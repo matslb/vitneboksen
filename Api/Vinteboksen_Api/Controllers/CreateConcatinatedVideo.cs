@@ -37,7 +37,7 @@ public static class CreateConcatinatedVideo
                 }
             }
             var concatFilePath = Path.Combine(tempPath, Constants.ConcatinatedVideoFileName);
-            await Helpers.ExecuteFFmpegCommand($"-f concat -safe 0 -i {fileListPath} -c:v libx264 -c:a aac {concatFilePath}");
+            await Helpers.ExecuteFFmpegCommand($"-f concat -safe 0 -i {fileListPath} -c:v copy -c:a copy {concatFilePath}");
 
             var file = File.OpenRead(concatFilePath);
             await containerClient.UploadBlobAsync(Constants.ConcatinatedVideoFileName, file);

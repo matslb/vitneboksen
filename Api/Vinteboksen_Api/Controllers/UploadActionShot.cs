@@ -21,15 +21,55 @@ public static class UploadActionShot
         {
             return new NotFoundObjectResult("Not found");
         }
+        
+        var tempFolder = $"action-{Guid.NewGuid()}";
+        var tempPath = Path.Combine(Environment.CurrentDirectory, tempFolder);
+        Directory.CreateDirectory(tempPath);
+        var videoFilePath = Path.Combine(tempPath, "file.mp4");
 
-        await containerClient.UploadBlobAsync(videoFile.FileName, videoFile.OpenReadStream());
-
-        var blob = containerClient.GetBlobClient(Constants.ConcatinatedVideoFileName);
-        if (blob.Exists())
+        using (var fileStream = new FileStream(videoFilePath, FileMode.Create))
         {
-            await blob.DeleteAsync();
+            await videoFile.CopyToAsync(fileStream);
         }
-        return new OkObjectResult("Ok");
+
+        try 
+        {
+            var outputFilePath = Path.Combine(tempPath, $"{DateTime.Now.ToFileTimeUtc()}.mp4");
+
+            var ffmpegCmd = OperatingSystem.IsWindows() ?
+            $"-i \"{videoFilePath}\" -c:v libx264 -c:a aac \"{outputFilePath}\""
+            : $"-i \"{videoFilePath}\" -c:v libx264 -c:a aac \"{outputFilePath}\"";
+
+            await Helpers.ExecuteFFmpegCommand(ffmpegCmd);
+
+            var fileInfo = new FileInfo(outputFilePath);
+            if (fileInfo.Exists && fileInfo.Length > 0)
+            {
+                using var fileStream = new FileStream(outputFilePath, FileMode.Open);
+                await containerClient.UploadBlobAsync(Path.GetFileName(outputFilePath), fileStream);
+            }
+            else
+            {
+                return Results.BadRequest("FFmpeg processing failed.");
+            }
+
+            var blob = containerClient.GetBlobClient(Constants.ConcatinatedVideoFileName);
+            if (blob.Exists())
+            {
+                await blob.DeleteAsync();
+            }
+
+        } 
+        catch (Exception)
+        {
+            throw;
+        }
+        finally 
+        {
+            Directory.Delete(tempPath, true);
+        }
+
+        return Results.Created();
     }
 
 }

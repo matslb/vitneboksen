@@ -44,8 +44,8 @@ public static class UploadTestemony
             var outputFilePath = Path.Combine(tempPath, $"{DateTime.Now.ToFileTimeUtc()}.mp4");
 
             var ffmpegCmd = OperatingSystem.IsWindows() ?
-            $"-i \"{videoFilePath}\" -vf \"subtitles='{subFilePath.Replace("\\", "\\\\").Replace(":", "\\:")}'\" -c:a copy \"{outputFilePath}\""
-            : $"-i \"{videoFilePath}\" -vf \"subtitles='{subFilePath}'\" -c:a copy \"{outputFilePath}\"";
+            $"-i \"{videoFilePath}\" -vf \"subtitles='{subFilePath.Replace("\\", "\\\\").Replace(":", "\\:")}'\" -c:v libx264 -c:a aac \"{outputFilePath}\""
+            : $"-i \"{videoFilePath}\" -vf \"subtitles='{subFilePath}'\" -c:v libx264 -c:a aac \"{outputFilePath}\"";
 
             await Helpers.ExecuteFFmpegCommand(ffmpegCmd);
 
