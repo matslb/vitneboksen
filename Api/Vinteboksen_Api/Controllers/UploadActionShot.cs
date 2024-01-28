@@ -1,11 +1,10 @@
 using Azure.Storage.Blobs;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Vitneboksen_Api.Controllers;
 
 public static class UploadActionShot
 {
-    public static async Task<IActionResult> Run(HttpRequest req, BlobServiceClient blobService)
+    public static async Task<IResult> Run(HttpRequest req, BlobServiceClient blobService)
     {
         string sharedKey = req.Query["sharedKey"];
 
@@ -13,15 +12,15 @@ public static class UploadActionShot
         var videoFile = req.Form.Files.FirstOrDefault(f => f.Name == "video");
         if (videoFile == null)
         {
-            return new BadRequestObjectResult("No file, stupid.");
+            return Results.BadRequest("No file, stupid.");
         }
 
         var containerClient = Helpers.GetContainerBySharedKey(blobService, sharedKey);
         if (containerClient == null)
         {
-            return new NotFoundObjectResult("Not found");
+            return Results.NotFound("Not found");
         }
-        
+
         var tempFolder = $"action-{Guid.NewGuid()}";
         var tempPath = Path.Combine(Environment.CurrentDirectory, tempFolder);
         Directory.CreateDirectory(tempPath);
@@ -32,7 +31,7 @@ public static class UploadActionShot
             await videoFile.CopyToAsync(fileStream);
         }
 
-        try 
+        try
         {
             var outputFilePath = Path.Combine(tempPath, $"{DateTime.Now.ToFileTimeUtc()}.mp4");
 
@@ -59,12 +58,12 @@ public static class UploadActionShot
                 await blob.DeleteAsync();
             }
 
-        } 
+        }
         catch (Exception)
         {
             throw;
         }
-        finally 
+        finally
         {
             Directory.Delete(tempPath, true);
         }
