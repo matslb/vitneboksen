@@ -288,7 +288,6 @@ const Testemony = () => {
           width: "80%",
           height: "90%",
           maxWidth: "110rem",
-          margin: "auto",
         }}
       >
         {recording && (
