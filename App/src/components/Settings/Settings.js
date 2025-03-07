@@ -288,15 +288,17 @@ const Settings = ({
                   }}
                 >
                   <div>
-                    <button
-                      onClick={() =>
-                        handleDownload(
-                          `download-session-files?sessionKey=${sessionKey}`
-                        )
-                      }
-                    >
-                      Last ned .zip
-                    </button>
+                    {testimonialCount + actionShotCount > 0 && (
+                      <button
+                        onClick={() =>
+                          handleDownload(
+                            `download-session-files?sessionKey=${sessionKey}`
+                          )
+                        }
+                      >
+                        Last ned .zip
+                      </button>
+                    )}
                   </div>
                   <div>
                     {testimonialCount + actionShotCount >= 1 &&
@@ -311,23 +313,25 @@ const Settings = ({
                         Last ned vitneboksvideo
                       </button>
                     ) : (
-                      <button
-                        className="button"
-                        disabled={finalVideoProcessingStarted}
-                        onClick={async () => {
-                          await startFinalVideoProcessing(
-                            sessionKey,
-                            sessionName
-                          );
-                          GetSession(sessionKey);
-                        }}
-                      >
-                        {!finalVideoProcessingStarted ? (
-                          "Sett sammen Vitneboksvideo"
-                        ) : (
-                          <span className="spinner">🤖</span>
-                        )}
-                      </button>
+                      testimonialCount + actionShotCount >= 1 && (
+                        <button
+                          className="button"
+                          disabled={finalVideoProcessingStarted}
+                          onClick={async () => {
+                            await startFinalVideoProcessing(
+                              sessionKey,
+                              sessionName
+                            );
+                            GetSession(sessionKey);
+                          }}
+                        >
+                          {!finalVideoProcessingStarted ? (
+                            "Sett sammen Vitneboksvideo"
+                          ) : (
+                            <span className="spinner">🤖</span>
+                          )}
+                        </button>
+                      )
                     )}
                   </div>
                 </div>

@@ -11,3 +11,10 @@ input[type="text"] {
 input[type="text"]:disabled {
   background: white;
 }
+
+.done-button {
+  margin: 1rem auto;
+  position: relative;
+  font-size: 1.2rem;
+  border-radius: 1rem;
+}

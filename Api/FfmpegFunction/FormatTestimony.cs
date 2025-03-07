@@ -52,7 +52,7 @@ namespace FfmpegFunction
             {
                 await blobContentStream.CopyToAsync(fileStream);
             }
-            string? subtitleText = null;
+            string? subtitleText = string.Empty;
             if (subfileBlobclient.Exists())
                 subtitleText = JsonConvert.DeserializeObject<string>((await subfileBlobclient.DownloadContentAsync()).Value.Content.ToString());
 
@@ -61,17 +61,7 @@ namespace FfmpegFunction
             {
                 string outputFilePath = Path.Combine(tempPath, $"{fileMetaData.CreatedOn.UtcDateTime.ToFileTimeUtc()}-{fileMetaData.VideoType}.mp4");
 
-                string ffmpegCmd;
-
-                if (subtitleText != null)
-                {
-                    ffmpegCmd = FfmpegCommandBuilder.WithText(videoFilePath, subtitleText, outputFilePath, fontSize: 50, TextPlacement.Subtitle);
-                }
-                else
-                {
-                    ffmpegCmd = FfmpegCommandBuilder.HandheldFormat(sourceVideoPath: videoFilePath, outputFilePath);
-
-                }
+                var ffmpegCmd = FfmpegCommandBuilder.WithText(videoFilePath, subtitleText, outputFilePath, fontSize: 50, TextPlacement.Subtitle);
 
                 await Helpers.ExecuteFFmpegCommand(ffmpegCmd);
 

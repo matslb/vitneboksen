@@ -238,7 +238,7 @@ const ActionShot = () => {
               <span style={{ fontSize: "1.1rem" }}>De som arrangerer</span>
               <h2 style={{ fontSize: "2rem" }}>{sessionName}</h2>
               <span style={{ fontSize: "1.1rem" }}>
-                syns du er kul nok til få denne linken
+                syns du er kul nok til få denne linken.
               </span>
             </div>
             {!countdown && (

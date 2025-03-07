@@ -284,28 +284,36 @@ const Testimony = () => {
           autoPlay
         />
         {recording && (
-          <button
-            onClick={() => {
-              const videoElement = document.getElementById("video");
-              recorder.stop();
-              setRecording(false);
-              setWaiting(true);
-              videoElement.srcObject = null;
-              videoElement.src = null;
-              setCountdown(waitTime / 1000);
-              let manualCountdownInterval = setInterval(() => {
-                setCountdown((prevCountdown) => prevCountdown - 1);
-              }, 1000);
-
-              setTimeout(async () => {
-                clearInterval(manualCountdownInterval);
-                setWaiting(false);
-                setStarted(false);
-              }, waitTime); //wait
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
             }}
           >
-            Ferdig snakka
-          </button>
+            <button
+              className="done-button"
+              onClick={() => {
+                const videoElement = document.getElementById("video");
+                recorder.stop();
+                setRecording(false);
+                setWaiting(true);
+                videoElement.srcObject = null;
+                videoElement.src = null;
+                setCountdown(waitTime / 1000);
+                let manualCountdownInterval = setInterval(() => {
+                  setCountdown((prevCountdown) => prevCountdown - 1);
+                }, 1000);
+
+                setTimeout(async () => {
+                  clearInterval(manualCountdownInterval);
+                  setWaiting(false);
+                  setStarted(false);
+                }, waitTime); //wait
+              }}
+            >
+              Ferdig snakka
+            </button>
+          </div>
         )}
       </div>
 
