@@ -30,13 +30,9 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: 'Download ffmpeg.exe from Azure Storage'
+        shell: pwsh
         run: |
-          az storage blob download \
-            --account-name vitneboksen \
-            --container-name ffmpeg \
-            --name ffmpeg.exe \
-            --file '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/ffmpeg.exe' \
-            --auth-mode login
+          az storage blob download --account-name vitneboksen --container-name ffmpeg --name ffmpeg.exe --file '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/ffmpeg.exe' --auth-mode login
 
       - name: 'Resolve Project Dependencies Using Dotnet'
         shell: pwsh
