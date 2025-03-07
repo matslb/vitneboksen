@@ -7,7 +7,8 @@ on:
   workflow_dispatch:
 
 env:
-  PROJECT_PATH: Api/Vitneboksen_Api  # Set the relative path to your project here
+  PROJECT_PATH: Api/Vitneboksen_Api  # Relative path to your project
+  PUBLISH_PATH: ./published_app       # Explicit publish directory
 
 jobs:
   build:
@@ -27,13 +28,13 @@ jobs:
         run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish ${{ env.PROJECT_PATH }} -c Release -o ${{ env.DOTNET_ROOT }}/myapp
+        run: dotnet publish ${{ env.PROJECT_PATH }} -c Release -o ${{ env.PUBLISH_PATH }}
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ${{ env.DOTNET_ROOT }}/myapp
+          path: ${{ env.PUBLISH_PATH }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -64,4 +65,4 @@ jobs:
         with:
           app-name: 'VinteboksenApiLinux'
           slot-name: 'Production'
-          package: ${{ env.DOTNET_ROOT }}/myapp
+          package: ${{ env.PUBLISH_PATH }}
