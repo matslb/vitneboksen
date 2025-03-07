@@ -33,7 +33,7 @@ public static class GetSession
         var session = await Helpers.GetBlobFromStorage<Session>(containerClient, Constants.SessionInfoFileName);
         if (session == null)
         {
-            session = new Session(string.Empty, []);
+            session = new Session("Vitneboksen", []);
             await Helpers.UploadJsonToStorage(blobClient, session);
         }
 

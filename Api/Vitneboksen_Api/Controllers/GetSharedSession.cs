@@ -16,7 +16,9 @@ public static class GetSharedSession
             return Results.NotFound("not found");
         }
 
-        return Results.Ok();
+        var session = await Helpers.GetBlobFromStorage<Session>(containerClient, Constants.SessionInfoFileName);
+
+        return Results.Ok(session?.SessionName);
     }
 }
 

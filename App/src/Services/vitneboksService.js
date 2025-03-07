@@ -39,7 +39,7 @@ export async function getSharedSession(sharedKey) {
   });
 
   if (response.ok) {
-    return true;
+    return response.json();
   }
   return false;
 }

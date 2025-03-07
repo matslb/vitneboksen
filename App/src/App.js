@@ -20,34 +20,11 @@ const App = () => {
     } else {
       setSharedKey(false);
     }
-    /*  if (closeTutorial) {
-      checkIfHasCamera().then(setHasCamera);
-    }
-    */
   }, [closeTutorial]);
-  /*
-  const checkIfHasCamera = () => {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
-      return false;
-    }
 
-    return navigator.mediaDevices
-      .enumerateDevices()
-      .then((devices) => {
-        const cameras = devices.filter(
-          (device) => device.kind === "videoinput"
-        );
-        return cameras.length > 0;
-      })
-      .catch((err) => {
-        console.error("Error accessing media devices:", err);
-        return false;
-      });
-  };
-*/
   return (
     <main>
-      {closeTutorial && (
+      {closeTutorial && !sharedKey && (
         <CloseButton
           onClick={() => {
             setCloseTutorial((prev) => !prev);

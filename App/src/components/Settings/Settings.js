@@ -48,10 +48,12 @@ const Settings = ({
   useEffect(() => {
     const intervalId = setInterval(GetSession, 4000);
 
+    if (!sessionKey) clearInterval(intervalId);
+
     return () => {
       clearInterval(intervalId);
     };
-  }, [GetSession]);
+  }, [GetSession, sessionKey]);
 
   const [showModal, setShowModal] = useState(false);
 
