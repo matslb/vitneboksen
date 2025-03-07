@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 
 namespace FfmpegFunction;
 
@@ -38,7 +38,7 @@ public static class FfmpegCommandBuilder
                $"pad=1920:1080:(1920-iw)/2:(1080-ih)/2," +
                $"drawtext=text='{escapedSubtitles}':font='Arial':fontcolor=white:fontsize={fontSize}:" +
                $"x=(w-text_w)/2:y={verticalPosition}:shadowcolor=black:shadowx=4:shadowy=4:{enableOption}\" " +
-               $"-r 30 -c:v libx264 -c:a aac -ar 48000 \"{outputVideoPath}\"";
+               $"-r 30 -c:v libx264 -c:a aac -b:a 192k -ar 48000 \"{outputVideoPath}\"";
     }
 
     public static string WithoutText(string sourceVideoPath, string outputVideoPath)
@@ -52,7 +52,7 @@ public static class FfmpegCommandBuilder
 
     internal static string ConcatVideos(string fileListPath, string outputFilePath)
     {
-        return $"-f concat -safe 0 -i {fileListPath} -c:v copy -c:a aac -ar 48000 {outputFilePath}";
+        return $"-f concat -safe 0 -i {fileListPath} -c:v copy -c:a copy {outputFilePath}";
     }
 
     internal static string HandheldFormat(string sourceVideoPath, string outputFilePath)
