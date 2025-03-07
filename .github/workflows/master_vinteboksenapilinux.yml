@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  PROJECT_PATH: api/Vitneboksen_Api  # Set the relative path to your project here
+  PROJECT_PATH: Api/Vitneboksen_Api  # Set the relative path to your project here
 
 jobs:
   build:
