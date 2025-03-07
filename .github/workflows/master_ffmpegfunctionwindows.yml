@@ -29,6 +29,65 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      - name: 'Download ffmpeg.exe from Azure Storage'
+        run: |
+          az storage blob download \
+            --account-name <storage_account_name> \
+            --container-name <container_name> \
+            --name ffmpeg.exe \
+            --file '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/ffmpeg.exe' \
+            --auth-mode login
+
+      - name: 'Resolve Project Dependencies Using Dotnet'
+        shell: pwsh
+        run: |
+          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+          dotnet build --configuration Release --output ./output
+          popd
+      
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.# Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy dotnet core app to Azure Function App - FfmpegFunctionWindows
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+env:
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'Api/FfmpegFunction' # set this to the path to your web app project, defaults to the repository root
+  DOTNET_VERSION: '8.0.x' # set this to the dotnet version to use
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest
+    permissions:
+      id-token: write #This is required for requesting the JWT
+      contents: read #This is required for actions/checkout
+
+    steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@v4
+
+      - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: 'Download ffmpeg.exe from Azure Storage'
+        run: |
+          az storage blob download \
+            --account-name vitneboksen \
+            --container-name ffmpeg \
+            --name ffmpeg.exe \
+            --file '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/ffmpeg.exe' \
+            --auth-mode login
+
       - name: 'Resolve Project Dependencies Using Dotnet'
         shell: pwsh
         run: |
@@ -50,4 +109,14 @@ jobs:
           app-name: 'FfmpegFunctionWindows'
           slot-name: 'Production'
           package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
-          
+ }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_694F78F323734DCBA512E1D4F0E2F7E5 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_81BB8247914245F4BF229053D2204298 }}
+
+      - name: 'Run Azure Functions Action'
+        uses: Azure/functions-action@v1
+        id: fa
+        with:
+          app-name: 'FfmpegFunctionWindows'
+          slot-name: 'Production'
+          package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
