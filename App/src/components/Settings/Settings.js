@@ -211,13 +211,14 @@ const Settings = ({
               setIsEditingQuestion(false);
               setEditingQuestionIndex(null);
             }}
-            saveQuestion={({ text, countdownTime, recordTime }) => {
+            saveQuestion={({ text, countdownTime, recordTime, active }) => {
               setQuestions((prevQuestions) => {
                 const updatedQuestions = [...prevQuestions];
                 updatedQuestions[editingQuestionIndex] = {
                   text,
                   countdownTime,
                   recordTime,
+                  active,
                 };
                 return updatedQuestions;
               });
@@ -227,15 +228,16 @@ const Settings = ({
             defaultQuestion={questions[editingQuestionIndex].text.trim()}
             defaultCountDownTime={questions[editingQuestionIndex].countdownTime}
             defaultRecordTime={questions[editingQuestionIndex].recordTime}
+            defaultActive={questions[editingQuestionIndex].active}
           />
         )}
         {showModal && (
           <NewQuestion
             closeModal={() => setShowModal(false)}
-            saveQuestion={({ text, countdownTime, recordTime }) => {
+            saveQuestion={({ text, countdownTime, recordTime, active }) => {
               setQuestions((prevQuestions) => [
                 ...prevQuestions,
-                { text, countdownTime, recordTime },
+                { text, countdownTime, recordTime, active },
               ]);
             }}
           />

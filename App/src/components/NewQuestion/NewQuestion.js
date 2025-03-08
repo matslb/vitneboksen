@@ -7,6 +7,7 @@ const NewQuestion = ({
   defaultQuestion,
   defaultCountDownTime,
   defaultRecordTime,
+  defaultActive,
   closeModal,
   saveQuestion,
 }) => {
@@ -15,6 +16,7 @@ const NewQuestion = ({
     defaultCountDownTime || 5000
   );
   const [recordTime, setrecordTime] = useState(defaultRecordTime || 15000);
+  const [active, setActive] = useState(defaultActive);
 
   const handleQuestionChange = (e) => {
     setQuestion(e.target.value);
@@ -83,6 +85,16 @@ const NewQuestion = ({
           >
             Lang
           </button>
+          <label>
+            Aktiv
+            <input
+              checked={active}
+              onClick={(e) => {
+                setActive(e.target.checked);
+              }}
+              type="checkbox"
+            ></input>
+          </label>
         </div>
 
         <div className="button-group">
@@ -92,6 +104,7 @@ const NewQuestion = ({
                 text: question.trim(),
                 countdownTime,
                 recordTime,
+                active,
               });
 
               closeModal();

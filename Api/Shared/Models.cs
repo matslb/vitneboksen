@@ -22,6 +22,7 @@ public record Question(
     [property: JsonPropertyName("text")] string Text,
     [property: JsonPropertyName("countdownTime")] int CountdownTime,
     [property: JsonPropertyName("recordTime")] int RecordTime,
-    [property: JsonPropertyName("order")] int Order = 0
+    [property: JsonPropertyName("order")] int Order = 0,
+    [property: JsonPropertyName("active")] bool Active = true
     );
 

@@ -94,10 +94,11 @@ const Testimony = () => {
 
   const startRecording = async () => {
     setStarted(true);
+    const activeQuestions = questions.filter((q) => q.active);
     let currentQuestion =
-      questions[
-        (questions.findIndex((item) => item.text === question) || 0) + 1
-      ] || questions[0];
+      activeQuestions[
+        (activeQuestions.findIndex((item) => item.text === question) || 0) + 1
+      ] || activeQuestions[0];
     setCountdown(currentQuestion.countdownTime / 1000);
     try {
       let countdownInterval = setInterval(() => {
