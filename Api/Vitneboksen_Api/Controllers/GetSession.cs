@@ -17,12 +17,12 @@ public static class GetSession
             sharingKey = Guid.NewGuid().ToString().Substring(0, 8);
             containerClient = blobService.GetBlobContainerClient($"{sessionKey}-{sharingKey}");
             await containerClient.CreateAsync();
+            containerClient.SetMetadata(new Dictionary<string, string> { { "created", DateTime.Now.ToString() } });
         }
         else
         {
             sharingKey = containerClient.Name.Split("-").Last();
         }
-
         var blobs = containerClient.GetBlobs();
         var testimonials = blobs.Count(b => b.Name.Contains(Constants.VideoTypes.Testimonial));
         var actionshots = blobs.Count(b => b.Name.Contains(Constants.VideoTypes.ActionShot));
