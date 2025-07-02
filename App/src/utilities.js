@@ -21,9 +21,9 @@ export const videoExtension = "webm";
 export const GetSupportedMimeType = async () => {
   let mimeType = "";
   const preferredTypes = [
+    "video/webm",
     "video/webm;codecs=vp9,opus",
     "video/webm;codecs=vp8,opus",
-    "video/webm",
   ];
 
   for (const type of preferredTypes) {
@@ -32,7 +32,6 @@ export const GetSupportedMimeType = async () => {
       break;
     }
   }
-
   if (mimeType === "") {
     alert(
       "Din nettleser støtter ikke den nødvendige video-kodeken. Oppdater eller bruk en annen nettleser."

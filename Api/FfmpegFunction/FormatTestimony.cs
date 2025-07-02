@@ -26,7 +26,7 @@ namespace FfmpegFunction
         {
             var fileMetaData = VideoFileMetaData.GetVideoFileMetaDataFromFileName(blobName);
 
-            if (!blobName.EndsWith(".mp4"))
+            if (!blobName.EndsWith(".webm"))
                 return;
 
             using var blobContentStream = new MemoryStream(blobContent);

@@ -24,10 +24,12 @@ const Testimony = () => {
   const [started, setStarted] = useState(false);
   const [waiting, setWaiting] = useState(false);
   const [recorder, setRecorder] = useState(null);
-  const [sessionKey, setSessionKey] = useState(null);
+  const [sessionKey, setSessionKey] = useState();
   const [sessionName, setSessionName] = useState(null);
   const [sharedKey, setSharedKey] = useState(null);
-  const [inputKey, setInputKey] = useState(null);
+  const [inputKey, setInputKey] = useState(
+    localStorage.getItem("sessionKey") ?? null
+  );
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [waitTime, setWaitTime] = useState(30000);
   const [lastUpload, setLastUpload] = useState(null);
@@ -41,9 +43,6 @@ const Testimony = () => {
 
   const GetSession = useCallback(
     async (sessionKey = inputKey) => {
-      if (sessionKey == null) {
-        sessionKey = localStorage.getItem("sessionKey");
-      }
       if (recording) return;
       var {
         sharingKey: newSharedKey,
@@ -55,7 +54,7 @@ const Testimony = () => {
         finalVideoStarted,
         questions,
         sessionName,
-      } = await getOrCreateSession(sessionKey);
+      } = await getOrCreateSession();
       if (newSessionKey) {
         setSessionKey(newSessionKey);
         setLastUpload(lastUpload);
@@ -118,7 +117,6 @@ const Testimony = () => {
         setVideoStream(stream);
 
         const options = {
-          mimeType: videoExtension,
           videoBitsPerSecond: 2500000,
         };
         const recorder = new MediaRecorder(stream, options);

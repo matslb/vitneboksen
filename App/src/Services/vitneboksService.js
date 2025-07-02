@@ -6,8 +6,8 @@ function generateKey() {
   });
 }
 
-export async function getOrCreateSession(existingSessionKey) {
-  const sessionKey = existingSessionKey || generateKey();
+export async function getOrCreateSession() {
+  const sessionKey = localStorage.getItem("sessionKey") || generateKey();
 
   const urlWithQueryParam = `${process.env.REACT_APP_API}get-session?sessionKey=${sessionKey}`;
   try {
@@ -106,6 +106,12 @@ export async function updateQuestions(sessionKey, questions) {
 }
 
 async function uploadFile(url, formData) {
+  const handleBeforeUnload = (e) => {
+    e.preventDefault();
+    e.returnValue = "";
+  };
+  window.addEventListener("beforeunload", handleBeforeUnload);
+
   try {
     const response = await fetch(url, {
       method: "POST",
@@ -118,4 +124,6 @@ async function uploadFile(url, formData) {
   } catch (error) {
     console.error("Error:", error);
   }
+
+  window.removeEventListener("beforeunload", handleBeforeUnload);
 }
