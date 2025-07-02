@@ -22,6 +22,11 @@ public static class UploadVideo
 
         var sessionKey = containerClient.Name.Split("-").First();
 
+        if (containerClient.GetBlobs().Count(b => b.Name.Contains("webm")) >= 50)
+        {
+            return Results.BadRequest("Video upload limit reached");
+        }
+
         var formdata = await req.ReadFormAsync();
         var videoFile = req.Form.Files.FirstOrDefault(f => f.Name == "video");
         string? subText = null;
