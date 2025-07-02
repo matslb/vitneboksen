@@ -34,15 +34,14 @@ public static class FfmpegCommandBuilder
             ? $"enable='between(t,{startTime.Value.ToString(CultureInfo.InvariantCulture)},{endTime.Value.ToString(CultureInfo.InvariantCulture)})'"
             : ""; // No enable option, text is shown for the whole duration.
 
-        return $"-fflags +genpts -err_detect ignore_err " + // <--- NEW
-               $"-i \"{sourceVideoPath}\" " +
+        return $"-i \"{sourceVideoPath}\" " +
                $"-filter:a \"loudnorm=I=-16:TP=-1.5:LRA=11\" " +
                $"-vf \"scale=1920:1080:force_original_aspect_ratio=decrease," +
                $"pad=1920:1080:(1920-iw)/2:(1080-ih)/2," +
                $"drawtext=text='{escapedSubtitles}':font='Arial':fontcolor=white:fontsize={fontSize}:" +
                $"x=(w-text_w)/2:y={verticalPosition}:shadowcolor=black:shadowx=4:shadowy=4:{enableOption}\" " +
                $"-r 30 -c:v libx264 -c:a aac -b:a 192k -ar 48000 -ac 2 " +
-               $"-movflags +faststart " + // <--- NEW (helps with streaming & malformed headers)
+               $"-movflags +faststart " +
                $"\"{outputVideoPath}\"";
     }
 

@@ -16,10 +16,12 @@ namespace FfmpegFunction
 {
     public class ProcessFinalVideo
     {
+        private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
         public ProcessFinalVideo(ILoggerFactory loggerFactory, IConfiguration configuration)
         {
             _configuration = configuration;
+            _logger = loggerFactory.CreateLogger<ProcessFinalVideo>();
         }
 
         [Function("ProcessFinalVideo")]
@@ -96,7 +98,10 @@ namespace FfmpegFunction
 
                 var concatFilePath = Path.Combine(tempPath, Constants.FinalVideoFileName);
                 var concatFfmpegCommand = FfmpegCommandBuilder.ConcatVideos(fileListPath, concatFilePath);
-                await Helpers.ExecuteFFmpegCommand(concatFfmpegCommand, timeoutInSeconds: 240, cancellationToken: cancellationToken);
+                var result = await Helpers.ExecuteFFmpegCommand(concatFfmpegCommand, timeoutInSeconds: 240, cancellationToken: cancellationToken);
+
+                if (!result.Success)
+                    _logger.LogError("Could not concatenate videos {error}", result.Exception);
 
                 var file = File.OpenRead(concatFilePath);
                 await containerClient.UploadBlobAsync(Constants.FinalVideoFileName, file);
