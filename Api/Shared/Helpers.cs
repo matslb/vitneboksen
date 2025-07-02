@@ -56,7 +56,8 @@ namespace Shared
             return default;
         }
 
-        public static async Task AppServiceExecuteFFmpegCommand(string arguments)
+
+        public static async Task<FFmpegResult> ExecuteFFmpegCommand(string arguments, int timeoutInSeconds = 60, CancellationToken cancellationToken = default)
         {
             string environment = Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT")!;
 
@@ -80,89 +81,46 @@ namespace Shared
 
             process.OutputDataReceived += (sender, e) =>
             {
-                if (!string.IsNullOrEmpty(e.Data))
-                {
-                    outputBuilder.AppendLine(e.Data);
-                }
+                if (!string.IsNullOrEmpty(e.Data)) outputBuilder.AppendLine(e.Data);
             };
 
             process.ErrorDataReceived += (sender, e) =>
             {
-                if (!string.IsNullOrEmpty(e.Data))
-                {
-                    errorBuilder.AppendLine(e.Data);
-                }
+                if (!string.IsNullOrEmpty(e.Data)) errorBuilder.AppendLine(e.Data);
             };
-
-            process.Start();
-
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
-
-            // Await the process exit asynchronously.
-            await process.WaitForExitAsync();
-
-            // Check the exit code and handle errors if any.
-            if (process.ExitCode != 0)
+            var timeout = TimeSpan.FromSeconds(timeoutInSeconds);
+            try
             {
-                string errorOutput = errorBuilder.ToString();
-                // Optionally, you can also log outputBuilder if needed.
-                throw new Exception($"FFmpeg exited with code {process.ExitCode}: {errorOutput}");
+                process.Start();
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+
+                using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                cts.CancelAfter(timeout);
+
+                await process.WaitForExitAsync(cts.Token);
+
+                if (process.ExitCode != 0)
+                {
+                    return new FFmpegResult(false, new Exception($"FFmpeg exited with code {process.ExitCode}: {errorBuilder}"));
+                }
+
+                return new FFmpegResult(true);
             }
-        }
-
-        public static async Task ExecuteFFmpegCommand(string arguments)
-        {
-            string environment = Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT")!;
-
-            var ffmpegFileName = Path.Combine(environment == "Development" ? Environment.CurrentDirectory : "C:\\home\\site\\wwwroot",
-                IsRunningOnWindows() ? "ffmpeg.exe" : "ffmpeg");
-
-            var ffmpegStartInfo = new ProcessStartInfo
+            catch (OperationCanceledException oce)
             {
-                FileName = ffmpegFileName,
-                Arguments = arguments,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
-
-            using var process = new Process { StartInfo = ffmpegStartInfo };
-
-            var outputBuilder = new StringBuilder();
-            var errorBuilder = new StringBuilder();
-
-            process.OutputDataReceived += (sender, e) =>
-            {
-                if (!string.IsNullOrEmpty(e.Data))
+                try
                 {
-                    outputBuilder.AppendLine(e.Data);
+                    if (!process.HasExited)
+                        process.Kill(true);
                 }
-            };
+                catch { /* ignored */ }
 
-            process.ErrorDataReceived += (sender, e) =>
+                return new FFmpegResult(false, oce);
+            }
+            catch (Exception ex)
             {
-                if (!string.IsNullOrEmpty(e.Data))
-                {
-                    errorBuilder.AppendLine(e.Data);
-                }
-            };
-
-            process.Start();
-
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
-
-            // Await the process exit asynchronously.
-            await process.WaitForExitAsync();
-
-            // Check the exit code and handle errors if any.
-            if (process.ExitCode != 0)
-            {
-                string errorOutput = errorBuilder.ToString();
-                // Optionally, you can also log outputBuilder if needed.
-                throw new Exception($"FFmpeg exited with code {process.ExitCode}: {errorOutput}");
+                return new FFmpegResult(false, ex);
             }
         }
 

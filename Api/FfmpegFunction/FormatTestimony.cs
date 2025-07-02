@@ -7,6 +7,7 @@ using Shared.Models;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 namespace FfmpegFunction
 {
@@ -21,7 +22,7 @@ namespace FfmpegFunction
         }
 
         [Function("FormatTestimony")]
-        public async Task Run([BlobTrigger("unprocessed/{blobName}", Connection = "AzureWebJobsStorage")] byte[] blobContent, FunctionContext context, string blobName)
+        public async Task Run([BlobTrigger("unprocessed/{blobName}", Connection = "AzureWebJobsStorage")] byte[] blobContent, FunctionContext context, string blobName, CancellationToken cancellation)
         {
             var fileMetaData = VideoFileMetaData.GetVideoFileMetaDataFromFileName(blobName);
 
@@ -57,30 +58,44 @@ namespace FfmpegFunction
                 subtitleText = JsonConvert.DeserializeObject<string>((await subfileBlobclient.DownloadContentAsync()).Value.Content.ToString());
 
             var sessionContainer = Helpers.GetContainerBySessionKey(blobService, fileMetaData.SessionKey);
+
             try
             {
-                string outputFilePath = Path.Combine(tempPath, $"{fileMetaData.CreatedOn.UtcDateTime.ToFileTimeUtc()}-{fileMetaData.VideoType}.mp4");
-
-                var ffmpegCmd = FfmpegCommandBuilder.WithText(videoFilePath, subtitleText, outputFilePath, fontSize: 50, TextPlacement.Subtitle);
-
-                await Helpers.ExecuteFFmpegCommand(ffmpegCmd);
-
-                var fileInfo = new FileInfo(outputFilePath);
-                if (fileInfo.Exists && fileInfo.Length > 0)
+                if (sessionContainer == null)
                 {
-                    using var fileStream = new FileStream(outputFilePath, FileMode.Open);
-                    await sessionContainer.UploadBlobAsync(Path.GetFileName(outputFilePath), fileStream);
+                    _logger.LogError("Session container {sessionContainer} does not exist. Deleting unprocessed files", fileMetaData.SessionKey);
+                    await videofileBlobClient.DeleteIfExistsAsync();
+                    await subfileBlobclient.DeleteIfExistsAsync();
                 }
                 else
                 {
-                    throw new Exception("FFmpeg processing failed.");
+                    string outputFilePath = Path.Combine(tempPath, $"{fileMetaData.CreatedOn.UtcDateTime.ToFileTimeUtc()}-{fileMetaData.VideoType}.mp4");
+
+                    var ffmpegCmd = FfmpegCommandBuilder.WithText(videoFilePath, subtitleText, outputFilePath, fontSize: 50, TextPlacement.Subtitle);
+
+                    var commandResult = await Helpers.ExecuteFFmpegCommand(ffmpegCmd, 180, cancellation);
+
+                    var fileInfo = new FileInfo(outputFilePath);
+                    if (fileInfo.Exists && fileInfo.Length > 0)
+                    {
+                        using var fileStream = new FileStream(outputFilePath, FileMode.Open);
+                        await sessionContainer.UploadBlobAsync(Path.GetFileName(outputFilePath), fileStream);
+                    }
+                    else
+                    {
+                        throw new Exception("FFmpeg processing failed.");
+                    }
+
+                    await videofileBlobClient.DeleteIfExistsAsync();
+                    await subfileBlobclient.DeleteIfExistsAsync();
+
+                    var blob = sessionContainer.GetBlobClient(Constants.FinalVideoFileName);
+                    await blob.DeleteIfExistsAsync();
                 }
-
-                await videofileBlobClient.DeleteIfExistsAsync();
-                await subfileBlobclient.DeleteIfExistsAsync();
-
-                var blob = sessionContainer.GetBlobClient(Constants.FinalVideoFileName);
-                await blob.DeleteIfExistsAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Could not process file {fileName}", fileMetaData.GetVideoFileName());
             }
             finally
             {

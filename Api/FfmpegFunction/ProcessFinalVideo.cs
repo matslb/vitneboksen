@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 namespace FfmpegFunction
 {
@@ -23,7 +24,8 @@ namespace FfmpegFunction
 
         [Function("ProcessFinalVideo")]
         public async Task Run([BlobTrigger("final-video-processing-requests/{sessionContainerName}", Connection = "AzureWebJobsStorage")] byte[] blobContent,
-            string sessionContainerName
+            string sessionContainerName,
+            CancellationToken cancellationToken
             )
         {
             var processingRequest = JsonSerializer.Deserialize<FinalVideoProcessingRequest>(blobContent);
@@ -71,7 +73,8 @@ namespace FfmpegFunction
                      outputVideoPath: outroDestinationPath,
                      fontSize: 80,
                      TextPlacement.Centered
-                     ));
+                     ),
+                     cancellationToken: cancellationToken);
 
                 // Create a MemoryStream to store the zip file
                 using var memoryStream = new MemoryStream();
@@ -93,7 +96,7 @@ namespace FfmpegFunction
 
                 var concatFilePath = Path.Combine(tempPath, Constants.FinalVideoFileName);
                 var concatFfmpegCommand = FfmpegCommandBuilder.ConcatVideos(fileListPath, concatFilePath);
-                await Helpers.ExecuteFFmpegCommand(concatFfmpegCommand);
+                await Helpers.ExecuteFFmpegCommand(concatFfmpegCommand, timeoutInSeconds: 240, cancellationToken: cancellationToken);
 
                 var file = File.OpenRead(concatFilePath);
                 await containerClient.UploadBlobAsync(Constants.FinalVideoFileName, file);

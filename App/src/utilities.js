@@ -1,8 +1,8 @@
 export const GetRecordingConstrains = async () => {
   let constraints = {
     video: {
-      width: { ideal: 1200 },
-      height: { ideal: 720 },
+      width: { ideal: 1920 },
+      height: { ideal: 1080 },
       frameRate: { ideal: 30 },
     },
     audio: {
@@ -10,10 +10,36 @@ export const GetRecordingConstrains = async () => {
       echoCancellation: false,
       autoGainControl: false,
     },
-    mimeType: "video/webm",
+    mimeType: GetSupportedMimeType(),
   };
 
   return constraints;
+};
+
+export const videoExtension = "webm";
+
+export const GetSupportedMimeType = async () => {
+  let mimeType = "";
+  const preferredTypes = [
+    "video/webm;codecs=vp9,opus",
+    "video/webm;codecs=vp8,opus",
+    "video/webm",
+  ];
+
+  for (const type of preferredTypes) {
+    if (MediaRecorder.isTypeSupported(type)) {
+      mimeType = type;
+      break;
+    }
+  }
+
+  if (mimeType == "") {
+    alert(
+      "Din nettleser støtter ikke den nødvendige video-kodeken. Oppdater eller bruk en annen nettleser."
+    );
+    return null;
+  }
+  return mimeType;
 };
 
 export const prepFile = (recordedChunks, type) => {

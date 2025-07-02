@@ -8,7 +8,11 @@ import {
 } from "../../Services/vitneboksService";
 import "./Testimony.css";
 import Settings from "../Settings/Settings";
-import { GetRecordingConstrains, prepFile } from "../../utilities";
+import {
+  GetRecordingConstrains,
+  prepFile,
+  videoExtension,
+} from "../../utilities";
 import Footer from "../Footer/Footer";
 
 const Testimony = () => {
@@ -99,22 +103,26 @@ const Testimony = () => {
       activeQuestions[
         (activeQuestions.findIndex((item) => item.text === question) || 0) + 1
       ] || activeQuestions[0];
+
     setCountdown(currentQuestion.countdownTime / 1000);
     try {
       let countdownInterval = setInterval(() => {
         setCountdown((prevCountdown) => prevCountdown - 1);
       }, 1000);
+
       setQuestion(currentQuestion.text);
+
       setTimeout(async () => {
         clearInterval(countdownInterval);
-
         const stream = await navigator.mediaDevices.getUserMedia(
           await GetRecordingConstrains()
         );
         setVideoStream(stream);
 
-        const recorder = new MediaRecorder(stream);
+        const options = { mimeType: mimeType, videoBitsPerSecond: 2500000 };
+        const recorder = new MediaRecorder(stream, options);
         setRecorder(recorder);
+
         const recordedChunks = [];
 
         recorder.ondataavailable = (event) => {
@@ -123,20 +131,11 @@ const Testimony = () => {
           }
         };
 
-        // Assign the stream to the video element
         const videoElement = document.getElementById("video");
-        if ("srcObject" in videoElement) {
-          videoElement.srcObject = stream;
-        } else {
-          // For older browsers that don't support srcObject
-          videoElement.src = URL.createObjectURL(stream);
-        }
-
-        // Mute the video
+        videoElement.srcObject = stream;
         videoElement.muted = true;
 
         recorder.start();
-
         setRecording(true);
         setCountdown(currentQuestion.recordTime / 1000);
 
@@ -147,10 +146,11 @@ const Testimony = () => {
           }
           setCountdown((prevCountdown) => prevCountdown - 1);
         }, 1000);
+
         recorder.onstop = async () => {
           const { blob: videoBlob, fileName: videoFileName } = prepFile(
             recordedChunks,
-            "mp4"
+            videoExtension
           );
 
           await uploadTestimony(
@@ -158,31 +158,33 @@ const Testimony = () => {
             videoBlob,
             videoFileName,
             currentQuestion.text,
-            videoFileName.replace("mp4", "srt")
+            videoFileName.replace(videoExtension, "txt")
           );
+
           await GetSession(sessionKey);
         };
 
-        setTimeout(async () => {
-          if (recorder.state === "inactive") return;
-          clearInterval(countdownInterval);
-          recorder.stop();
-          setRecording(false);
-          setWaiting(true);
-          videoElement.srcObject = null;
-          videoElement.src = null;
-          setCountdown(waitTime / 1000);
-          countdownInterval = setInterval(() => {
-            setCountdown((prevCountdown) => prevCountdown - 1);
-          }, 1000);
+        setTimeout(() => {
+          if (recorder.state !== "inactive") {
+            recorder.requestData(); // ensure final chunk
+            recorder.stop();
+            setRecording(false);
+            setWaiting(true);
+            videoElement.srcObject = null;
+            videoElement.src = null;
+            setCountdown(waitTime / 1000);
+            countdownInterval = setInterval(() => {
+              setCountdown((prevCountdown) => prevCountdown - 1);
+            }, 1000);
 
-          setTimeout(async () => {
-            clearInterval(countdownInterval);
-            setWaiting(false);
-            setStarted(false);
-          }, waitTime); //wait
-        }, currentQuestion.recordTime); // Record
-      }, currentQuestion.countdownTime); // Countdown
+            setTimeout(() => {
+              clearInterval(countdownInterval);
+              setWaiting(false);
+              setStarted(false);
+            }, waitTime);
+          }
+        }, currentQuestion.recordTime);
+      }, currentQuestion.countdownTime);
     } catch (error) {
       console.error("Error accessing webcam:", error);
     }

@@ -14,7 +14,7 @@ public class VideoFileMetaData(
 
     public string GetVideoFileName()
     {
-        return $"{Id}&{CreatedOn.ToUnixTimeSeconds()}&{VideoType}&{SessionKey}.mp4";
+        return $"{Id}&{CreatedOn.ToUnixTimeSeconds()}&{VideoType}&{SessionKey}.webm";
     }
 
     public string GetSubFileName()
