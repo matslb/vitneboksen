@@ -5,7 +5,11 @@ import {
   uploadActionShot,
 } from "../../Services/vitneboksService";
 import "./actionShot.css";
-import { GetRecordingConstrains, prepFile } from "../../utilities";
+import {
+  GetRecordingConstrains,
+  prepFile,
+  videoExtension,
+} from "../../utilities";
 
 const ActionShot = () => {
   const [videoStream, setVideoStream] = useState(null);

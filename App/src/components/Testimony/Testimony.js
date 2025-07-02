@@ -24,9 +24,7 @@ const Testimony = () => {
   const [started, setStarted] = useState(false);
   const [waiting, setWaiting] = useState(false);
   const [recorder, setRecorder] = useState(null);
-  const [sessionKey, setSessionKey] = useState(
-    localStorage.getItem("sessionKey", null)
-  );
+  const [sessionKey, setSessionKey] = useState(null);
   const [sessionName, setSessionName] = useState(null);
   const [sharedKey, setSharedKey] = useState(null);
   const [inputKey, setInputKey] = useState(null);
@@ -119,7 +117,10 @@ const Testimony = () => {
         );
         setVideoStream(stream);
 
-        const options = { mimeType: mimeType, videoBitsPerSecond: 2500000 };
+        const options = {
+          mimeType: videoExtension,
+          videoBitsPerSecond: 2500000,
+        };
         const recorder = new MediaRecorder(stream, options);
         setRecorder(recorder);
 
