@@ -33,7 +33,7 @@ export const GetSupportedMimeType = async () => {
     }
   }
 
-  if (mimeType == "") {
+  if (mimeType === "") {
     alert(
       "Din nettleser støtter ikke den nødvendige video-kodeken. Oppdater eller bruk en annen nettleser."
     );
