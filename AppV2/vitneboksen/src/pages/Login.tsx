@@ -2,6 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from '../firebase';
+import Footer from '../components/Footer';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ export default function Login() {
           Logg inn med Google
         </button>
       </main>
+      <Footer />
     </div>
   );
 }

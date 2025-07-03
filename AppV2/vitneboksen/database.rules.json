@@ -1,8 +1,14 @@
 {
   "rules": {
-      "$uid": {
-        ".read": true,
-        ".write": "auth != null && auth.uid === $uid"
+    "$uid": {
+      ".read": "auth != null && auth.uid === $uid",
+      ".write": "auth != null && auth.uid === $uid",
+      "vitnebokser": {
+        "$vitneboksId": {
+          ".read": "auth != null && auth.uid === $uid || query.equalTo == data.child('publicId').val()",
+          ".write": "auth != null && auth.uid === $uid"
+        }
       }
+    }
   }
 }

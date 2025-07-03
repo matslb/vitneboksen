@@ -1,10 +1,12 @@
 // src/pages/AdminDashboard.tsx
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getDatabase, ref, push, onValue } from 'firebase/database';
+import { getDatabase, ref, push, onValue, set } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
 import type Vitneboks from '../types/Vitneboks';
 import LogoutButton from '../components/LogoutButton';
+import type PublicVitneboks from '../types/publicVitneboks';
+import Footer from '../components/Footer';
 
 export default function AdminDashboard() {
   const [vitnebokser, setVitnebokser] = useState<Vitneboks[]>([]);
@@ -24,7 +26,7 @@ export default function AdminDashboard() {
         id,
         publicId: value.publicId || id,
         title: value.title,
-        createdOn: new Date(value.createdOn),
+        createdOn: new Date(value.createdOn).toLocaleDateString(),
         uploadedVideos: value.uploadedVideos || 0,
         questions: value.questions || [],
       }));
@@ -34,14 +36,23 @@ export default function AdminDashboard() {
 
   const handleCreate = () => {
     if (!newTitle.trim() || !uid) return;
-    const vitnebokserRef = ref(db, `${uid}/vitnebokser`);
-    push(vitnebokserRef, {
-      publicId: crypto.randomUUID(),
+    const newVitneboks: Vitneboks = {
+      id: crypto.randomUUID(),
       title: newTitle,
-      createdOn: new Date().toISOString(),
+      createdOn: new Date(Date.now()).toISOString(),
       uploadedVideos: 0,
       questions: [],
-    });
+    };
+    const vitneboksRef = ref(db, `${uid}/vitnebokser/${newVitneboks.id}`);
+    set(vitneboksRef, newVitneboks);
+
+    const publicVitneboksRef = ref(db, `publicVitnebokser/${newVitneboks.id}`);
+
+    set(publicVitneboksRef, {
+      questions: newVitneboks.questions,
+      title: newVitneboks.title
+    }as PublicVitneboks);
+
     setNewTitle('');
   };
 
@@ -67,30 +78,36 @@ export default function AdminDashboard() {
               <p className="text-m text-muted mb-1">Spørsmål: {Object.keys(vb.questions).length}</p>
               <p className="text-m text-muted">Opplastede videoer: {vb.uploadedVideos}</p>
             </div>
-            <div>
-              <label className="text-sm">Vitnebokslink</label>
-              <input
-                readOnly
-                value={`${window.location.origin}/vitne/${vb.publicId}`}
-                onClick={() => handleCopy(`${window.location.origin}/vitne/${vb.publicId}`, 'Vitnebokslink kopiert!')}
-                className="w-full p-2 rounded bg-white text-black mb-2 cursor-pointer"
-              />
-              <label className="text-sm">Delelink</label>
-              <input
-                readOnly
-                value={`${window.location.origin}/bidra/${vb.publicId}`}
-                onClick={() => handleCopy(`${window.location.origin}/bidra/${vb.publicId}`, 'Delelink kopiert!')}
-                className="w-full p-2 rounded bg-white text-black cursor-pointer"
-              />
-              {copied && <p className="text-green-500 text-sm mt-1">{copied}</p>}
-            </div>
-            <div className="mt-4 text-right">
-              <Link
-                to={`/admin/vitneboks/${vb.id}`}
-                className="bg-primary-button text-black px-4 py-2 rounded hover:bg-secondary-bg"
-              >
-                Rediger
-              </Link>
+            {Object.values(vb.questions).length > 0 ?
+              <div>
+                <label className="text-sm">Vitnebokslink</label>
+                <input
+                  readOnly
+                  value={`${window.location.origin}/vitne/${vb.id}`}
+                  onClick={() => handleCopy(`${window.location.origin}/vitne/${vb.id}`, 'Vitnebokslink kopiert!')}
+                  className="w-full p-2 rounded bg-white text-black mb-2 cursor-pointer"
+                  />
+                <label className="text-sm">Delelink</label>
+                <input
+                  readOnly
+                  value={`${window.location.origin}/bidra/${vb.id}`}
+                  onClick={() => handleCopy(`${window.location.origin}/bidra/${vb.id}`, 'Delelink kopiert!')}
+                  className="w-full p-2 rounded bg-white text-black cursor-pointer"
+                  />
+                {copied && <p className="text-green-500 text-sm mt-1">{copied}</p>}
+              </div>
+                : 
+                <div>
+                  <p>Lag et spørsmål for å komme i gang.</p>
+                </div>
+              }
+              <div className="mt-4 text-right">
+                <Link
+                  to={`/admin/vitneboks/${vb.id}`}
+                  className="bg-primary-button text-black px-4 py-2 rounded hover:bg-secondary-bg"
+                  >
+                  Rediger
+                </Link>
             </div>
           </li>
         ))}
@@ -111,6 +128,7 @@ export default function AdminDashboard() {
           Opprett
         </button>
       </div>
+      <Footer />
     </div>
   );
 }

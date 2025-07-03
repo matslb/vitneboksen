@@ -1,19 +1,20 @@
-// The issue is most likely that `auth.currentUser?.uid` is null when the page reloads,
-// because Firebase Auth state can take a moment to initialize.
-// Fix: use onAuthStateChanged to wait for the user to be loaded.
-
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { getDatabase, ref, onValue, push, set, update } from 'firebase/database';
+import { useParams, useNavigate } from 'react-router-dom';
+import { getDatabase, ref, onValue, push, set, update, remove } from 'firebase/database';
 import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
 import type Vitneboks from '../types/Vitneboks';
 import type Question from '../types/Question';
+import type PublicVitneboks from '../types/publicVitneboks';
+
 import ActiveFromToPicker from '../components/ActiveFromToDatePicker';
 import LoadingFullScreen from '../components/LoadingFullScreen';
 import LogoutButton from '../components/LogoutButton';
+import { dateStringToLocal, dateStringToUtc } from '../utils';
+import Footer from '../components/Footer';
 
 export default function VitneboksDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [vitneboks, setVitneboks] = useState<Vitneboks | null>(null);
   const [newQuestionText, setNewQuestionText] = useState('');
   const [newRecordingDuration, setNewRecordingDuration] = useState(10);
@@ -34,6 +35,16 @@ export default function VitneboksDetail() {
   }, [auth]);
 
   useEffect(() => {
+    if(vitneboks === null) return;
+
+    const publicVitneboksRef = ref(db, `publicVitnebokser/${vitneboks.id}`);
+    set(publicVitneboksRef, {
+      questions: vitneboks.questions,
+      title: vitneboks.title
+    } as PublicVitneboks);
+  },[vitneboks]);
+
+  useEffect(() => {
     if (!user?.uid || !id) return;
 
     const vbRef = ref(db, `${user.uid}/vitnebokser/${id}`);
@@ -42,9 +53,8 @@ export default function VitneboksDetail() {
       if (!data) return;
       setVitneboks({
         id,
-        publicId: data.publicId || id,
         title: data.title,
-        createdOn: new Date(data.createdOn),
+        createdOn: new Date(data.createdOn).toLocaleDateString(),
         uploadedVideos: data.uploadedVideos || 0,
         questions: data.questions || [],
       });
@@ -60,8 +70,8 @@ export default function VitneboksDetail() {
     const newQuestion: Question = {
       text: newQuestionText,
       recordingDuration: newRecordingDuration,
-      activeFrom: alwaysActive || !activeFrom ? null : new Date(activeFrom),
-      activeTo: alwaysActive || !activeTo ? null : new Date(activeTo),
+      activeFrom: alwaysActive || !activeFrom ? null : dateStringToLocal(activeFrom),
+      activeTo: alwaysActive || !activeTo ? null : dateStringToLocal(activeTo),
       order: Object.keys(vitneboks.questions).length,
     };
     push(questionsRef, newQuestion);
@@ -71,6 +81,19 @@ export default function VitneboksDetail() {
     setAlwaysActive(true);
     setActiveFrom('');
     setActiveTo('');
+  };
+
+  const handleDeleteVitneboks = () => {
+    if (!user?.uid || !id) return;
+
+    if (!confirm("Er du sikker på at du vil slette denne vitneboksen? Dette kan ikke angres.")) return;
+
+    const vbRef = ref(db, `${user.uid}/vitnebokser/${id}`);
+    const publicRef = ref(db, `publicVitnebokser/${id}`);
+    remove(vbRef);
+    remove(publicRef);
+
+    navigate('/admin');
   };
 
   const handleDragStart = (id: string) => setDraggedId(id);
@@ -103,7 +126,7 @@ export default function VitneboksDetail() {
       <h1 className="text-3xl font-bold mb-4">{vitneboks.title}</h1>
       <LogoutButton/>
       <p className="mb-8">Opprettet: {vitneboks.createdOn.toLocaleString()}</p>
-      <h2 className="text-2xl  font-bold mb-4">Spørsmål</h2>
+      <h2 className="text-2xl font-bold mb-4">Spørsmål</h2>
       <div className="w-full max-w-3xl space-y-4 mb-8">
         {sortedQuestions.map((q) => (
           <div
@@ -130,6 +153,22 @@ export default function VitneboksDetail() {
               onChange={(e) => set(ref(db, `${user.uid}/vitnebokser/${id}/questions/${q.id}/recordingDuration`), parseInt(e.target.value))}
               className="w-full p-2 rounded text-black"
             />
+            <div className='mt-4'>
+              <ActiveFromToPicker 
+              alwaysActive={q.activeFrom === undefined && q.activeTo === undefined} 
+              setAlwaysActive={(isactive) => false }
+              activeFrom={dateStringToLocal(q.activeFrom!)}
+              activeTo={dateStringToLocal(q.activeTo!)}
+              onChangeTo={(to) => set(ref(db, `${user.uid}/vitnebokser/${id}/questions/${q.id}/activeTo`), new Date(to).toISOString())} 
+              onChangeFrom={(from) => set(ref(db, `${user.uid}/vitnebokser/${id}/questions/${q.id}/activeFrom`), new Date(from).toISOString())} 
+              />
+            </div>
+            <button
+            onClick={() => remove(ref(db, `${user.uid}/vitnebokser/${id}/questions/${q.id}`))}
+            className="bg-danger text-white px-4 py-2 mt-8 rounded hover:bg-danger-200 mb-8"
+            >
+              Slett spørsmål
+            </button>
           </div>
         ))}
       </div>
@@ -155,30 +194,7 @@ export default function VitneboksDetail() {
           <option value={25}>25 sekunder</option>
         </select>
 
-        <div className="mb-4">
-          <label className="mr-4">
-            <input
-              type="radio"
-              checked={alwaysActive}
-              onChange={() => setAlwaysActive(true)}
-              className="mr-1"
-            />
-            Alltid aktiv
-          </label>
-          <label>
-            <input
-              type="radio"
-              checked={!alwaysActive}
-              onChange={() => setAlwaysActive(false)}
-              className="mr-1"
-            />
-            Aktiv fra - til
-          </label>
-        </div>
-
-        {!alwaysActive && (
-        <ActiveFromToPicker activeFrom={activeFrom} activeTo={activeTo} onChangeFrom={setActiveFrom} onChangeTo={setActiveTo} />
-        )}
+        <ActiveFromToPicker alwaysActive={alwaysActive} setAlwaysActive={setAlwaysActive} activeFrom={activeFrom} activeTo={activeTo} onChangeFrom={setActiveFrom} onChangeTo={setActiveTo} />
 
         <button
           onClick={handleAddQuestion}
@@ -191,6 +207,14 @@ export default function VitneboksDetail() {
       <button className="bg-primary-button text-black px-6 py-3 rounded hover:bg-secondary-bg">
         Last ned vitneboksvideo
       </button>
+
+         <button
+        onClick={handleDeleteVitneboks}
+        className="bg-danger text-white px-4 py-2 mt-8 rounded hover:bg-danger-200 mb-8"
+      >
+        Slett vitneboks
+      </button>
+      <Footer />
     </div>
   );
 }

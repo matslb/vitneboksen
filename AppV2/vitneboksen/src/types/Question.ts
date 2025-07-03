@@ -1,7 +1,7 @@
 export default interface Question {
   text: string;
   recordingDuration: number;
-  activeFrom: Date | null;
-  activeTo: Date | null;
+  activeFrom: string | null;
+  activeTo: string | null;
   order: number;
 }
