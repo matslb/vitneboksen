@@ -14,12 +14,12 @@ public class VideoFileMetaData(
 
     public string GetVideoFileName()
     {
-        return $"{Id}&{CreatedOn.ToUnixTimeSeconds()}&{VideoType}&{SessionKey}.webm";
+        return $"{Id}&{CreatedOn.ToUnixTimeMilliseconds()}&{VideoType}&{SessionKey}.webm";
     }
 
     public string GetSubFileName()
     {
-        return $"{Id}&{CreatedOn.ToUnixTimeSeconds()}&{VideoType}&{SessionKey}.txt";
+        return $"{Id}&{CreatedOn.ToUnixTimeMilliseconds()}&{VideoType}&{SessionKey}.txt";
     }
 
     public static VideoFileMetaData GetVideoFileMetaDataFromFileName(string fileName)
