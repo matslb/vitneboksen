@@ -27,7 +27,7 @@ public class VideoFileMetaData(
         var metadata = fileName.Split(".").First().Split("&");
         return new VideoFileMetaData(
                 id: Guid.Parse(metadata[0]),
-                createdOn: DateTimeOffset.FromUnixTimeSeconds(long.Parse(metadata[1])),
+                createdOn: DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(metadata[1])),
                 videoType: metadata[2],
                 sessionKey: metadata[3]
             );
