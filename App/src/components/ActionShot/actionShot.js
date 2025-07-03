@@ -107,7 +107,7 @@ const ActionShot = () => {
 
       // Mute the video
       videoElement.muted = true;
-
+      await new Promise((resolve) => setTimeout(resolve, 250)); // wait for camera warmup
       recorder.start();
 
       setTimeout(() => {
