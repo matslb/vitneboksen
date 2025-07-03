@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-bg: oklch(0.4872 0.1977 283.03);
+  --color-primary-text: oklch(1 0 0);
+  --color-primary-button: oklch(0.8219 0.1503 74.95);
+  --color-secondary-bg: oklch(0.4029 0.1611 283.96);
+  --color-accent: oklch(0.7443 0.1626 153.47);
+  --color-muted: oklch(0.8717 0.0093 258.34);
+  --color-danger: oklch(0.5326 0.1224 26.17);
+}
+
+input,
+select {
+  background-color: white;
+}
+
+button:hover {
+  cursor: pointer;
+}

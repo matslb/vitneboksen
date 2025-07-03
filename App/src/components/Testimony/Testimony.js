@@ -134,7 +134,6 @@ const Testimony = () => {
         videoElement.srcObject = stream;
         videoElement.muted = true;
 
-        await new Promise((resolve) => setTimeout(resolve, 250)); // wait for camera warmup
         recorder.start();
         setRecording(true);
         setCountdown(currentQuestion.recordTime / 1000);
