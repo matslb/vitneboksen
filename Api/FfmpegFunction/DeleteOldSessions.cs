@@ -20,7 +20,7 @@ public class DeleteOldSessions
     }
 
     [Function("DeleteOldSessions")]
-    public async Task Run([TimerTrigger("@daily")] TimerInfo myTimer)
+    public async Task Run([TimerTrigger("1 1 * * *")] TimerInfo myTimer)
     {
         string connectionString = _configuration.GetConnectionString("AzureWebJobsStorage");
 
