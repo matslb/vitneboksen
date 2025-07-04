@@ -16,7 +16,8 @@ jobs:
 
       - run: npm run build
         working-directory: AppV2/vitneboksen
-        VITE_VIDEO_PROCESSOR_URL: ${{ secrets.VITNEBOKS_API_URL }}
+        env:
+          VITE_VIDEO_PROCESSOR_URL: ${{ secrets.VITNEBOKS_API_URL }}
       # Deploy from the correct folder
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
