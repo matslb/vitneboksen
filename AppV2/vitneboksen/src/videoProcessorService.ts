@@ -1,5 +1,5 @@
 export async function uploadVideoToProcessor(videoBlob: Blob, vitneboksId: string, uid: string, question: string) {
-  const API_URL = import.meta.env.VIDEO_PROCESSOR_URL;
+  const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
 
   if (!API_URL) {
     throw new Error("Video processor API URL or key is not set in environment variables");
@@ -24,20 +24,20 @@ export async function uploadVideoToProcessor(videoBlob: Blob, vitneboksId: strin
 }
 
 export async function startFinalVideoProcessing(vitneboksId: string){
-    const API_URL = import.meta.env.VIDEO_PROCESSOR_URL;
+    const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
     const urlWithQueryParam = `${API_URL}start-final-video-processing?sessionKey=${vitneboksId}`;
      await fetch(urlWithQueryParam, { method: "GET" });
 }
 
 export async function deleteVitneboks(vitneboksId: string){
-    const API_URL = import.meta.env.VIDEO_PROCESSOR_URL;
+    const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
     const urlWithQueryParam = `${API_URL}delete-session?sessionKey=${vitneboksId}`;
     const response = await fetch(urlWithQueryParam, { method: "DELETE" });
     return response.ok;
 }
 
 export async function downloadFinalVideo(vitneboksId: string){
-    const API_URL = import.meta.env.VIDEO_PROCESSOR_URL;
+    const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
     const urlWithQueryParam = `${API_URL}download-final-video?sessionKey=${vitneboksId}`;
     window.open(urlWithQueryParam, '_blank');
 }
