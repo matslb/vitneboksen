@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getDatabase, ref, onValue, push, set, update, remove } from 'firebase/database';
 import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
 import {type Vitneboks} from '../types/Vitneboks';
@@ -132,14 +132,7 @@ export default function VitneboksDetail() {
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-primary-bg text-primary-text ">
-      <Header />
-      <Link
-        to={`/admin/`}
-        className="bg-primary-button underline text-black px-4 py-2 rounded"
-        >
-        Tilbake
-      </Link>
-
+      <Header backButtonPath={"/admin/"} />
       <h1 className="text-3xl font-bold mb-4">{vitneboks.title}</h1>
       <p className="mb-8">Opprettet: {vitneboks.createdOn.toLocaleString()}</p>
       <h2 className="text-2xl font-bold mb-4">Spørsmål</h2>

@@ -48,17 +48,17 @@ namespace FfmpegFunction
             var tempPath = Path.Combine(Path.GetTempPath(), $"vitne-{Guid.NewGuid()}");
             Directory.CreateDirectory(tempPath);
 
-            await DownloadResources(blobService, tempPath);
-            _logger.LogInformation("Resources downloaded successfully");
-            var containerClient = Helpers.GetContainerBySessionKey(blobService, sessionKey);
-
-            var sessionName = _firebaseService.GetSessionName(sessionKey);
-            _logger.LogInformation("Session name fetched from Firebase");
-
-            var blobs = containerClient.GetBlobs().Where(blob => blob.Name.EndsWith(".mp4"));
-            var transitions = await CreateTransitionsFromBlobs(blobs.ToList(), tempPath);
             try
             {
+
+                await DownloadResources(blobService, tempPath);
+                _logger.LogInformation("Resources downloaded successfully");
+                var containerClient = Helpers.GetContainerBySessionKey(blobService, sessionKey);
+                var sessionName = _firebaseService.GetSessionName(sessionKey);
+                _logger.LogInformation("Session name fetched from Firebase");
+
+                var blobs = containerClient.GetBlobs().Where(blob => blob.Name.EndsWith(".mp4"));
+                var transitions = await CreateTransitionsFromBlobs(blobs.ToList(), tempPath);
                 //Intro
                 var introSourcePath = Path.Combine(tempPath, Constants.IntroFileName);
                 var introDestinationPath = Path.Combine(tempPath, "intro-processed.mp4");
