@@ -1,6 +1,6 @@
 export default function SpinnerIcon() {
   return (
-    <div className="inline-block pr-2">
+    <div className="inline-block pr-1 align-text-bottom">
         <svg
         className="animate-spin h-5 w-5 text-blac"
         xmlns="http://www.w3.org/2000/svg"

@@ -83,11 +83,14 @@ export default function AdminDashboard() {
           >
             <div>
               <h2 className="text-xl font-semibold mb-2">{vb.title}</h2>
-              <p className="text-m text-muted mb-1">Spørsmål: {Object.keys(vb.questions).length}</p>
+              <div className='flex flex-col gap-2'>
+
+              <p className="text-m text-muted mb-1"><span className='bg-white text-center text-black min-w-9 inline-block pl-2 pr-2 pt-1 pb-1 rounded'>{Object.keys(vb.questions).length}</span> spørsmål</p>
               {vb.videosToBeProcessed > 0 &&
-              <p className="text-m text-muted">Videoer i kø: {vb.videosToBeProcessed}<SpinnerIcon /></p>
+              <p className="text-m text-muted"><span className='bg-white text-black text-center min-w-9 inline-block pl-2 pr-2 pt-1 pb-1 rounded'><SpinnerIcon />{vb.videosToBeProcessed}</span> video{vb.videosToBeProcessed > 1 ? "er" :""} i kø </p>
               }
-              <p className="text-m text-muted">Ferdige videoer: {vb.completedVideos}</p>
+              <p className="text-m text-muted"><span className='bg-white text-black text-center min-w-9 inline-block pl-2 pr-2 pt-1 pb-1 rounded'>{vb.completedVideos}</span> ferdig {vb.completedVideos > 1 ? "behandlede videoer" : "behandlet video"}</p>
+            </div>
             </div>
             {Object.values(vb.questions).length > 0 ?
               <div>
