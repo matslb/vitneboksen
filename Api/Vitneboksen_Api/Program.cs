@@ -27,10 +27,11 @@ var app = builder.Build();
 app.UseCors("AllowedOrigins");
 var storageConnectionString = builder.Configuration.GetSection("StorageConnectionString").Get<string>() ?? "";
 
+var firesharpSecrets = builder.Configuration.GetSection("FireSharp");
 var firebaseService = new FirebaseService(new FirebaseConfig
 {
-    BasePath = Environment.GetEnvironmentVariable("FireSharp__BasePath"),
-    AuthSecret = Environment.GetEnvironmentVariable("FireSharp__AuthSecret"),
+    BasePath = firesharpSecrets.GetValue<string>("BasePath"),
+    AuthSecret = firesharpSecrets.GetValue<string>("AuthSecret"),
 });
 
 
