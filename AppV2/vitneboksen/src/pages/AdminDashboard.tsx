@@ -1,7 +1,7 @@
 // src/pages/AdminDashboard.tsx
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getDatabase, ref, push, onValue, set } from 'firebase/database';
+import { getDatabase, ref, onValue, set } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
 import { FinalVideoStatus, type Vitneboks} from '../types/Vitneboks';
 import LogoutButton from '../components/LogoutButton';

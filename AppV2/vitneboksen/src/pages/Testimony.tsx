@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getDatabase, ref, get, onValue } from 'firebase/database';
+import { getDatabase, ref, onValue } from 'firebase/database';
 import NotFoundMessage from '../components/NotFoundMessage';
 import LoadingFullScreen from '../components/LoadingFullScreen';
 import WelcomeScreen from '../components/WelcomeScreen';

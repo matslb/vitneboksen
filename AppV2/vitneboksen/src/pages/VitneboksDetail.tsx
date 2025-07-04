@@ -9,7 +9,7 @@ import type PublicVitneboks from '../types/PublicVitneboks';
 import ActiveFromToPicker from '../components/ActiveFromToDatePicker';
 import LoadingFullScreen from '../components/LoadingFullScreen';
 import LogoutButton from '../components/LogoutButton';
-import { dateStringToLocal, dateStringToUtc } from '../utils';
+import { dateStringToLocal } from '../utils';
 import Footer from '../components/Footer';
 import { deleteVitneboks } from '../videoProcessorService';
 
@@ -165,7 +165,7 @@ export default function VitneboksDetail() {
             <div className='mt-4'>
               <ActiveFromToPicker 
               alwaysActive={q.activeFrom === undefined && q.activeTo === undefined} 
-              setAlwaysActive={(isactive) => false }
+              setAlwaysActive={() => false }
               activeFrom={dateStringToLocal(q.activeFrom!)}
               activeTo={dateStringToLocal(q.activeTo!)}
               onChangeTo={(to) => set(ref(db, `${user.uid}/vitnebokser/${id}/questions/${q.id}/activeTo`), new Date(to).toISOString())} 
