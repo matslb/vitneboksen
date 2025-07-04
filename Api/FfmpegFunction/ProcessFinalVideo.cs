@@ -166,8 +166,9 @@ namespace FfmpegFunction
 
             foreach (var blob in filteredElements)
             {
+                var fileMetadata = EncodedFileMetaData.GetVideoFileMetaDataFromFileName(blob.Name);
                 // Convert the DateTimeOffset to Norwegian time
-                var norwegianTime = TimeZoneInfo.ConvertTime(blob.Properties.CreatedOn!.Value, norwegianTimeZone);
+                var norwegianTime = TimeZoneInfo.ConvertTime(fileMetadata.CreatedOn, norwegianTimeZone);
                 var srtContent = $"kl. {norwegianTime.ToString("HH:mm")}";
 
                 var transitionSourcePath = Path.Combine(tempPath, Constants.TransitionFileName);

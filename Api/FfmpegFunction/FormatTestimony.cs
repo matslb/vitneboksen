@@ -31,7 +31,7 @@ namespace FfmpegFunction
         [Function("FormatTestimony")]
         public async Task Run([BlobTrigger("unprocessed/{blobName}", Connection = "AzureWebJobsStorage")] byte[] blobContent, FunctionContext context, string blobName, CancellationToken cancellation)
         {
-            var fileMetaData = VideoFileMetaData.GetVideoFileMetaDataFromFileName(blobName);
+            var fileMetaData = UnEncodedFileMetaData.GetVideoFileMetaDataFromFileName(blobName);
 
             if (!blobName.EndsWith(".webm"))
                 return;

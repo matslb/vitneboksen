@@ -1,6 +1,6 @@
 ﻿namespace Shared.Models;
 
-public class VideoFileMetaData(
+public class UnEncodedFileMetaData(
     Guid id,
     DateTimeOffset createdOn,
     string videoType,
@@ -22,10 +22,10 @@ public class VideoFileMetaData(
         return $"{Id}&{CreatedOn.ToUnixTimeMilliseconds()}&{VideoType}&{SessionKey}.txt";
     }
 
-    public static VideoFileMetaData GetVideoFileMetaDataFromFileName(string fileName)
+    public static UnEncodedFileMetaData GetVideoFileMetaDataFromFileName(string fileName)
     {
         var metadata = fileName.Split(".").First().Split("&");
-        return new VideoFileMetaData(
+        return new UnEncodedFileMetaData(
                 id: Guid.Parse(metadata[0]),
                 createdOn: DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(metadata[1])),
                 videoType: metadata[2],

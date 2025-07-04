@@ -84,7 +84,9 @@ export default function AdminDashboard() {
             <div>
               <h2 className="text-xl font-semibold mb-2">{vb.title}</h2>
               <p className="text-m text-muted mb-1">Spørsmål: {Object.keys(vb.questions).length}</p>
-              <p className="text-m text-muted">Videoer i kø: {vb.videosToBeProcessed}</p>
+              {vb.videosToBeProcessed > 0 &&
+              <p className="text-m text-muted">Videoer i kø: {vb.videosToBeProcessed}<SpinnerIcon /></p>
+              }
               <p className="text-m text-muted">Ferdige videoer: {vb.completedVideos}</p>
             </div>
             {Object.values(vb.questions).length > 0 ?

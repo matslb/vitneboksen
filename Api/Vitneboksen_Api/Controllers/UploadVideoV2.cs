@@ -48,7 +48,7 @@ public static class UploadVideoV2
             return Results.NotFound("Not found");
         }
 
-        var videoMetadata = new VideoFileMetaData(
+        var videoMetadata = new UnEncodedFileMetaData(
             id: Guid.NewGuid(),
             createdOn: DateTimeOffset.Now,
             videoType: videoType,
