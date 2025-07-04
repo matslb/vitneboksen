@@ -10,18 +10,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Install dependencies
+      # Install and build in the correct folder
       - run: npm ci
         working-directory: AppV2/vitneboksen
 
-      # Build, with env var passed
       - run: npm run build
         working-directory: AppV2/vitneboksen
-        env:
-          VIDEO_PROCESSOR_URL: ${{ secrets.VITNEBOKS_API_URL }}
 
-      # Deploy (use CLI directly for subdirectory support)
-      - name: Deploy to Firebase Hosting
-        run: |
-          cd AppV2/vitneboksen
-          npx firebase deploy --only hosting --project vitneboksen --token "${{ secrets.FIREBASE_SERVICE_ACCOUNT_VITNEBOKSEN }}"
+      # Deploy from the correct folder
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_VITNEBOKSEN }}
+          channelId: live
+          projectId: vitneboksen
+        # change directory for firebase.json
+        env:
+          FIREBASE_CLI_PREV_DIR: AppV2/vitneboksen
