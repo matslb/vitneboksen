@@ -26,8 +26,8 @@ namespace FfmpegFunction
             _logger = loggerFactory.CreateLogger<ProcessFinalVideo>();
             _firebaseService = new FirebaseService(new FireSharp.Config.FirebaseConfig
             {
-                AuthSecret = Environment.GetEnvironmentVariable("FireSharp__AuthSecret"),
-                BasePath = Environment.GetEnvironmentVariable("FireSharp__BasePath"),
+                AuthSecret = configuration.GetValue<string>("FireSharp__AuthSecret"),
+                BasePath = configuration.GetValue<string>("FireSharp__BasePath"),
             });
         }
 
