@@ -49,10 +49,11 @@ namespace FfmpegFunction
             Directory.CreateDirectory(tempPath);
 
             await DownloadResources(blobService, tempPath);
-
+            _logger.LogInformation("Resources downloaded successfully");
             var containerClient = Helpers.GetContainerBySessionKey(blobService, sessionKey);
 
             var sessionName = _firebaseService.GetSessionName(sessionKey);
+            _logger.LogInformation("Session name fetched from Firebase");
 
             var blobs = containerClient.GetBlobs().Where(blob => blob.Name.EndsWith(".mp4"));
             var transitions = await CreateTransitionsFromBlobs(blobs.ToList(), tempPath);
@@ -83,6 +84,8 @@ namespace FfmpegFunction
                      ),
                      cancellationToken: cancellationToken);
 
+                _logger.LogInformation("Intro and outro successfully");
+
                 // Create a MemoryStream to store the zip file
                 using var memoryStream = new MemoryStream();
 
@@ -101,6 +104,8 @@ namespace FfmpegFunction
                     fileListWriter.WriteLine($"file '{outroDestinationPath}'");
                 }
 
+                _logger.LogInformation("File list created successfully");
+
                 var concatFilePath = Path.Combine(tempPath, Constants.FinalVideoFileName);
                 var concatFfmpegCommand = FfmpegCommandBuilder.ConcatVideos(fileListPath, concatFilePath);
                 var result = await Helpers.ExecuteFFmpegCommand(concatFfmpegCommand, timeoutInSeconds: 240, cancellationToken: cancellationToken);
@@ -108,12 +113,14 @@ namespace FfmpegFunction
                 if (!result.Success)
                     _logger.LogError("Could not concatenate videos {error}", result.Exception);
 
+                _logger.LogInformation("Final video processed");
+
                 var file = File.OpenRead(concatFilePath);
                 await containerClient.UploadBlobAsync(Constants.FinalVideoFileName, file);
                 file.Close();
 
                 _firebaseService.SetFinalVideoProcessingStatus(sessionKey: sessionKey, FinalVideoProcessingStatus.completed);
-
+                _logger.LogInformation("Firebase status updated");
             }
             finally
             {
