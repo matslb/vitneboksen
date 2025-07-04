@@ -4,20 +4,27 @@ using Vitneboksen_Api;
 using Vitneboksen_Api.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
+var allowedOrigins = new[]
+{
+    "http://localhost:5173",
+    "https://vitneboksen.no",
+    "https://vitneboksen.web.app"
+};
+
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy =>
-                      {
-                          policy.AllowAnyOrigin()
-                                .AllowAnyMethod()
-                                .AllowAnyHeader();
-                      });
+    options.AddPolicy("AllowedOrigins", policy =>
+    {
+        policy.WithOrigins(allowedOrigins)
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
 });
 
 builder.Services.AddApplicationInsightsTelemetry();
 
 var app = builder.Build();
-app.UseCors();
+app.UseCors("AllowedOrigins");
 var storageConnectionString = builder.Configuration.GetSection("StorageConnectionString").Get<string>() ?? "";
 
 var firesharpSecrets = builder.Configuration.GetSection("FireSharp");
@@ -29,7 +36,6 @@ var firebaseService = new FirebaseService(new FirebaseConfig
 
 
 app.MapPost("/upload-testimony/v2", async Task<IResult> (HttpRequest request) => await UploadVideoV2.Run(request, videoType: Constants.VideoTypes.Testimonial, constring: storageConnectionString, firebaseService: firebaseService));
-
 
 app.MapGet("/download-session-files", async Task<IResult> (HttpRequest request) => await DownloadSessionFiles.Run(request, storageConnectionString));
 
