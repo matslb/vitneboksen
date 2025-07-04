@@ -3,10 +3,13 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getDatabase, ref, push, onValue, set } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
-import type Vitneboks from '../types/Vitneboks';
+import { FinalVideoStatus, type Vitneboks} from '../types/Vitneboks';
 import LogoutButton from '../components/LogoutButton';
-import type PublicVitneboks from '../types/publicVitneboks';
+import type PublicVitneboks from '../types/PublicVitneboks';
 import Footer from '../components/Footer';
+import { generateVitneboksId } from '../utils';
+import SpinnerIcon from '../components/SpinnerIcon';
+import { downloadFinalVideo, startFinalVideoProcessing } from '../videoProcessorService';
 
 export default function AdminDashboard() {
   const [vitnebokser, setVitnebokser] = useState<Vitneboks[]>([]);
@@ -27,9 +30,11 @@ export default function AdminDashboard() {
         publicId: value.publicId || id,
         title: value.title,
         createdOn: new Date(value.createdOn).toLocaleDateString(),
-        uploadedVideos: value.uploadedVideos || 0,
+        completedVideos: value.completedVideos || 0,
+        videosToBeProcessed: value.videosToBeProcessed,
+        finalVideoProcessingStatus: value.finalVideoProcessingStatus,
         questions: value.questions || [],
-      }));
+      } as Vitneboks));
       setVitnebokser(parsed);
     });
   }, [uid]);
@@ -37,10 +42,12 @@ export default function AdminDashboard() {
   const handleCreate = () => {
     if (!newTitle.trim() || !uid) return;
     const newVitneboks: Vitneboks = {
-      id: crypto.randomUUID(),
+      id: generateVitneboksId(),
       title: newTitle,
       createdOn: new Date(Date.now()).toISOString(),
-      uploadedVideos: 0,
+      videosToBeProcessed: 0,
+      completedVideos: 0,
+      finalVideoProcessingStatus: FinalVideoStatus.notStarted,
       questions: [],
     };
     const vitneboksRef = ref(db, `${uid}/vitnebokser/${newVitneboks.id}`);
@@ -50,8 +57,9 @@ export default function AdminDashboard() {
 
     set(publicVitneboksRef, {
       questions: newVitneboks.questions,
-      title: newVitneboks.title
-    }as PublicVitneboks);
+      title: newVitneboks.title,
+      uid: uid
+    } as PublicVitneboks);
 
     setNewTitle('');
   };
@@ -76,7 +84,8 @@ export default function AdminDashboard() {
             <div>
               <h2 className="text-xl font-semibold mb-2">{vb.title}</h2>
               <p className="text-m text-muted mb-1">Spørsmål: {Object.keys(vb.questions).length}</p>
-              <p className="text-m text-muted">Opplastede videoer: {vb.uploadedVideos}</p>
+              <p className="text-m text-muted">Videoer i kø: {vb.videosToBeProcessed}</p>
+              <p className="text-m text-muted">Ferdige videoer: {vb.completedVideos}</p>
             </div>
             {Object.values(vb.questions).length > 0 ?
               <div>
@@ -98,16 +107,40 @@ export default function AdminDashboard() {
               </div>
                 : 
                 <div>
-                  <p>Lag et spørsmål for å komme i gang.</p>
+                  <p>Legg til spørsmål for å komme i gang.</p>
                 </div>
               }
-              <div className="mt-4 text-right">
-                <Link
+              
+              <div className="mt-4 text-right flex flex-row-reverse justify-between gap-6">
+                  <Link
                   to={`/admin/vitneboks/${vb.id}`}
-                  className="bg-primary-button text-black px-4 py-2 rounded hover:bg-secondary-bg"
+                  className="bg-primary-button text-black px-4 py-2 rounded"
                   >
                   Rediger
                 </Link>
+
+                {vb.finalVideoProcessingStatus == FinalVideoStatus.notStarted && 
+                <button 
+                onClick={() => startFinalVideoProcessing(vb.id)}
+                className=" flex gap-2 bg-primary-button  text-black px-4 py-2 rounded ">
+                 Generer Vitneboksvideo
+                </button>
+                }
+                {vb.finalVideoProcessingStatus == FinalVideoStatus.started && 
+                <button 
+                className="flex gap-2 bg-primary-button-disabled disabled text-black px-4 py-2 rounded ">
+                  <SpinnerIcon />
+                  Vitneboksvideo mekkes nå
+                </button>
+                }
+                {vb.finalVideoProcessingStatus == FinalVideoStatus.completed && 
+                <button 
+                onClick={() => downloadFinalVideo(vb.id)}
+                className="bg-primary-button text-black px-4 py-2 rounded">
+                  Last ned Vitneboksvideo
+                </button>
+                }
+              
             </div>
           </li>
         ))}

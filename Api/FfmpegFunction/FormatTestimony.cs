@@ -15,10 +15,18 @@ namespace FfmpegFunction
     {
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
+        private readonly FirebaseService _firebaseService;
+
         public FormatTestimony(ILoggerFactory loggerFactory, IConfiguration configuration)
         {
             _logger = loggerFactory.CreateLogger<FormatTestimony>();
             _configuration = configuration;
+            var fireSharpSecrets = configuration.GetSection("FireSharp");
+            _firebaseService = new FirebaseService(new FireSharp.Config.FirebaseConfig
+            {
+                AuthSecret = fireSharpSecrets.GetValue<string>("AuthSecret"),
+                BasePath = fireSharpSecrets.GetValue<string>("BasePath")
+            });
         }
 
         [Function("FormatTestimony")]
@@ -91,6 +99,10 @@ namespace FfmpegFunction
 
                     var blob = sessionContainer.GetBlobClient(Constants.FinalVideoFileName);
                     await blob.DeleteIfExistsAsync();
+
+                    _firebaseService.SetFinalVideoProcessingStatus(fileMetaData.SessionKey, FirebaseService.FinalVideoProcessingStatus.notStarted);
+                    _firebaseService.SetToBeProcessedCount(fileMetaData.SessionKey, unprocessedContainer.GetBlobs().Count(blob => blob.Name.Contains(".webm") && blob.Name.Contains(fileMetaData.SessionKey)));
+                    _firebaseService.SetCompletedVideosCount(fileMetaData.SessionKey, sessionContainer.GetBlobs().Count(blob => blob.Name.Contains(".mp4")));
                 }
             }
             catch (Exception e)

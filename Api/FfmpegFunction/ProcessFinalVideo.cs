@@ -12,16 +12,24 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using static Shared.FirebaseService;
 namespace FfmpegFunction
 {
     public class ProcessFinalVideo
     {
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
+        private readonly FirebaseService _firebaseService;
         public ProcessFinalVideo(ILoggerFactory loggerFactory, IConfiguration configuration)
         {
             _configuration = configuration;
             _logger = loggerFactory.CreateLogger<ProcessFinalVideo>();
+            var fireSharpSecrets = configuration.GetSection("FireSharp");
+            _firebaseService = new FirebaseService(new FireSharp.Config.FirebaseConfig
+            {
+                AuthSecret = fireSharpSecrets.GetValue<string>("AuthSecret"),
+                BasePath = fireSharpSecrets.GetValue<string>("BasePath")
+            });
         }
 
         [Function("ProcessFinalVideo")]
@@ -45,9 +53,7 @@ namespace FfmpegFunction
 
             var containerClient = Helpers.GetContainerBySessionKey(blobService, sessionKey);
 
-            var sessionInfoBlobClient = containerClient.GetBlobClient(Constants.SessionInfoFileName);
-
-            var session = JsonSerializer.Deserialize<Session>((await sessionInfoBlobClient.DownloadContentAsync()).Value.Content);
+            var sessionName = _firebaseService.GetSessionName(sessionKey);
 
             var blobs = containerClient.GetBlobs().Where(blob => blob.Name.EndsWith(".mp4"));
             var transitions = await CreateTransitionsFromBlobs(blobs.ToList(), tempPath);
@@ -59,7 +65,7 @@ namespace FfmpegFunction
 
                 await Helpers.ExecuteFFmpegCommand(FfmpegCommandBuilder.WithText(
                     sourceVideoPath: introSourcePath,
-                    subtitles: session.SessionName,
+                    subtitles: sessionName,
                     outputVideoPath: introDestinationPath,
                     fontSize: 80,
                     TextPlacement.Centered,
@@ -106,6 +112,9 @@ namespace FfmpegFunction
                 var file = File.OpenRead(concatFilePath);
                 await containerClient.UploadBlobAsync(Constants.FinalVideoFileName, file);
                 file.Close();
+
+                _firebaseService.SetFinalVideoProcessingStatus(sessionKey: sessionKey, FinalVideoProcessingStatus.completed);
+
             }
             finally
             {

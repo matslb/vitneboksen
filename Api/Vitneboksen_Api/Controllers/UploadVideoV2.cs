@@ -5,22 +5,26 @@ using Shared.Models;
 
 namespace Vitneboksen_Api.Controllers;
 
-public static class UploadVideo
+public static class UploadVideoV2
 {
-    public static async Task<IResult> Run(HttpRequest req, string videoType, string constring)
+    public static async Task<IResult> Run(HttpRequest req, string videoType, string constring, FirebaseService firebaseService)
     {
         var blobService = new BlobServiceClient(constring);
-        BlobContainerClient containerClient;
-        if (videoType == Constants.VideoTypes.Testimonial)
-        {
-            containerClient = Helpers.GetContainerBySessionKey(blobService, req.Query["sessionKey"]);
-        }
-        else
-        {
-            containerClient = Helpers.GetContainerBySharedKey(blobService, req.Query["sharedKey"]);
-        }
 
-        var sessionKey = containerClient.Name.Split("-").First();
+        var uid = req.Query["uid"].ToString();
+        var sessionKey = req.Query["sessionKey"].ToString();
+        if (uid == null || sessionKey == null)
+        {
+            return Results.BadRequest();
+        }
+        var containerClient = Helpers.GetContainerBySessionKey(blobService, sessionKey);
+
+        if (containerClient == null)
+        {
+            containerClient = blobService.GetBlobContainerClient($"{sessionKey}-{uid.ToLowerInvariant()}");
+            await containerClient.CreateAsync();
+            containerClient.SetMetadata(new Dictionary<string, string> { { "created", DateTime.Now.ToString() } });
+        }
 
         if (containerClient.GetBlobs().Count(b => b.Name.Contains("webm")) >= 50)
         {
@@ -61,6 +65,9 @@ public static class UploadVideo
             var subTextBlobClient = unprocessedContainer.GetBlobClient(subFileName);
             await Helpers.UploadJsonToStorage(subTextBlobClient, subText);
         }
+
+        firebaseService.SetToBeProcessedCount(sessionKey, unprocessedContainer.GetBlobs().Count(blob => blob.Name.Contains(".webm") && blob.Name.Contains(sessionKey)));
+        firebaseService.SetFinalVideoProcessingStatus(sessionKey, FirebaseService.FinalVideoProcessingStatus.notStarted);
 
         return Results.Created();
     }

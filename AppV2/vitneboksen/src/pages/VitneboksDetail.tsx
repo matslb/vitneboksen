@@ -2,15 +2,16 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getDatabase, ref, onValue, push, set, update, remove } from 'firebase/database';
 import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
-import type Vitneboks from '../types/Vitneboks';
+import {type Vitneboks} from '../types/Vitneboks';
 import type Question from '../types/Question';
-import type PublicVitneboks from '../types/publicVitneboks';
+import type PublicVitneboks from '../types/PublicVitneboks';
 
 import ActiveFromToPicker from '../components/ActiveFromToDatePicker';
 import LoadingFullScreen from '../components/LoadingFullScreen';
 import LogoutButton from '../components/LogoutButton';
 import { dateStringToLocal, dateStringToUtc } from '../utils';
 import Footer from '../components/Footer';
+import { deleteVitneboks } from '../videoProcessorService';
 
 export default function VitneboksDetail() {
   const { id } = useParams();
@@ -40,7 +41,8 @@ export default function VitneboksDetail() {
     const publicVitneboksRef = ref(db, `publicVitnebokser/${vitneboks.id}`);
     set(publicVitneboksRef, {
       questions: vitneboks.questions,
-      title: vitneboks.title
+      title: vitneboks.title,
+      uid: user!.uid
     } as PublicVitneboks);
   },[vitneboks]);
 
@@ -49,13 +51,15 @@ export default function VitneboksDetail() {
 
     const vbRef = ref(db, `${user.uid}/vitnebokser/${id}`);
     onValue(vbRef, (snapshot) => {
-      const data = snapshot.val();
+      const data: Vitneboks = snapshot.val();
       if (!data) return;
       setVitneboks({
         id,
         title: data.title,
         createdOn: new Date(data.createdOn).toLocaleDateString(),
-        uploadedVideos: data.uploadedVideos || 0,
+        completedVideos: data.completedVideos || 0,
+        finalVideoProcessingStatus: data.finalVideoProcessingStatus,
+        videosToBeProcessed: data.videosToBeProcessed,
         questions: data.questions || [],
       });
     });
@@ -83,11 +87,16 @@ export default function VitneboksDetail() {
     setActiveTo('');
   };
 
-  const handleDeleteVitneboks = () => {
+  const handleDeleteVitneboks = async() => {
     if (!user?.uid || !id) return;
 
     if (!confirm("Er du sikker på at du vil slette denne vitneboksen? Dette kan ikke angres.")) return;
-
+    const deleteResponseOk = await deleteVitneboks(id);
+    if(!deleteResponseOk)
+    {
+      alert("Kunne ikke slette Vitneboksen");
+      return;
+    }
     const vbRef = ref(db, `${user.uid}/vitnebokser/${id}`);
     const publicRef = ref(db, `publicVitnebokser/${id}`);
     remove(vbRef);
@@ -198,17 +207,12 @@ export default function VitneboksDetail() {
 
         <button
           onClick={handleAddQuestion}
-          className="bg-primary-button text-black px-4 py-2 rounded hover:bg-secondary-bg w-full"
+          className="bg-primary-button text-black px-4 py-2 rounded hover:bg-secondary w-full"
         >
           Legg til spørsmål
         </button>
       </div>
-
-      <button className="bg-primary-button text-black px-6 py-3 rounded hover:bg-secondary-bg">
-        Last ned vitneboksvideo
-      </button>
-
-         <button
+      <button
         onClick={handleDeleteVitneboks}
         className="bg-danger text-white px-4 py-2 mt-8 rounded hover:bg-danger-200 mb-8"
       >

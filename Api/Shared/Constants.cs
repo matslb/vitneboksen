@@ -3,7 +3,6 @@
     public static class Constants
     {
         public const string FinalVideoFileName = "final.mp4";
-        public const string SessionInfoFileName = "session.json";
         public const string IntroFileName = "intro.mp4";
         public const string OutroFileName = "outro.mp4";
         public const string TransitionFileName = "transition.mp4";

@@ -1,17 +1,19 @@
 import { useEffect, useState } from 'react';
 
 interface WaitingScreenProps {
-  seconds: number;
+    setWaiting: (isWaiting: boolean) => void;
+    seconds: number;
 }
 
-export default function WaitingScreen({ seconds }: WaitingScreenProps) {
+export default function WaitingScreen({ seconds, setWaiting }: WaitingScreenProps) {
   const [countdown, setCountdown] = useState(seconds);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCountdown(prev => {
-        if (prev <= 1) {
+        if (prev == 1) {
           clearInterval(interval);
+          setWaiting(false);
           return 0;
         }
         return prev - 1;

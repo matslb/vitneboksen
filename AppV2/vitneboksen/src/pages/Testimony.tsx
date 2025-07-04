@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getDatabase, ref, get } from 'firebase/database';
+import { getDatabase, ref, get, onValue } from 'firebase/database';
 import NotFoundMessage from '../components/NotFoundMessage';
 import LoadingFullScreen from '../components/LoadingFullScreen';
 import WelcomeScreen from '../components/WelcomeScreen';
 import VideoRecorder from '../components/VideoRecorder';
 import WaitingScreen from '../components/WaitingScreen';
 import Footer from '../components/Footer';
-import type PublicVitneboks from '../types/publicVitneboks';
+import type PublicVitneboks from '../types/PublicVitneboks';
 
 export default function TestimonyPage() {
   const { vitneboksId } = useParams();
@@ -18,13 +18,13 @@ export default function TestimonyPage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   const fetchVitneboks = async () => {
-      const db = getDatabase();
-
       setLoading(true);
-      const snapshot = await get(ref(db, `publicVitnebokser/${vitneboksId}`));
-      setVitneboks(snapshot.val());
-      setLoading(false);
-    
+      const db = getDatabase();
+      const vitneboksRef = ref(db, `publicVitnebokser/${vitneboksId}`);
+      onValue(vitneboksRef, (snapshot) => {
+        setVitneboks(snapshot.val());
+        setLoading(false);
+      });
   };
     
   useEffect(() => {
@@ -40,16 +40,13 @@ export default function TestimonyPage() {
 
   const handleStart = () => setStarted(true);
   const handleRecordingFinished = () => {
+    setStarted(false);
     setWaiting(true);
-    setTimeout(() => {
-      setWaiting(false);
-      if (currentQuestionIndex + 1 < questions.length) {
-        setCurrentQuestionIndex(i => i + 1);
-      } else {
-        setStarted(false);
-        setCurrentQuestionIndex(0);
-      }
-    }, 5000);
+    if (currentQuestionIndex + 1 < questions.length) {
+      setCurrentQuestionIndex(i => i + 1);
+    } else {
+      setCurrentQuestionIndex(0);
+    }
   };
 
   return (
@@ -62,12 +59,13 @@ export default function TestimonyPage() {
         <VideoRecorder
           question={currentQuestion}
           onFinish={handleRecordingFinished}
+          uid={vitneboks.uid}
           vitneboksId={vitneboksId!}
         />
       )}
 
       {waiting && (
-        <WaitingScreen seconds={5} />
+        <WaitingScreen seconds={5} setWaiting={setWaiting} />
       )}
 
       <Footer />
