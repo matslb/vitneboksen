@@ -10,6 +10,7 @@ import Footer from '../components/Footer';
 import { generateVitneboksId } from '../utils';
 import SpinnerIcon from '../components/SpinnerIcon';
 import { downloadFinalVideo, startFinalVideoProcessing } from '../videoProcessorService';
+import Header from '../components/Header';
 
 export default function AdminDashboard() {
   const [vitnebokser, setVitnebokser] = useState<Vitneboks[]>([]);
@@ -73,8 +74,8 @@ export default function AdminDashboard() {
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-primary-bg text-primary-text">
-      <h1 className="text-3xl font-bold mb-8">Dine vitnebokser</h1>
-      <LogoutButton/>
+      <Header/>      
+      <h2 className="text-3xl font-bold mb-8">Dine vitnebokser</h2>
       <ul className="flex flex-col items-center gap-4 w-full mb-16">
         {vitnebokser.map((vb) => (
           <li
