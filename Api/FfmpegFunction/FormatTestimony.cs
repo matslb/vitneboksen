@@ -21,11 +21,10 @@ namespace FfmpegFunction
         {
             _logger = loggerFactory.CreateLogger<FormatTestimony>();
             _configuration = configuration;
-            var fireSharpSecrets = configuration.GetSection("FireSharp");
             _firebaseService = new FirebaseService(new FireSharp.Config.FirebaseConfig
             {
-                AuthSecret = fireSharpSecrets.GetValue<string>("AuthSecret"),
-                BasePath = fireSharpSecrets.GetValue<string>("BasePath")
+                AuthSecret = Environment.GetEnvironmentVariable("FireSharp__AuthSecret"),
+                BasePath = Environment.GetEnvironmentVariable("FireSharp__BasePath"),
             });
         }
 

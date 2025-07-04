@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getDatabase, ref, onValue, push, set, update, remove } from 'firebase/database';
 import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
 import {type Vitneboks} from '../types/Vitneboks';
@@ -12,6 +12,7 @@ import LogoutButton from '../components/LogoutButton';
 import { dateStringToLocal } from '../utils';
 import Footer from '../components/Footer';
 import { deleteVitneboks } from '../videoProcessorService';
+import Header from '../components/Header';
 
 export default function VitneboksDetail() {
   const { id } = useParams();
@@ -132,8 +133,15 @@ export default function VitneboksDetail() {
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-primary-bg text-primary-text ">
+      <Header />
+      <Link
+        to={`/admin/`}
+        className="bg-primary-button underline text-black px-4 py-2 rounded"
+        >
+        Tilbake
+      </Link>
+
       <h1 className="text-3xl font-bold mb-4">{vitneboks.title}</h1>
-      <LogoutButton/>
       <p className="mb-8">Opprettet: {vitneboks.createdOn.toLocaleString()}</p>
       <h2 className="text-2xl font-bold mb-4">Spørsmål</h2>
       <div className="w-full max-w-3xl space-y-4 mb-8">
