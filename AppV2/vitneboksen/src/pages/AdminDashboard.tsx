@@ -131,7 +131,7 @@ export default function AdminDashboard() {
                 }
                 {vb.completedVideos > 0 && vb.finalVideoProcessingStatus == FinalVideoStatus.started && 
                 <button 
-                className="flex gap-2 bg-primary-button-disabled disabled text-black px-4 py-2 rounded ">
+                className="flex bg-primary-button-disabled disabled text-black px-4 py-2 rounded ">
                   <SpinnerIcon />
                   Vitneboksvideo mekkes nå
                 </button>
