@@ -76,7 +76,8 @@ namespace FfmpegFunction
                 }
                 else
                 {
-                    string outputFilePath = Path.Combine(tempPath, $"{fileMetaData.CreatedOn.UtcDateTime.ToFileTimeUtc()}-{fileMetaData.VideoType}.mp4");
+                    var processedFileMetadata = new EncodedFileMetaData(fileMetaData.CreatedOn, fileMetaData.VideoType);
+                    string outputFilePath = Path.Combine(tempPath, processedFileMetadata.GetVideoFileName());
 
                     var ffmpegCmd = FfmpegCommandBuilder.WithText(videoFilePath, subtitleText, outputFilePath, fontSize: 50, TextPlacement.Subtitle);
 
