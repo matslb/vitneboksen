@@ -16,8 +16,6 @@ jobs:
 
       - run: npm run build
         working-directory: AppV2/vitneboksen
-        env:
-          VIDEO_PROCESSOR_URL: ${{ secrets.VITNEBOKS_API_URL }}
       # Deploy from the correct folder
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
@@ -28,3 +26,4 @@ jobs:
           entryPoint: AppV2/vitneboksen
         env:
           FIREBASE_CLI_PREV_DIR: AppV2/vitneboksen
+          VIDEO_PROCESSOR_URL: ${{ secrets.VITNEBOKS_API_URL }}
