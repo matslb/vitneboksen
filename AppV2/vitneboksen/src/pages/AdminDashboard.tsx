@@ -120,21 +120,21 @@ export default function AdminDashboard() {
                   Rediger
                 </Link>
 
-                {vb.finalVideoProcessingStatus == FinalVideoStatus.notStarted && 
+                {vb.completedVideos > 0 && vb.finalVideoProcessingStatus == FinalVideoStatus.notStarted && 
                 <button 
                 onClick={() => startFinalVideoProcessing(vb.id)}
                 className=" flex gap-2 bg-primary-button  text-black px-4 py-2 rounded ">
                  Generer Vitneboksvideo
                 </button>
                 }
-                {vb.finalVideoProcessingStatus == FinalVideoStatus.started && 
+                {vb.completedVideos > 0 && vb.finalVideoProcessingStatus == FinalVideoStatus.started && 
                 <button 
                 className="flex gap-2 bg-primary-button-disabled disabled text-black px-4 py-2 rounded ">
                   <SpinnerIcon />
                   Vitneboksvideo mekkes nå
                 </button>
                 }
-                {vb.finalVideoProcessingStatus == FinalVideoStatus.completed && 
+                { vb.completedVideos > 0 && vb.finalVideoProcessingStatus == FinalVideoStatus.completed && 
                 <button 
                 onClick={() => downloadFinalVideo(vb.id)}
                 className="bg-primary-button text-black px-4 py-2 rounded">
