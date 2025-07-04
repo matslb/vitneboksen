@@ -4,7 +4,6 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AdminDashboard from './pages/AdminDashboard';
 import VitneboksDetail from './pages/VitneboksDetail';
 import Testimony from './pages/Testimony';
-import ActionShot from './pages/ActionShot';
 import Login from './pages/Login';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import LoadingFullScreen from './components/LoadingFullScreen';
@@ -70,7 +69,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           }
         />
         <Route path="/vitne/:vitneboksId" element={<Testimony />} />
-        <Route path="/bidra/:vitneboksId" element={<ActionShot />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

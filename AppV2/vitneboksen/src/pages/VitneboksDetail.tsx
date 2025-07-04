@@ -131,7 +131,7 @@ export default function VitneboksDetail() {
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-primary-bg text-primary-text p-6">
+    <div className="flex flex-col items-center min-h-screen bg-primary-bg text-primary-text ">
       <h1 className="text-3xl font-bold mb-4">{vitneboks.title}</h1>
       <LogoutButton/>
       <p className="mb-8">Opprettet: {vitneboks.createdOn.toLocaleString()}</p>

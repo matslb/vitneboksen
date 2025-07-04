@@ -72,7 +72,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-primary-bg text-primary-text p-6">
+    <div className="flex flex-col items-center min-h-screen bg-primary-bg text-primary-text">
       <h1 className="text-3xl font-bold mb-8">Dine vitnebokser</h1>
       <LogoutButton/>
       <ul className="flex flex-col items-center gap-4 w-full mb-16">
@@ -96,13 +96,14 @@ export default function AdminDashboard() {
                   onClick={() => handleCopy(`${window.location.origin}/vitne/${vb.id}`, 'Vitnebokslink kopiert!')}
                   className="w-full p-2 rounded bg-white text-black mb-2 cursor-pointer"
                   />
+                  { /*
                 <label className="text-sm">Delelink</label>
                 <input
                   readOnly
                   value={`${window.location.origin}/bidra/${vb.id}`}
                   onClick={() => handleCopy(`${window.location.origin}/bidra/${vb.id}`, 'Delelink kopiert!')}
                   className="w-full p-2 rounded bg-white text-black cursor-pointer"
-                  />
+                  /> */}
                 {copied && <p className="text-green-500 text-sm mt-1">{copied}</p>}
               </div>
                 : 
