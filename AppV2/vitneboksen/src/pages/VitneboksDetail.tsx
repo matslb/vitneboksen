@@ -8,7 +8,6 @@ import type PublicVitneboks from '../types/PublicVitneboks';
 
 import ActiveFromToPicker from '../components/ActiveFromToDatePicker';
 import LoadingFullScreen from '../components/LoadingFullScreen';
-import LogoutButton from '../components/LogoutButton';
 import { dateStringToLocal } from '../utils';
 import Footer from '../components/Footer';
 import { deleteVitneboks } from '../videoProcessorService';

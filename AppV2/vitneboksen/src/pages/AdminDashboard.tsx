@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { getDatabase, ref, onValue, set } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
 import { FinalVideoStatus, type Vitneboks} from '../types/Vitneboks';
-import LogoutButton from '../components/LogoutButton';
 import type PublicVitneboks from '../types/PublicVitneboks';
 import Footer from '../components/Footer';
 import { generateVitneboksId } from '../utils';
