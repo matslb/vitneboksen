@@ -16,6 +16,6 @@ public class EncodedFileMetaData(
     public static EncodedFileMetaData GetVideoFileMetaDataFromFileName(string fileName)
     {
         var metadata = fileName.Split(".").First().Split("-");
-        return new EncodedFileMetaData(createdOn: DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(metadata[1])), videoType: metadata[2]);
+        return new EncodedFileMetaData(createdOn: DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(metadata[0])), videoType: metadata[1]);
     }
 }
