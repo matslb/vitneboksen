@@ -9,6 +9,7 @@ import WaitingScreen from '../components/WaitingScreen';
 import Footer from '../components/Footer';
 import type PublicVitneboks from '../types/PublicVitneboks';
 import ThankYouScreen from '../components/TankYouScreen';
+import CameraAccessChecker from '../components/CameraAccessChecker';
 
 export default function TestimonyPage() {
   const { vitneboksId } = useParams();
@@ -77,12 +78,15 @@ function enterFullscreen(element: HTMLElement) {
     <div ref={divRef} className="flex flex-col min-h-screen bg-primary-bg text-primary-text">
       {!isFullScreen &&
         <button
+        className="fixed top-2 left-2 bg-primary-button text-black px-4 py-2 rounded hover:text-white hover:bg-secondary-bg"
         onClick={handleEnterFullscreen}
         >Fullskjerm</button>
       }
+      <CameraAccessChecker />
       {!started && (!waiting || thankYouWaiting ) && (
         <WelcomeScreen onStart={handleStart} recordingTime={currentQuestion.recordingDuration} title={vitneboks.title}/>
       )}
+    
 
       {waiting &&  (
         <WaitingScreen seconds={3} setWaiting={setWaiting} />
