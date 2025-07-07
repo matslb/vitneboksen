@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { GetRecordingConstrains, videoExtension } from '../utils';
 import type Question from '../types/Question';
 import { uploadVideoToProcessor } from '../videoProcessorService';
+import tvTestImage from '../assets/tv-test.png';
 
 interface VideoRecorderProps {
   question: Question;
@@ -92,10 +93,34 @@ export default function VideoRecorder({ question, vitneboksId, uid, onFinish }: 
   };
 
   return (
-    <div className="flex flex-col items-center justify-center flex-1 p-6">
-      <h2 className="text-2xl font-semibold mb-4">{question.text}</h2>
-      <video ref={videoRef} className="w-full max-w-2xl rounded mb-4" />
-      <p className="text-lg">Opptak stopper automatisk om {countdown} sekunder…</p>
+    <div  className="flex flex-col items-center justify-center fixed bg-black top-0 left-0 right-0 bottom-0 flex-1 ">
+      <img src={tvTestImage} className='w-full image'  />
+      <video ref={videoRef} className="fixed top-0 bottom-0 min-h-full max-w-none" />
+        <div className='rounded p-4 pl-6 pr-8 fixed flex top-16 left-16 text-4xl'
+          style={{
+              background: "rgba(0,0,0,0.5)",
+            }}
+          >
+            <div
+              style={{
+                width: "20px",
+                height: "20px",
+                padding: "2px",
+                borderRadius: "50%",
+                backgroundColor: "red",
+                animation: "blinker 1s infinite",
+              }}
+            />
+            <div style={{ color: "white" }}>REC</div>
+          </div>
+          <div className='rounded p-4 fixed top-16 right-16 text-4xl'
+            style={{
+              background: "rgba(0,0,0,0.5)",
+            }}
+          >
+            {countdown}
+          </div>
+      <h2 className="fixed bottom-24 text-6xl font-semibold ">{question.text}</h2>
     </div>
   );
 }

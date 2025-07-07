@@ -1,20 +1,16 @@
-// src/pages/AdminDashboard.tsx
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { getDatabase, ref, onValue, set } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
 import { FinalVideoStatus, type Vitneboks} from '../types/Vitneboks';
 import type PublicVitneboks from '../types/PublicVitneboks';
 import Footer from '../components/Footer';
 import { generateVitneboksId } from '../utils';
-import SpinnerIcon from '../components/SpinnerIcon';
-import { downloadFinalVideo, startFinalVideoProcessing } from '../videoProcessorService';
 import Header from '../components/Header';
+import VitneboksBox from '../components/VitneboksBox';
 
 export default function AdminDashboard() {
   const [vitnebokser, setVitnebokser] = useState<Vitneboks[]>([]);
   const [newTitle, setNewTitle] = useState('');
-  const [copied, setCopied] = useState<string | null>(null);
 
   const auth = getAuth();
   const db = getDatabase();
@@ -64,12 +60,6 @@ export default function AdminDashboard() {
     setNewTitle('');
   };
 
-  const handleCopy = (text: string, label: string) => {
-    navigator.clipboard.writeText(text).then(() => {
-      setCopied(label);
-      setTimeout(() => setCopied(null), 2000);
-    }).catch(console.error);
-  };
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-primary-bg text-primary-text">
@@ -81,77 +71,7 @@ export default function AdminDashboard() {
             key={vb.id}
             className="border border-muted rounded-lg p-6 max-w-md w-full shadow-md bg-secondary-bg flex flex-col gap-2"
           >
-            <div>
-              <h2 className="text-xl font-semibold mb-2">{vb.title}</h2>
-              <div className='flex flex-col gap-2'>
-
-              <p className="text-m text-muted mb-1"><span className='bg-white text-center text-black min-w-9 inline-block pl-2 pr-2 pt-1 pb-1 rounded'>{Object.keys(vb.questions).length}</span> spørsmål</p>
-    
-              <p className="text-m text-muted"><span className='bg-white text-black text-center min-w-9 inline-block pl-2 pr-2 pt-1 pb-1 rounded'>{vb.completedVideos}</span> vitnesbyrd
-                { vb.videosToBeProcessed > 0 &&
-                  <>
-                     &nbsp;(&nbsp;<SpinnerIcon />{vb.videosToBeProcessed} til på vei)
-                  </>
-                }
-              </p>
-            </div>
-            </div>
-            {Object.values(vb.questions).length > 0 ?
-              <div>
-                <label className="text-sm">Vitnebokslink</label>
-                <input
-                  readOnly
-                  value={`${window.location.origin}/vitne/${vb.id}`}
-                  onClick={() => handleCopy(`${window.location.origin}/vitne/${vb.id}`, 'Vitnebokslink kopiert!')}
-                  className="w-full p-2 rounded bg-white text-black mb-2 cursor-pointer"
-                  />
-                  { /*
-                <label className="text-sm">Delelink</label>
-                <input
-                  readOnly
-                  value={`${window.location.origin}/bidra/${vb.id}`}
-                  onClick={() => handleCopy(`${window.location.origin}/bidra/${vb.id}`, 'Delelink kopiert!')}
-                  className="w-full p-2 rounded bg-white text-black cursor-pointer"
-                  /> */}
-                {copied && <p className="text-green-500 text-sm mt-1">{copied}</p>}
-              </div>
-                : 
-                <div>
-                  <p>Legg til spørsmål for å komme i gang.</p>
-                </div>
-              }
-              
-              <div className="mt-4 text-right flex flex-row-reverse justify-between gap-6">
-                  <Link
-                  to={`/admin/vitneboks/${vb.id}`}
-                  className="bg-primary-button text-black px-4 py-2 rounded"
-                  >
-                  Rediger
-                </Link>
-
-                {vb.completedVideos > 1 && vb.finalVideoProcessingStatus == FinalVideoStatus.notStarted && 
-                <button 
-                onClick={() => startFinalVideoProcessing(vb.id)}
-                className=" flex gap-2 bg-primary-button  text-black px-4 py-2 rounded ">
-                 Generer Vitneboksvideo
-                </button>
-                }
-                {vb.completedVideos > 0 && vb.finalVideoProcessingStatus == FinalVideoStatus.started && 
-                <button 
-                className="flex bg-primary-button-disabled disabled text-black px-4 py-2 rounded ">
-                  <SpinnerIcon />
-                  Vitneboksvideo mekkes nå
-                </button>
-                }
-                { vb.completedVideos > 0 && vb.finalVideoProcessingStatus == FinalVideoStatus.completed && 
-                <button 
-                onClick={() => downloadFinalVideo(vb.id)}
-                className="bg-primary-button text-black px-4 py-2 rounded">
-                  Last ned Vitneboksvideo
-                </button>
-                }
-              
-            </div>
+            <VitneboksBox Vitneboks={vb}/> 
           </li>
         ))}
       </ul>

@@ -51,18 +51,19 @@ export default function TestimonyPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-primary-bg text-primary-text">
-      {!started && !waiting && (
+      { !started && !waiting && (
         <WelcomeScreen onStart={handleStart} title={vitneboks.title}/>
       )}
 
-      {started && !waiting && (
+      { started && !waiting && (
         <VideoRecorder
           question={currentQuestion}
           onFinish={handleRecordingFinished}
           uid={vitneboks.uid}
           vitneboksId={vitneboksId!}
         />
-      )}
+      )
+      }
 
       {waiting && (
         <WaitingScreen seconds={5} setWaiting={setWaiting} />
