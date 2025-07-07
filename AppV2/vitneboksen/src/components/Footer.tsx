@@ -17,7 +17,7 @@ export default function Footer() {
         </a>
         <span>og</span>
         <a
-          href="https://erdetfesthosmatsikveld.no"
+          href="https://erdetfesthosmats.no"
           className="underline hover:text-primary-button"
         >
           erdetfesthosmatsikveld.no

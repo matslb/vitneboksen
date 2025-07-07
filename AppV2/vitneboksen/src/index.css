@@ -16,12 +16,8 @@ select {
   background-color: white;
 }
 
-button:hover {
+button:not(.disabled):hover {
   cursor: pointer;
-}
-
-button.disabled:hover {
-  cursor: default;
 }
 
 @keyframes blinker {

@@ -75,21 +75,32 @@ export default function AdminDashboard() {
           </li>
         ))}
       </ul>
-      <div className="max-w-md w-full bg-secondary-bg rounded-lg shadow-lg p-6 border border-muted">
+      <div className="max-w-md w-full bg-secondary-bg rounded-lg shadow-lg p-6 mb-16 border border-muted">
         <h2 className="text-xl font-semibold mb-4">Opprett ny vitneboks</h2>
         <input
           type="text"
           value={newTitle}
           onChange={(e) => setNewTitle(e.target.value)}
           placeholder="Navn på arrangement"
-          className="w-full p-2 rounded bg-white text-black mb-4 border border-gray-300"
+          className="w-full p-2 rounded  bg-white text-black mb-4 border border-gray-300"
         />
+        {vitnebokser.length <= 1 ?
         <button
           onClick={handleCreate}
-          className="bg-primary-button text-black px-4 py-2 rounded hover:bg-secondary-bg w-full"
+          disabled={true}
+          className="bg-primary-button hover:text-white  text-black px-4 py-2 rounded hover:bg-secondary-bg w-full"
         >
           Opprett
         </button>
+        : 
+          <button
+          onClick={handleCreate}
+          disabled={true}
+          className="bg-primary-button hover:text-white  disabled opacity-40 cursor-not-allowed text-black px-4 py-2 rounded w-full"
+        >
+        Du kan bare ha to aktive vitnebokser
+        </button>
+        } 
       </div>
       <Footer />
     </div>

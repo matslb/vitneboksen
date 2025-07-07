@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getDatabase, ref, onValue } from 'firebase/database';
 import NotFoundMessage from '../components/NotFoundMessage';
@@ -8,6 +8,7 @@ import VideoRecorder from '../components/VideoRecorder';
 import WaitingScreen from '../components/WaitingScreen';
 import Footer from '../components/Footer';
 import type PublicVitneboks from '../types/PublicVitneboks';
+import ThankYouScreen from '../components/TankYouScreen';
 
 export default function TestimonyPage() {
   const { vitneboksId } = useParams();
@@ -15,7 +16,10 @@ export default function TestimonyPage() {
   const [loading, setLoading] = useState(true);
   const [started, setStarted] = useState(false);
   const [waiting, setWaiting] = useState(false);
+  const [thankYouWaiting, setThankYouWaiting] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  const divRef = useRef<HTMLDivElement>(null);
 
   const fetchVitneboks = async () => {
       setLoading(true);
@@ -38,7 +42,10 @@ export default function TestimonyPage() {
   const questions = Object.values(vitneboks.questions) || [];
   const currentQuestion = questions[currentQuestionIndex];
 
-  const handleStart = () => setStarted(true);
+  const handleStart = () => {
+    setWaiting(true);
+    setStarted(true);
+  }
   const handleRecordingFinished = () => {
     setStarted(false);
     setWaiting(true);
@@ -49,13 +56,39 @@ export default function TestimonyPage() {
     }
   };
 
+function enterFullscreen(element: HTMLElement) {
+  if (element.requestFullscreen) {
+    element.requestFullscreen();
+  } else if ((element as any).webkitRequestFullscreen) { // Safari
+    (element as any).webkitRequestFullscreen();
+  } else if ((element as any).mozRequestFullScreen) { // Firefox
+    (element as any).mozRequestFullScreen();
+  } else if ((element as any).msRequestFullscreen) { // IE/Edge
+    (element as any).msRequestFullscreen();
+  }
+}
+ const handleEnterFullscreen = () => {
+    if (divRef.current) {
+      enterFullscreen(divRef.current);
+      setIsFullScreen(true);
+    }
+  };
   return (
-    <div className="flex flex-col min-h-screen bg-primary-bg text-primary-text">
-      { !started && !waiting && (
-        <WelcomeScreen onStart={handleStart} title={vitneboks.title}/>
+    <div ref={divRef} className="flex flex-col min-h-screen bg-primary-bg text-primary-text">
+      {!isFullScreen &&
+        <button
+        onClick={handleEnterFullscreen}
+        >Fullskjerm</button>
+      }
+      {!started && (!waiting || thankYouWaiting ) && (
+        <WelcomeScreen onStart={handleStart} recordingTime={currentQuestion.recordingDuration} title={vitneboks.title}/>
       )}
 
-      { started && !waiting && (
+      {waiting &&  (
+        <WaitingScreen seconds={3} setWaiting={setWaiting} />
+      )}
+
+      { started && !waiting  && !thankYouWaiting && (
         <VideoRecorder
           question={currentQuestion}
           onFinish={handleRecordingFinished}
@@ -64,11 +97,9 @@ export default function TestimonyPage() {
         />
       )
       }
-
-      {waiting && (
-        <WaitingScreen seconds={5} setWaiting={setWaiting} />
+      {thankYouWaiting &&  (
+        <ThankYouScreen seconds={40} setWaiting={setThankYouWaiting} />
       )}
-
       <Footer />
     </div>
   );

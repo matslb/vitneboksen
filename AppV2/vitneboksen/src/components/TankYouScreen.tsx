@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
-import tvTestImage from '../assets/tv-test.png';
 
-interface WaitingScreenProps {
+interface ThankYouScreenProps {
     setWaiting: (isWaiting: boolean) => void;
     seconds: number;
 }
 
-export default function WaitingScreen({ seconds, setWaiting }: WaitingScreenProps) {
+export default function ThankYouScreen({ seconds, setWaiting }: ThankYouScreenProps) {
   const [countdown, setCountdown] = useState(seconds);
 
   useEffect(() => {
@@ -25,9 +24,10 @@ export default function WaitingScreen({ seconds, setWaiting }: WaitingScreenProp
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center flex-1 p-6 fixed left-0 right-0 top-0 bottom-0 bg-black">
-      <img src={tvTestImage} className='fixed h-full max-w-none image'  />
-      <div className="text-6xl top-[11%] text-center w-100 h-100 top-0 absolute"> {countdown}</div>
+    <div className="flex flex-col items-center justify-center flex-1 p-6">
+      <h2 className="text-3xl font-bold mb-4">Takk til deg!</h2>
+      <p className="text-lg">Vitneboksen åpner igjen om {countdown} sekunder…</p>
+      <p className="text-2xl mt-16 ">Nå kan du vinke inn neste, og bare kul'n</p>
     </div>
   );
 }
