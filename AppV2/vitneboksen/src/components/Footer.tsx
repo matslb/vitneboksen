@@ -14,7 +14,7 @@ export default function Footer() {
           Mats Løvstrand Berntsen
         </a>
       </div>
-      <div className="flex flex-col items-center gap-2">
+      <div className="flex flex-col items-center gap-1">
         <span>Sponset av</span>
         <a
           href="https://spritjakt.no"

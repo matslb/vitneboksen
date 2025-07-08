@@ -10,7 +10,7 @@ import WaitingScreen from '../components/WaitingScreen';
 import Footer from '../components/Footer';
 import type PublicVitneboks from '../types/PublicVitneboks';
 import ThankYouScreen from '../components/TankYouScreen';
-import ismobile from "is-mobile";
+import ismobile, { isMobile } from "is-mobile";
 import { mapPublicVitneboks } from '../utils';
 import type Question from '../types/Question';
 import { FinalVideoStatus } from '../types/Vitneboks';
@@ -114,7 +114,7 @@ export default function TestimonyPage() {
 
   return (
     <div ref={divRef} className="flex flex-col min-h-screen bg-primary-bg text-primary-text">
-      {!ismobile && !isFullScreen && !waiting && !thankYouWaiting && !started &&
+      {!isFullScreen && !waiting && !thankYouWaiting && !started &&
         <button
           className="fixed top-2 left-2 bg-primary-button text-black px-4 py-2 rounded hover:text-white hover:bg-secondary-bg"
           onClick={handleEnterFullscreen}
@@ -148,9 +148,6 @@ export default function TestimonyPage() {
       {thankYouWaiting && vitneboks.isOpen && (
         <ThankYouScreen seconds={30} setWaiting={setThankYouWaiting} />
       )}
-      {!started && !waiting && !thankYouWaiting &&
-        <Footer />
-      }
     </div>
   );
 }
