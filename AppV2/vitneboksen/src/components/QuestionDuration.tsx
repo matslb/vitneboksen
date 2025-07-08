@@ -9,7 +9,7 @@ export default function QuestionDuration({ recordingDuration, setRecordingDurati
         <select
             value={recordingDuration}
             onChange={(e) => setRecordingDuration(parseInt(e.target.value))}
-            className="white w-full max-w-35 p-2 rounded text-black"
+            className="white w-full p-2 rounded text-black"
         >
             <option value={10}>10 sekunder</option>
             <option value={15}>15 sekunder</option>

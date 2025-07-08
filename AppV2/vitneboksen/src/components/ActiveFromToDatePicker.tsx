@@ -11,7 +11,7 @@ export default function ActiveFromToPicker({ allwaysActive, setAllwaysActive, ac
   const isInvalid = activeFrom && activeTo && new Date(activeTo) < new Date(activeFrom);
   return (
     <div className="mb-4 flex gap-2">
-      <div className="flex flex-col justify-bottom gap">
+      <div className="flex flex-col gap-2">
         <label className="w-30">
           <input
             type="radio"
@@ -36,7 +36,7 @@ export default function ActiveFromToPicker({ allwaysActive, setAllwaysActive, ac
       </div>
 
       {!allwaysActive &&
-        <div className="grid grid-cols-2 gap-2">
+        <div className="flex gap-4 justify-end w-full">
           <div>
             <label className="block mb-1">Aktiv fra</label>
             <input

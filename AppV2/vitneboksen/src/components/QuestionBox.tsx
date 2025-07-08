@@ -32,7 +32,7 @@ export default function QuestionBox({ vitneboksId, userId, question }: QuestionB
     };
     return (
         <div
-            className="bg-white/10 py-6 px-4 rounded shadow-md relative"
+            className="bg-white/10 py-6 px-4 rounded shadow-md max-w-5xl relative"
             key={question.id}
             draggable
             onDragStart={(e) => handleDragStart(e, question.id, question.order)}
@@ -45,8 +45,9 @@ export default function QuestionBox({ vitneboksId, userId, question }: QuestionB
                 style={{
                     gridTemplateColumns: "4fr 2fr"
                 }}
-                className="grid  gap-4 justify-left mt-4">
+                className="grid gap-4 align-between mt-4">
                 <div
+                    className="w-full"
                 >
                     <label className="block mb-1">Spørsmålstekst</label>
                     <input
@@ -57,7 +58,9 @@ export default function QuestionBox({ vitneboksId, userId, question }: QuestionB
                         className="white w-full p-2 rounded text-black mb-1"
                     />
                 </div>
-                <div>
+                <div
+                    className="w-full"
+                >
                     <label className="block mb-1">Opptakstid</label>
                     <QuestionDuration
                         recordingDuration={question.recordingDuration}
