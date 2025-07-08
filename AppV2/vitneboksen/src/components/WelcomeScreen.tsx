@@ -6,7 +6,7 @@ interface WelcomeScreenProps {
 
 export default function WelcomeScreen({ title, recordingTime , onStart }: WelcomeScreenProps) {
   return (
-    <div className="flex flex-col items-center flex-1 mt-12 p-6">
+    <div className="flex flex-col items-center justify-center flex-1 p-6">
         <div className="m-16">
             <h1 className="text-5xl font-bold mb-4 text-center">VITNEBOKSEN</h1>
             <h1 className="text-xl mb-4 text-center">ønsker deg velkommen til...</h1>

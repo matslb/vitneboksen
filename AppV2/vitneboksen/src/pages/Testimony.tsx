@@ -49,7 +49,7 @@ export default function TestimonyPage() {
   }
   const handleRecordingFinished = () => {
     setStarted(false);
-    setWaiting(true);
+    setThankYouWaiting(true);
     if (currentQuestionIndex + 1 < questions.length) {
       setCurrentQuestionIndex(i => i + 1);
     } else {
@@ -76,14 +76,14 @@ function enterFullscreen(element: HTMLElement) {
   };
   return (
     <div ref={divRef} className="flex flex-col min-h-screen bg-primary-bg text-primary-text">
-      {!isFullScreen &&
+      {!isFullScreen && !waiting && !thankYouWaiting && !started &&
         <button
         className="fixed top-2 left-2 bg-primary-button text-black px-4 py-2 rounded hover:text-white hover:bg-secondary-bg"
         onClick={handleEnterFullscreen}
         >Fullskjerm</button>
       }
       <CameraAccessChecker />
-      {!started && (!waiting || thankYouWaiting ) && (
+      {!started && (!waiting && !thankYouWaiting ) && (
         <WelcomeScreen onStart={handleStart} recordingTime={currentQuestion.recordingDuration} title={vitneboks.title}/>
       )}
     
@@ -102,7 +102,7 @@ function enterFullscreen(element: HTMLElement) {
       )
       }
       {thankYouWaiting &&  (
-        <ThankYouScreen seconds={40} setWaiting={setThankYouWaiting} />
+        <ThankYouScreen seconds={30} setWaiting={setThankYouWaiting} />
       )}
       <Footer />
     </div>
