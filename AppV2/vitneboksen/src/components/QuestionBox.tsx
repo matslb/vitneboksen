@@ -41,9 +41,12 @@ export default function QuestionBox({ vitneboksId, userId, question }: QuestionB
         >
             <span className="cursor-move text-xl absolute w-8 text-center  bg-black/50 rounded-br rounded-tl top-0 left-0" title="Dra for å endre rekkefølge">{question.order + 1}</span>
             <span className="absolute top-2 right-4 cursor-move text-2xl" title="Dra for å endre rekkefølge">≡</span>
-            <div className="flex w-full gap-2 justify-left mt-4">
+            <div
+                style={{
+                    gridTemplateColumns: "4fr 2fr"
+                }}
+                className="grid  gap-4 justify-left mt-4">
                 <div
-                    className="w-[80%]"
                 >
                     <label className="block mb-1">Spørsmålstekst</label>
                     <input
@@ -54,7 +57,7 @@ export default function QuestionBox({ vitneboksId, userId, question }: QuestionB
                         className="white w-full p-2 rounded text-black mb-1"
                     />
                 </div>
-                <div className="w-[20%]">
+                <div>
                     <label className="block mb-1">Opptakstid</label>
                     <QuestionDuration
                         recordingDuration={question.recordingDuration}
@@ -72,12 +75,14 @@ export default function QuestionBox({ vitneboksId, userId, question }: QuestionB
                     onChangeFrom={(from) => set(ref(db, `${userId}/vitnebokser/${vitneboksId}/questions/${question.id}/activeFrom`), new Date(from).toISOString())}
                 />
             </div>
-            <button
-                onClick={() => remove(ref(db, `${userId}/vitnebokser/${vitneboksId}/questions/${question.id}`))}
-                className="bg-danger text-white px-4 py-2  rounded"
-            >
-                Slett
-            </button>
+            <div className="flex justify-end">
+                <button
+                    onClick={() => remove(ref(db, `${userId}/vitnebokser/${vitneboksId}/questions/${question.id}`))}
+                    className="bg-danger text-white px-4 py-2 rounded"
+                >
+                    Slett
+                </button>
+            </div>
         </div >
     );
 }

@@ -40,7 +40,7 @@ export default function QuestionList({ vitneBoksId, userId, questions }: Questio
   };
   return (
     <>
-      <div className="w-full max-w-3xl space-y-4 mb-8">
+      <div className="w-full space-y-4 mb-8">
         {questions.map((q) => (
           <QuestionBox
             key={q.id}
@@ -50,27 +50,39 @@ export default function QuestionList({ vitneBoksId, userId, questions }: Questio
           />
         ))}
       </div>
-      <div className="w-full max-w-md bg-white/10 rounded shadow-md p-6  mb-8">
+      <div className="w-full  bg-white/10 rounded shadow-md p-6  mb-8">
         <h2 className="text-xl font-semibold mb-4">Legg til nytt spørsmål</h2>
-        <label className="block mb-1">Spørsmålstekst</label>
-        <input
-          type="text"
-          maxLength={70}
-          value={newQuestionText}
-          onChange={(e) => setNewQuestionText(e.target.value)}
-          placeholder="Spørsmålstekst"
-          className="white w-full p-2 rounded text-black mb-4"
-        />
-        <label className="block mb-1">Opptakstid</label>
-        <QuestionDuration recordingDuration={newRecordingDuration} setRecordingDuration={setNewRecordingDuration} />
+        <div
+          style={{
+            gridTemplateColumns: "4fr 2fr"
+          }}
+          className="grid gap-4 justify-left mt-4">
+          <div>
+            <label className="block mb-1">Spørsmålstekst</label>
+            <input
+              type="text"
+              maxLength={70}
+              value={newQuestionText}
+              onChange={(e) => setNewQuestionText(e.target.value)}
+              placeholder="Spørsmålstekst"
+              className="white w-full p-2 rounded text-black mb-4"
+            />
+          </div>
+          <div>
+            <label className="block mb-1">Opptakstid</label>
+            <QuestionDuration recordingDuration={newRecordingDuration} setRecordingDuration={setNewRecordingDuration} />
+          </div>
+        </div>
         <ActiveFromToPicker allwaysActive={allwaysActive} setAllwaysActive={setAllwaysActive} activeFrom={activeFrom} activeTo={activeTo} onChangeFrom={setActiveFrom} onChangeTo={setActiveTo} />
-        <button
-          onClick={handleAddQuestion}
-          className="bg-primary-button text-black px-4 py-2 rounded hover:bg-secondary w-full"
-        >
-          Legg til spørsmål
-        </button>
-      </div>
+        <div className="flex justify-end">
+          <button
+            onClick={handleAddQuestion}
+            className="bg-primary-button text-black px-4 py-2 rounded hover:bg-secondary "
+          >
+            Legg til spørsmål
+          </button>
+        </div>
+      </div >
     </>
   );
 }

@@ -10,7 +10,7 @@ interface ActiveFromToPickerProps {
 export default function ActiveFromToPicker({ allwaysActive, setAllwaysActive, activeFrom, activeTo, onChangeFrom, onChangeTo }: ActiveFromToPickerProps) {
   const isInvalid = activeFrom && activeTo && new Date(activeTo) < new Date(activeFrom);
   return (
-    <div className="mb-4 min-w-50 flex  gap-2">
+    <div className="mb-4 flex gap-2">
       <div className="flex flex-col justify-bottom gap">
         <label className="w-30">
           <input
@@ -36,7 +36,7 @@ export default function ActiveFromToPicker({ allwaysActive, setAllwaysActive, ac
       </div>
 
       {!allwaysActive &&
-        <div className="flex items-center w-full flex-wrap justify-end gap-2">
+        <div className="grid grid-cols-2 gap-2">
           <div>
             <label className="block mb-1">Aktiv fra</label>
             <input
@@ -44,7 +44,7 @@ export default function ActiveFromToPicker({ allwaysActive, setAllwaysActive, ac
               value={activeFrom}
               max={activeTo}
               onChange={(e) => onChangeFrom(e.target.value)}
-              className=" w-50 p-2 bg-white rounded text-black"
+              className=" w-full p-2 bg-white rounded text-black"
             />
           </div>
           <div>
@@ -54,13 +54,13 @@ export default function ActiveFromToPicker({ allwaysActive, setAllwaysActive, ac
               value={activeTo}
               min={activeFrom}
               onChange={(e) => onChangeTo(e.target.value)}
-              className={`w-50 bg-white p-2 rounded text-black ${isInvalid ? 'border border-red-500' : ''}`}
+              className={`w-full bg-white p-2 rounded text-black ${isInvalid ? 'border border-red-500' : ''}`}
             />
           </div>
           {isInvalid && <p className="text-red-500 w-full min-w-[100%] text-right text-sm">Sluttdato kan ikke være tidligere enn startdato</p>}
         </div>
       }
 
-    </div>
+    </div >
   );
 }
