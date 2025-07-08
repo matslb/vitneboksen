@@ -78,7 +78,7 @@ export default function VitneboksDetail() {
         </div>
         <label htmlFor="title" className='hidden'>Tittel</label>
         <h1 className="text-3xl font-bold mb-4 ">
-          <input type='text' name='title' className='rounded p-2  text-center' value={vitneboks.title} onChange={(e) => set(ref(db, `${user.uid}/vitnebokser/${id}/title`), e.currentTarget.value)} />
+          <input type='text' name='title' maxLength={50} className='rounded p-2  text-center' value={vitneboks.title} onChange={(e) => set(ref(db, `${user.uid}/vitnebokser/${id}/title`), e.currentTarget.value)} />
         </h1>
         <QuestionList vitneBoksId={vitneboks.id} userId={user.uid} questions={vitneboks.questions} />
         <button
