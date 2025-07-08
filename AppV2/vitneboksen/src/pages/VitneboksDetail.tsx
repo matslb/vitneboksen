@@ -74,12 +74,7 @@ export default function VitneboksDetail() {
       <div className='mb-8 bg-tertiary-bg w-full max-w-5xl p-8 border-1 border-white rounded'>
         <div className='flex justify-between'>
           <p className="opacity-80">Opprettet: {vitneboks.createdOn.toLocaleString()}</p>
-          <div className='flex'>
-            <ToggleSwitch label={vitneboks.isOpen ? "Åpen" : "Lukket"} checked={vitneboks.isOpen} onChange={(checked) => set(ref(db, `${user.uid}/vitnebokser/${id}/isOpen`), checked)} />
-            {vitneboks.isOpen &&
-              <div className='blinker ml-2 -mt-2 h-2 w-2 bg-green-600 rounded-full'></div>
-            }
-          </div>
+          <ToggleSwitch label={vitneboks.isOpen ? "Åpen" : "Stengt"} checked={vitneboks.isOpen} onChange={(checked) => set(ref(db, `${user.uid}/vitnebokser/${id}/isOpen`), checked)} />
         </div>
         <label htmlFor="title" className='hidden'>Tittel</label>
         <h1 className="text-3xl font-bold mb-4 ">

@@ -60,7 +60,7 @@ export default function AdminDashboard() {
         {vitnebokser.map((vb) => (
           <li
             key={vb.id}
-            className="border border-muted rounded-lg p-6 max-w-md w-full shadow-md bg-secondary-bg flex flex-col gap-2"
+            className="border border-muted rounded-lg max-w-md w-full shadow-md bg-secondary-bg flex flex-col gap-2"
           >
             <VitneboksBox Vitneboks={vb} />
           </li>

@@ -28,11 +28,17 @@ export default function VitneboksBox({ Vitneboks }: VitneboxBoxProps) {
         });
     }, [db]);
     return (
-        <div className="relative">
-            <h2 className="text-xl font-semibold mb-2 max-w-80 break-all">{Vitneboks.title}</h2>
+        <div className="relative p-6">
+            <h2 className="text-xl font-semibold  max-w-80 break-all">{Vitneboks.title}</h2>
+            {!isRecording &&
+                <div
+                    className="bg-white/30 text-black p-2 rounded-bl rounded-tr-[7px] absolute top-0 right-0"
+                >{Vitneboks.isOpen ? "Åpen" : "Stengt"}
+                </div>
+            }
             {isRecording &&
                 <div
-                    className='absolute top-0 right-0 rounded h-18 flex text-2xl'
+                    className="bg-black/60 flex text-white p-2 rounded-bl rounded-tr-[7px] absolute top-0 right-0"
                 >
                     <div style={{ color: "white" }}>REC</div>
                     <div className='p-1 m-1 w-2 h-2'
@@ -45,18 +51,9 @@ export default function VitneboksBox({ Vitneboks }: VitneboxBoxProps) {
                     </div>
                 </div>
             }
-            <div className='flex flex-col gap-2'>
-                <p className="text-m text-muted mb-1"><span className='bg-white text-center text-black min-w-9 inline-block pl-2 pr-2 pt-1 pb-1 rounded'>{Object.values(Vitneboks.questions)?.length}</span> spørsmål</p>
-                <p className="text-m text-muted"><span className='bg-white text-black text-center min-w-9 inline-block pl-2 pr-2 pt-1 pb-1 rounded'>{Vitneboks.completedVideos}</span> vitnesbyrd
-                    {Vitneboks.videosToBeProcessed > 0 &&
-                        <>
-                            &nbsp;(&nbsp;<SpinnerIcon />{Vitneboks.videosToBeProcessed} til på vei)
-                        </>
-                    }
-                </p>
-            </div>
+
             {Object.values(Vitneboks.questions).length > 0 ?
-                <div>
+                <div className="py-4">
                     <label className="text-sm">Vitnebokslink</label>
                     <input
                         readOnly
@@ -71,7 +68,17 @@ export default function VitneboksBox({ Vitneboks }: VitneboxBoxProps) {
                     <p>Legg til spørsmål for å komme i gang.</p>
                 </div>
             }
+            <div className='flex justify-between gap-2'>
+                <p className="text-m "><span className='bg-white/30 text-black text-center min-w-9 inline-block rounded'>{Vitneboks.completedVideos}</span> Vitnesbyrd
+                    {Vitneboks.videosToBeProcessed > 0 &&
+                        <>
+                            &nbsp;(&nbsp;<SpinnerIcon />{Vitneboks.videosToBeProcessed} til på vei)
+                        </>
+                    }
+                </p>
+                <p className="text-m mb-1"><span className='bg-white/30 text-center text-black min-w-9 inline-block rounded'>{Object.values(Vitneboks.questions)?.length}</span> Spørsmål</p>
 
+            </div>
             <div className="mt-4 text-right flex flex-row-reverse justify-between gap-6">
                 <Link
                     to={`/admin/vitneboks/${Vitneboks.id}`}
@@ -104,8 +111,8 @@ export default function VitneboksBox({ Vitneboks }: VitneboxBoxProps) {
                         }
                     </>
                 }
-
             </div>
+
         </div>
     );
 }

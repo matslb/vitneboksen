@@ -144,7 +144,7 @@ export default function TestimonyPage() {
         />
       )
       }
-      {thankYouWaiting && (
+      {thankYouWaiting && vitneboks.isOpen && (
         <ThankYouScreen seconds={30} setWaiting={setThankYouWaiting} />
       )}
       {!started && !waiting && !thankYouWaiting &&
