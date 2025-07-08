@@ -21,7 +21,7 @@ export default function Login() {
     <div className="flex flex-col min-h-screen bg-primary-bg text-primary-text">
       <main className="flex-col flex mt-auto mb-auto items-center justify-center">
         <header className="p-8 text-center">
-          <h1 className="text-4xl font-bold">Velkommen til Vitneboksen</h1>
+          <h1 className="text-4xl font-bold">Velkommen til VITNEBOKSEN</h1>
         </header>
         <button
           type="button"
