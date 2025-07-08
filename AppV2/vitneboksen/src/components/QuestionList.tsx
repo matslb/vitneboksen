@@ -55,7 +55,7 @@ export default function QuestionList({ vitneBoksId, userId, questions }: Questio
         <label className="block mb-1">Spørsmålstekst</label>
         <input
           type="text"
-          maxLength={100}
+          maxLength={70}
           value={newQuestionText}
           onChange={(e) => setNewQuestionText(e.target.value)}
           placeholder="Spørsmålstekst"

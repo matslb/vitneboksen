@@ -48,7 +48,7 @@ export default function QuestionBox({ vitneboksId, userId, question }: QuestionB
                     <label className="block mb-1">Spørsmålstekst</label>
                     <input
                         type="text"
-                        maxLength={100}
+                        maxLength={70}
                         value={question.text}
                         onChange={(e) => set(ref(db, `${userId}/vitnebokser/${vitneboksId}/questions/${question.id}/text`), e.target.value)}
                         className="white w-full p-2 rounded text-black mb-1"
