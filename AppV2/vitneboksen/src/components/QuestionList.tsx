@@ -50,7 +50,7 @@ export default function QuestionList({ vitneBoksId, userId, questions }: Questio
           />
         ))}
       </div>
-      <div className="w-full max-w-md bg-white/10 rounded shadow-m p-6  mb-8">
+      <div className="w-full max-w-md bg-white/10 rounded shadow-md p-6  mb-8">
         <h2 className="text-xl font-semibold mb-4">Legg til nytt spørsmål</h2>
         <label className="block mb-1">Spørsmålstekst</label>
         <input

@@ -32,7 +32,7 @@ export default function QuestionBox({ vitneboksId, userId, question }: QuestionB
     };
     return (
         <div
-            className="bg-white/10 p-4 rounded shadow-m relative"
+            className="bg-white/10 p-4 rounded shadow-md relative"
             key={question.id}
             draggable
             onDragStart={(e) => handleDragStart(e, question.id, question.order)}

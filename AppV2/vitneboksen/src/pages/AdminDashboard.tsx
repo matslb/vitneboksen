@@ -68,7 +68,7 @@ export default function AdminDashboard() {
               </li>
             ))}
           </ul>
-          <div className="max-w-md w-full bg-secondary-bg rounded-lg shadow-lg p-6 mb-16">
+          <div className="max-w-md w-full bg-secondary-bg rounded-lg shadow-md p-6 mb-16">
             <h2 className="text-xl font-semibold mb-4">Opprett ny vitneboks</h2>
             <input
               type="text"
