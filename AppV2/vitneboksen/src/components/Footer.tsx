@@ -20,7 +20,7 @@ export default function Footer() {
           href="https://erdetfesthosmats.no"
           className="underline hover:text-primary-button"
         >
-          erdetfesthosmatsikveld.no
+          erdetfesthosmats.no
         </a>
       </div>
 
