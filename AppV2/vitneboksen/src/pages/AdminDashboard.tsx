@@ -100,7 +100,7 @@ export default function AdminDashboard() {
             }
           </div>
           <div className='p-8 rounded my-16  text-xl bg-secondary-bg'>
-            <h3 className='text-2xl'>Hvordan bruke Vitneboksen?</h3>
+            <h3 className='text-2xl'>Hvordan bruke VITNEBOKSEN?</h3>
             <br />
             <p>Dette trenger du for å komme i gang med Vitneboksen:</p>
             <ol className='list px-16 py-4'>
@@ -112,7 +112,7 @@ export default function AdminDashboard() {
             <ol className='list px-16 py-4'>
               <li className='list-decimal'>Opprett en Vitneboks, og legg til spørsmålene du vil at deltakerne skal svare på.</li>
               <li className='list-decimal'>Kopier <span className='italic'>Vitnebokslinken</span> og åpne den i en nettleser (Chrome, Edge, eller Firefox) på PCen du skal bruke på arrangementet ditt.</li>
-              <li className='list-decimal'>Et webkamera og en mikrofon.</li>
+              <li className='list-decimal'>Send inn dine første ofre.</li>
             </ol>
           </div>
         </div>
