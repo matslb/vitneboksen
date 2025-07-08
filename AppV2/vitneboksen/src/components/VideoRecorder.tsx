@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { GetRecordingConstrains, videoExtension } from '../utils';
 import type Question from '../types/Question';
 import { uploadVideoToProcessor } from '../videoProcessorService';
+import { getDatabase, ref, set } from 'firebase/database';
 
 interface VideoRecorderProps {
   question: Question;
@@ -17,11 +18,17 @@ export default function VideoRecorder({ question, vitneboksId, uid, onFinish }: 
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
+  const db = getDatabase();
+
+  const setIsRecordingStateInFirebase = (isRecording: boolean) => {
+    set(ref(db, `/activeSessions/${vitneboksId}`), isRecording);
+  };
 
   useEffect(() => {
     let mounted = true;
 
     const startRecording = async () => {
+      setIsRecordingStateInFirebase(true);
       const stream = await navigator.mediaDevices.getUserMedia(GetRecordingConstrains());
       streamRef.current = stream;
 
@@ -80,6 +87,7 @@ export default function VideoRecorder({ question, vitneboksId, uid, onFinish }: 
 
     return () => {
       mounted = false;
+      setIsRecordingStateInFirebase(false);
       if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
       if (mediaRecorderRef.current?.state === 'recording') mediaRecorderRef.current.stop();
       streamRef.current?.getTracks().forEach(t => t.stop());
@@ -93,15 +101,15 @@ export default function VideoRecorder({ question, vitneboksId, uid, onFinish }: 
 
   return (
     <>
-    <div  className="flex flex-col items-center justify-center fixed bg-black top-0 left-0 right-0 bottom-0 flex-1 ">
+      <div className="flex flex-col items-center justify-center fixed bg-black top-0 left-0 right-0 bottom-0 flex-1 ">
         <video ref={videoRef} className="fixed top-0 bottom-0 min-h-full max-w-none -scale-x-100" />
-      <h2
-        style={{
-              background: "rgba(0,0,0,0.55)",
-            }}
-      className="fixed bottom-32 2xl:text-5xl font-semibold p-6 max-w-wd m-8 text-3xl rounded text-shadow-s">{question.text}</h2>
-    </div>
-       <div className='fixed top-8 bottom-8 left-8 right-8 m-auto left-0 right-0 flex w-90% max-w-7xl flex justify-between 1 p-8'>
+        <h2
+          style={{
+            background: "rgba(0,0,0,0.55)",
+          }}
+          className="fixed bottom-32 2xl:text-5xl font-semibold p-6 max-w-wd m-8 text-3xl rounded text-shadow-s">{question.text}</h2>
+      </div>
+      <div className='fixed top-8 bottom-8 left-8 right-8 m-auto left-0 right-0 flex w-90% max-w-7xl flex justify-between 1 p-8'>
         <div className='absolute top-0 left-0 rounded-tl border-l-3 border-t-3 h-60 w-60 border-black opacity-55'> </div>
         <div className='absolute top-0 right-0 rounded-tr border-r-3 border-t-3 h-60 w-60 border-black opacity-55'> </div>
         <div className='absolute bottom-0 left-0 rounded-bl border-l-3 border-b-3 h-60 w-60 border-black opacity-55'> </div>
@@ -109,28 +117,28 @@ export default function VideoRecorder({ question, vitneboksId, uid, onFinish }: 
 
         <div>
           <div className='rounded h-18 p-4 pl-6 pr-6 flex text-4xl'
-              style={{
-                background: "rgba(0,0,0,0.55)",
-              }}
-              >
-          <div style={{ color: "white" }}>REC</div>
-          <div className='p-2 pl-0 m-1 w-5 h-5'
             style={{
-              borderRadius: "50%",
-              backgroundColor: "red",
-              animation: "blinker 1s infinite",
+              background: "rgba(0,0,0,0.55)",
             }}
+          >
+            <div style={{ color: "white" }}>REC</div>
+            <div className='p-2 pl-0 m-1 w-5 h-5'
+              style={{
+                borderRadius: "50%",
+                backgroundColor: "red",
+                animation: "blinker 1s infinite",
+              }}
             />
           </div>
-      </div>
-      <div className='rounded h-18 p p-4 pl-6 pr-6 flex text-4xl'
-        style={{
-          background: "rgba(0,0,0,0.55)",
-        }}
+        </div>
+        <div className='rounded h-18 p p-4 pl-6 pr-6 flex text-4xl'
+          style={{
+            background: "rgba(0,0,0,0.55)",
+          }}
         >
-        T - {countdown}
+          T - {countdown}
+        </div>
       </div>
-    </div>
-</>
+    </>
   );
 }

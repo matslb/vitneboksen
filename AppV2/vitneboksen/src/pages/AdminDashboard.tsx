@@ -72,6 +72,7 @@ export default function AdminDashboard() {
           type="text"
           value={newTitle}
           onChange={(e) => setNewTitle(e.target.value)}
+          maxLength={50}
           placeholder="Navn på arrangement"
           className="w-full p-2 rounded  bg-white text-black mb-4 border border-gray-300"
         />

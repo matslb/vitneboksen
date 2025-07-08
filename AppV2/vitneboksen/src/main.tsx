@@ -1,3 +1,5 @@
+/* eslint-disable react-refresh/only-export-components */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { type JSX } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
@@ -11,7 +13,7 @@ import './index.css';
 
 const auth = getAuth();
 
-function ProtectedRoute({ children }: { children: JSX.Element }) {
+const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const [loading, setLoading] = React.useState(true);
   const [user, setUser] = React.useState<any>(null);
 
@@ -29,7 +31,7 @@ function ProtectedRoute({ children }: { children: JSX.Element }) {
   return children;
 }
 
-function LoginRedirect() {
+const LoginRedirect = () => {
   const [loading, setLoading] = React.useState(true);
   const [user, setUser] = React.useState<any>(null);
 

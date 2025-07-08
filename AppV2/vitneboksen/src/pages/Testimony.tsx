@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getDatabase, ref, onValue } from 'firebase/database';
+import { getDatabase, ref, onValue, off } from 'firebase/database';
 import NotFoundMessage from '../components/NotFoundMessage';
 import LoadingFullScreen from '../components/LoadingFullScreen';
 import WelcomeScreen from '../components/WelcomeScreen';
@@ -11,6 +11,8 @@ import Footer from '../components/Footer';
 import type PublicVitneboks from '../types/PublicVitneboks';
 import ThankYouScreen from '../components/TankYouScreen';
 import ismobile from "is-mobile";
+import { mapPublicVitneboks } from '../utils';
+import type Question from '../types/Question';
 
 export default function TestimonyPage() {
   const { vitneboksId } = useParams();
@@ -23,33 +25,50 @@ export default function TestimonyPage() {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const divRef = useRef<HTMLDivElement>(null);
 
-  const fetchVitneboks = async () => {
-    setLoading(true);
+  useEffect(() => {
     const db = getDatabase();
     const vitneboksRef = ref(db, `publicVitnebokser/${vitneboksId}`);
-    onValue(vitneboksRef, (snapshot) => {
 
-      const vitneboks = snapshot.val() as PublicVitneboks;
-      const now = Date.now();
-      vitneboks.questions = Object.values(vitneboks.questions).filter(q =>
-        (q.activeFrom == null && q.activeTo === null)
-        || (Date.parse((q.activeFrom) as string) >= now && Date.parse((q.activeTo) as string) <= now)
-      )
-      console.log(vitneboks);
-      setVitneboks(vitneboks);
-      setLoading(false);
-    });
+    if (!started) {
+      const unsubscribe = onValue(vitneboksRef, (snapshot) => {
+        const vitneboks = mapPublicVitneboks(snapshot.val());
+        vitneboks.questions = filterQuestions(vitneboks.questions);
+        setVitneboks(vitneboks);
+        setLoading(false);
+      });
+
+      return () => { //unmounts
+        unsubscribe();
+      };
+    } else {
+      return () => {
+        off(vitneboksRef);
+      };
+    }
+  }, [vitneboksId, started]);
+
+  const filterQuestions = (questions: Question[]) => {
+    const now = Date.now();
+    return questions.filter(q =>
+      q.allwaysActive || ((q.activeFrom && Date.parse(q.activeFrom) <= now) && (q.activeTo && Date.parse(q.activeTo) >= now))
+    )
   };
 
   useEffect(() => {
-    if (!vitneboksId) return;
-    fetchVitneboks();
-  }, [vitneboksId]);
+    const intervalId = setInterval(() => {
+      if (vitneboks === null || started || waiting) return;
+      vitneboks!.questions = filterQuestions(vitneboks!.questions);
+      setVitneboks(vitneboks);
+      if (vitneboks.questions.findIndex(q => q.id === currentQuestion?.id) === -1) {
+        setCurrentQuestionIndex(vitneboks.questions[0].order);
+      }
+    }, 1000);
+    return () => clearInterval(intervalId);
+  }, [vitneboks]);
+
 
   if (loading) return <LoadingFullScreen />;
   if (!vitneboks) return <NotFoundMessage />;
-
-  const currentQuestion = vitneboks.questions[currentQuestionIndex];
 
   const handleStart = () => {
     setWaiting(true);
@@ -58,11 +77,18 @@ export default function TestimonyPage() {
   const handleRecordingFinished = () => {
     setStarted(false);
     setThankYouWaiting(true);
-    if (currentQuestionIndex + 1 < vitneboks.questions.length) {
-      setCurrentQuestionIndex(i => i + 1);
-    } else {
-      setCurrentQuestionIndex(0);
-    }
+    setNextQuestion();
+  };
+
+  const setNextQuestion = () => {
+    if (currentQuestion == undefined)
+      setCurrentQuestionIndex(vitneboks.questions[0].order);
+
+    const nextQuestion = vitneboks.questions.find(q => q.order > currentQuestion!.order);
+    if (nextQuestion != undefined)
+      setCurrentQuestionIndex(nextQuestion.order);
+    else
+      setCurrentQuestionIndex(vitneboks.questions[0].order);
   };
 
   function enterFullscreen(element: HTMLElement) {
@@ -82,6 +108,9 @@ export default function TestimonyPage() {
       setIsFullScreen(true);
     }
   };
+
+  const currentQuestion = vitneboks.questions.find(q => q.order === currentQuestionIndex);
+
   return (
     <div ref={divRef} className="flex flex-col min-h-screen bg-primary-bg text-primary-text">
       {!ismobile && !isFullScreen && !waiting && !thankYouWaiting && !started &&
@@ -90,23 +119,23 @@ export default function TestimonyPage() {
           onClick={handleEnterFullscreen}
         >Fullskjerm</button>
       }
-      {!vitneboks.isOpen ?
+      {!vitneboks.isOpen || vitneboks.questions.length === 0 ?
         <div className="flex flex-col items-center justify-center flex-1 p-6 text-3xl">
-          Kom tilbake senere. Her er det stengt.
+          Kom tilbake senere. Her er det dessverre stengt 😓
         </div>
         :
         <>
-          {!started && (!waiting && !thankYouWaiting) && (
-            <WelcomeScreen onStart={handleStart} recordingTime={currentQuestion.recordingDuration} title={vitneboks.title} />
-          )}
+          {!started && !waiting && !thankYouWaiting && currentQuestion != null &&
+            <WelcomeScreen onStart={handleStart} recordingTime={currentQuestion!.recordingDuration} title={vitneboks.title} />
+          }
         </>
       }
 
       {waiting && (
-        <WaitingScreen seconds={3} withBeep={true} setWaiting={setWaiting} />
+        <WaitingScreen seconds={3} withBeep={false} setWaiting={setWaiting} />
       )}
 
-      {started && !waiting && !thankYouWaiting && (
+      {started && !waiting && !thankYouWaiting && currentQuestion && (
         <VideoRecorder
           question={currentQuestion}
           onFinish={handleRecordingFinished}

@@ -3,7 +3,6 @@ import type Question from "../types/Question";
 import { dateStringToLocal } from "../utils";
 import ActiveFromToPicker from "./ActiveFromToDatePicker";
 import QuestionDuration from "./QuestionDuration";
-import { useState } from "react";
 
 type QuestionBoxProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
     question: Question,
@@ -14,14 +13,11 @@ type QuestionBoxProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 export default function QuestionBox({ vitneboksId, userId, question }: QuestionBoxProps) {
     const db = getDatabase();
 
-    const [alwaysActive, setAlwaysActive] = useState(question.allwaysActive);
-
     const handleDragStart = (e: React.DragEvent, id: string, order: number) => {
         e.dataTransfer.setData("text/plain", JSON.stringify({ id, order }));
     };
 
     const handleIsAllwaysActiveChange = (active: boolean) => {
-        setAlwaysActive(active);
         set(ref(db, `${userId}/vitnebokser/${vitneboksId}/questions/${question.id}/allwaysActive`), active);
     };
     const handleDrop = (e: React.DragEvent, targetId: string, targetOrder: number) => {
@@ -52,6 +48,7 @@ export default function QuestionBox({ vitneboksId, userId, question }: QuestionB
                     <label className="block mb-1">Spørsmålstekst</label>
                     <input
                         type="text"
+                        maxLength={100}
                         value={question.text}
                         onChange={(e) => set(ref(db, `${userId}/vitnebokser/${vitneboksId}/questions/${question.id}/text`), e.target.value)}
                         className="white w-full p-2 rounded text-black mb-1"
@@ -68,7 +65,7 @@ export default function QuestionBox({ vitneboksId, userId, question }: QuestionB
             <div className='mt-4'>
                 <ActiveFromToPicker
                     setAlwaysActive={handleIsAllwaysActiveChange}
-                    alwaysActive={alwaysActive}
+                    alwaysActive={question.allwaysActive}
                     activeFrom={dateStringToLocal(question.activeFrom!)}
                     activeTo={dateStringToLocal(question.activeTo!)}
                     onChangeTo={(to) => set(ref(db, `${userId}/vitnebokser/${vitneboksId}/questions/${question.id}/activeTo`), new Date(to).toISOString())}

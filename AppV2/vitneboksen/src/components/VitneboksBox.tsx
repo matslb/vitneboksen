@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FinalVideoStatus, type Vitneboks } from "../types/Vitneboks"
 import SpinnerIcon from "./SpinnerIcon"
 import { Link } from "react-router-dom";
 import { downloadFinalVideo, startFinalVideoProcessing } from "../videoProcessorService";
+import { getDatabase, onValue, ref } from "firebase/database";
 
 interface VitneboxBoxProps {
     Vitneboks: Vitneboks
@@ -12,17 +13,38 @@ interface VitneboxBoxProps {
 export default function VitneboksBox({ Vitneboks }: VitneboxBoxProps) {
 
     const [copied, setCopied] = useState<string | null>(null);
-
+    const [isRecording, setIsRecording] = useState<boolean>(false);
     const handleCopy = (text: string, label: string) => {
         navigator.clipboard.writeText(text).then(() => {
             setCopied(label);
             setTimeout(() => setCopied(null), 2000);
         }).catch(console.error);
     };
-
+    const db = getDatabase();
+    useEffect(() => {
+        onValue(ref(db, `/activeSessions/${Vitneboks.id}`), (snapshot) => {
+            const data: boolean = snapshot.val();
+            setIsRecording(data);
+        });
+    }, [db]);
     return (
-        <div>
-            <h2 className="text-xl font-semibold mb-2">{Vitneboks.title}</h2>
+        <div className="relative">
+            <h2 className="text-xl font-semibold mb-2 max-w-80 break-all">{Vitneboks.title}</h2>
+            {isRecording &&
+                <div
+                    className='absolute top-0 right-0 rounded h-18 flex text-2xl'
+                >
+                    <div style={{ color: "white" }}>REC</div>
+                    <div className='p-1 m-1 w-2 h-2'
+                        style={{
+                            borderRadius: "50%",
+                            backgroundColor: "red",
+                            animation: "blinker 1s infinite",
+                        }}
+                    >
+                    </div>
+                </div>
+            }
             <div className='flex flex-col gap-2'>
                 <p className="text-m text-muted mb-1"><span className='bg-white text-center text-black min-w-9 inline-block pl-2 pr-2 pt-1 pb-1 rounded'>{Object.values(Vitneboks.questions)?.length}</span> spørsmål</p>
                 <p className="text-m text-muted"><span className='bg-white text-black text-center min-w-9 inline-block pl-2 pr-2 pt-1 pb-1 rounded'>{Vitneboks.completedVideos}</span> vitnesbyrd
