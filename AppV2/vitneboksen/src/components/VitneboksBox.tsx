@@ -65,7 +65,7 @@ export default function VitneboksBox({ Vitneboks }: VitneboxBoxProps) {
                 <p className="text-m "><span className='bg-black/40 text-white text-center min-w-9 inline-block rounded'>{Vitneboks.completedVideos}</span> Vitnesbyrd
                     {Vitneboks.videosToBeProcessed > 0 &&
                         <>
-                            &nbsp;(&nbsp;<SpinnerIcon />{Vitneboks.videosToBeProcessed} til på vei)
+                            &nbsp;(&nbsp;<SpinnerIcon />{Vitneboks.videosToBeProcessed} på vei )
                         </>
                     }
                 </p>
