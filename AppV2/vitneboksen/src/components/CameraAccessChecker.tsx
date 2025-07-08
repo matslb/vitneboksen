@@ -44,26 +44,26 @@ export default function CameraAndMicAccessChecker() {
       stream.getTracks().forEach(track => track.stop());
       setHasAccess(true);
       location.reload();
-    } catch (err) {
+    } catch {
       setHasAccess(false);
     }
   };
 
   if (checking || hasAccess) {
-    return null; 
+    return null;
   }
 
   return (
-      <div className="flex flex-col bg-danger shadow-xl rounded items-center p-4 flex gap-2 w-full">
-        <h2 className="text-lg text-black text-center ">
-          Vitneboksen trenger tilgang til kamera og mikrofon
-        </h2>
-        <button
-          onClick={requestAccess}
-          className="bg-primary-button text-black min-w-25 h-12 rounded hover:text-white hover:bg-secondary-bg"
-        >
-          Gi tilgang
-        </button>
-      </div>
+    <div className="flex flex-col bg-danger shadow-xl rounded items-center p-4 flex gap-2 w-full">
+      <h2 className="text-lg text-black text-center ">
+        Vitneboksen trenger tilgang til kamera og mikrofon
+      </h2>
+      <button
+        onClick={requestAccess}
+        className="bg-primary-button text-black min-w-25 h-12 rounded hover:text-white hover:bg-secondary-bg"
+      >
+        Gi tilgang
+      </button>
+    </div>
   );
 }

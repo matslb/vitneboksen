@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getDatabase, ref, onValue, set } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
-import { FinalVideoStatus, type Vitneboks} from '../types/Vitneboks';
+import { FinalVideoStatus, type Vitneboks } from '../types/Vitneboks';
 import type PublicVitneboks from '../types/PublicVitneboks';
 import Footer from '../components/Footer';
 import { generateVitneboksId } from '../utils';
@@ -21,18 +21,7 @@ export default function AdminDashboard() {
     const vitnebokserRef = ref(db, `${uid}/vitnebokser`);
     onValue(vitnebokserRef, (snapshot) => {
       const data = snapshot.val() || {};
-      const parsed: Vitneboks[] = Object.entries(data).map(([id, value]: any) => ({
-        id,
-        publicId: value.publicId || id,
-        title: value.title,
-        createdOn: new Date(value.createdOn).toLocaleDateString(),
-        completedVideos: value.completedVideos || 0,
-        videosToBeProcessed: value.videosToBeProcessed,
-        finalVideoProcessingStatus: value.finalVideoProcessingStatus,
-        questions: value.questions || [],
-        isOpen: value.isOpen
-      } as Vitneboks));
-      setVitnebokser(parsed);
+      setVitnebokser(Object.values(data) as Vitneboks[]);
     });
   }, [uid]);
 
@@ -65,7 +54,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-primary-bg text-primary-text">
-      <Header/>      
+      <Header />
       <h2 className="text-3xl font-bold mb-8">Dine vitnebokser</h2>
       <ul className="flex flex-col items-center gap-4 w-full mb-16">
         {vitnebokser.map((vb) => (
@@ -73,7 +62,7 @@ export default function AdminDashboard() {
             key={vb.id}
             className="border border-muted rounded-lg p-6 max-w-md w-full shadow-md bg-secondary-bg flex flex-col gap-2"
           >
-            <VitneboksBox Vitneboks={vb}/> 
+            <VitneboksBox Vitneboks={vb} />
           </li>
         ))}
       </ul>
@@ -87,21 +76,21 @@ export default function AdminDashboard() {
           className="w-full p-2 rounded  bg-white text-black mb-4 border border-gray-300"
         />
         {vitnebokser.length <= 1 ?
-        <button
-          onClick={handleCreate}
-          className="bg-primary-button hover:text-white  text-black px-4 py-2 rounded hover:bg-secondary-bg w-full"
-        >
-          Opprett
-        </button>
-        : 
           <button
-          onClick={handleCreate}
-          disabled={true}
-          className="bg-primary-button hover:text-white  disabled opacity-40 cursor-not-allowed text-black px-4 py-2 rounded w-full"
-        >
-        Du kan bare ha to aktive vitnebokser
-        </button>
-        } 
+            onClick={handleCreate}
+            className="bg-primary-button hover:text-white  text-black px-4 py-2 rounded hover:bg-secondary-bg w-full"
+          >
+            Opprett
+          </button>
+          :
+          <button
+            onClick={handleCreate}
+            disabled={true}
+            className="bg-primary-button hover:text-white  disabled opacity-40 cursor-not-allowed text-black px-4 py-2 rounded w-full"
+          >
+            Du kan bare ha to aktive vitnebokser
+          </button>
+        }
       </div>
       <Footer />
     </div>

@@ -11,48 +11,54 @@ export default function ActiveFromToPicker({ alwaysActive, setAlwaysActive, acti
   const isInvalid = activeFrom && activeTo && new Date(activeTo) < new Date(activeFrom);
 
   return (
-    <div className="space-y-2 mb-4">
-         <div className="mb-4">
-          <label className="mr-4">
-            <input
-              type="radio"
-              checked={alwaysActive}
-              onChange={() => setAlwaysActive(true)}
-              className="mr-1"
-            />
-            Alltid aktiv
-          </label>
-          <label>
-            <input
-              type="radio"
-              checked={!alwaysActive}
-              onChange={() => setAlwaysActive(false)}
-              className="mr-1"
-            />
-            Aktiv fra - til
-          </label>
-        </div>
+    <div className="mb-4 min-w-50 flex  gap-2">
+      <div className="flex flex-col justify-bottom gap">
+        <label className="w-30">
+          <input
+            name="active"
+            type="radio"
+            checked={alwaysActive}
+            onChange={() => setAlwaysActive(true)}
+            className="mr-2 bg-white"
+          />
+          Alltid aktiv
+        </label>
+        <label className="w-30">
+          <input
+            name="timed"
+            type="radio"
+            checked={!alwaysActive}
+            className="mr-2 bg-white"
+            onChange={() => setAlwaysActive(false)}
+          />
+          Aktiv fra - til
+        </label>
+      </div>
 
-        {!alwaysActive && 
-        <>
-          <label className="block mb-1">Aktiv fra</label>
-          <input
-            type="datetime-local"
-            value={activeFrom}
-            max={activeTo}
-            onChange={(e) => onChangeFrom(e.target.value)}
-            className="w-full p-2 rounded text-black"
+      {!alwaysActive &&
+        <div className="flex items-center w-full justify-end gap-2">
+          <div>
+            <label className="block mb-1">Aktiv fra</label>
+            <input
+              type="datetime-local"
+              value={activeFrom}
+              max={activeTo}
+              onChange={(e) => onChangeFrom(e.target.value)}
+              className=" w-50 p-2 bg-white rounded text-black"
             />
-          <label className="block mb-1">Aktiv til</label>
-          <input
-            type="datetime-local"
-            value={activeTo}
-            min={activeFrom}
-            onChange={(e) => onChangeTo(e.target.value)}
-            className={`w-full p-2 rounded text-black ${isInvalid ? 'border border-red-500' : ''}`}
+          </div>
+          <div>
+            <label className="block mb-1">Aktiv til</label>
+            <input
+              type="datetime-local"
+              value={activeTo}
+              min={activeFrom}
+              onChange={(e) => onChangeTo(e.target.value)}
+              className={`w-50 bg-white p-2 rounded text-black ${isInvalid ? 'border border-red-500' : ''}`}
             />
-          </>
-        }
+          </div>
+        </div>
+      }
       {isInvalid && <p className="text-red-500 text-sm">Sluttdato kan ikke være før startdato</p>}
     </div>
   );

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getDatabase, ref, onValue } from 'firebase/database';
@@ -23,15 +24,15 @@ export default function TestimonyPage() {
   const divRef = useRef<HTMLDivElement>(null);
 
   const fetchVitneboks = async () => {
-      setLoading(true);
-      const db = getDatabase();
-      const vitneboksRef = ref(db, `publicVitnebokser/${vitneboksId}`);
-      onValue(vitneboksRef, (snapshot) => {
-        setVitneboks(snapshot.val());
-        setLoading(false);
-      });
+    setLoading(true);
+    const db = getDatabase();
+    const vitneboksRef = ref(db, `publicVitnebokser/${vitneboksId}`);
+    onValue(vitneboksRef, (snapshot) => {
+      setVitneboks(snapshot.val());
+      setLoading(false);
+    });
   };
-    
+
   useEffect(() => {
     if (!vitneboksId) return;
     fetchVitneboks();
@@ -57,18 +58,18 @@ export default function TestimonyPage() {
     }
   };
 
-function enterFullscreen(element: HTMLElement) {
-  if (element.requestFullscreen) {
-    element.requestFullscreen();
-  } else if ((element as any).webkitRequestFullscreen) { // Safari
-    (element as any).webkitRequestFullscreen();
-  } else if ((element as any).mozRequestFullScreen) { // Firefox
-    (element as any).mozRequestFullScreen();
-  } else if ((element as any).msRequestFullscreen) { // IE/Edge
-    (element as any).msRequestFullscreen();
+  function enterFullscreen(element: HTMLElement) {
+    if (element.requestFullscreen) {
+      element.requestFullscreen();
+    } else if ((element as any).webkitRequestFullscreen) { // Safari
+      (element as any).webkitRequestFullscreen();
+    } else if ((element as any).mozRequestFullScreen) { // Firefox
+      (element as any).mozRequestFullScreen();
+    } else if ((element as any).msRequestFullscreen) { // IE/Edge
+      (element as any).msRequestFullscreen();
+    }
   }
-}
- const handleEnterFullscreen = () => {
+  const handleEnterFullscreen = () => {
     if (divRef.current) {
       enterFullscreen(divRef.current);
       setIsFullScreen(true);
@@ -78,27 +79,27 @@ function enterFullscreen(element: HTMLElement) {
     <div ref={divRef} className="flex flex-col min-h-screen bg-primary-bg text-primary-text">
       {!ismobile && !isFullScreen && !waiting && !thankYouWaiting && !started &&
         <button
-        className="fixed top-2 left-2 bg-primary-button text-black px-4 py-2 rounded hover:text-white hover:bg-secondary-bg"
-        onClick={handleEnterFullscreen}
+          className="fixed top-2 left-2 bg-primary-button text-black px-4 py-2 rounded hover:text-white hover:bg-secondary-bg"
+          onClick={handleEnterFullscreen}
         >Fullskjerm</button>
       }
-      { !vitneboks.isOpen ?
-       <div className="flex flex-col items-center justify-center flex-1 p-6 text-3xl">
+      {!vitneboks.isOpen ?
+        <div className="flex flex-col items-center justify-center flex-1 p-6 text-3xl">
           Kom tilbake senere. Her er det stengt.
         </div>
         :
         <>
-          {!started && (!waiting && !thankYouWaiting ) && (
-            <WelcomeScreen onStart={handleStart} recordingTime={currentQuestion.recordingDuration} title={vitneboks.title}/>
-            )}
-          </>
-        }
+          {!started && (!waiting && !thankYouWaiting) && (
+            <WelcomeScreen onStart={handleStart} recordingTime={currentQuestion.recordingDuration} title={vitneboks.title} />
+          )}
+        </>
+      }
 
-      {waiting &&  (
+      {waiting && (
         <WaitingScreen seconds={3} withBeep={true} setWaiting={setWaiting} />
       )}
 
-      { started && !waiting  && !thankYouWaiting && (
+      {started && !waiting && !thankYouWaiting && (
         <VideoRecorder
           question={currentQuestion}
           onFinish={handleRecordingFinished}
@@ -107,10 +108,10 @@ function enterFullscreen(element: HTMLElement) {
         />
       )
       }
-      {thankYouWaiting &&  (
+      {thankYouWaiting && (
         <ThankYouScreen seconds={30} setWaiting={setThankYouWaiting} />
       )}
-      { !started && !waiting && !thankYouWaiting &&
+      {!started && !waiting && !thankYouWaiting &&
         <Footer />
       }
     </div>
