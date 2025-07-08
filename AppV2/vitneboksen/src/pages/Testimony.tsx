@@ -28,7 +28,15 @@ export default function TestimonyPage() {
     const db = getDatabase();
     const vitneboksRef = ref(db, `publicVitnebokser/${vitneboksId}`);
     onValue(vitneboksRef, (snapshot) => {
-      setVitneboks(snapshot.val());
+
+      const vitneboks = snapshot.val() as PublicVitneboks;
+      const now = Date.now();
+      vitneboks.questions = Object.values(vitneboks.questions).filter(q =>
+        (q.activeFrom == null && q.activeTo === null)
+        || (Date.parse((q.activeFrom) as string) >= now && Date.parse((q.activeTo) as string) <= now)
+      )
+      console.log(vitneboks);
+      setVitneboks(vitneboks);
       setLoading(false);
     });
   };
@@ -41,8 +49,7 @@ export default function TestimonyPage() {
   if (loading) return <LoadingFullScreen />;
   if (!vitneboks) return <NotFoundMessage />;
 
-  const questions = Object.values(vitneboks.questions) || [];
-  const currentQuestion = questions[currentQuestionIndex];
+  const currentQuestion = vitneboks.questions[currentQuestionIndex];
 
   const handleStart = () => {
     setWaiting(true);
@@ -51,7 +58,7 @@ export default function TestimonyPage() {
   const handleRecordingFinished = () => {
     setStarted(false);
     setThankYouWaiting(true);
-    if (currentQuestionIndex + 1 < questions.length) {
+    if (currentQuestionIndex + 1 < vitneboks.questions.length) {
       setCurrentQuestionIndex(i => i + 1);
     } else {
       setCurrentQuestionIndex(0);

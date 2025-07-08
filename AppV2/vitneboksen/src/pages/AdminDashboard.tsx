@@ -4,7 +4,7 @@ import { getAuth } from 'firebase/auth';
 import { FinalVideoStatus, type Vitneboks } from '../types/Vitneboks';
 import type PublicVitneboks from '../types/PublicVitneboks';
 import Footer from '../components/Footer';
-import { generateVitneboksId } from '../utils';
+import { generateVitneboksId, mapVitneboks } from '../utils';
 import Header from '../components/Header';
 import VitneboksBox from '../components/VitneboksBox';
 
@@ -21,7 +21,7 @@ export default function AdminDashboard() {
     const vitnebokserRef = ref(db, `${uid}/vitnebokser`);
     onValue(vitnebokserRef, (snapshot) => {
       const data = snapshot.val() || {};
-      setVitnebokser(Object.values(data) as Vitneboks[]);
+      setVitnebokser(Object.values(data).map(v => mapVitneboks(v)))
     });
   }, [uid]);
 

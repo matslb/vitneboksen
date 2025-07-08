@@ -9,34 +9,34 @@ interface ActiveFromToPickerProps {
 
 export default function ActiveFromToPicker({ alwaysActive, setAlwaysActive, activeFrom, activeTo, onChangeFrom, onChangeTo }: ActiveFromToPickerProps) {
   const isInvalid = activeFrom && activeTo && new Date(activeTo) < new Date(activeFrom);
-
   return (
     <div className="mb-4 min-w-50 flex  gap-2">
       <div className="flex flex-col justify-bottom gap">
         <label className="w-30">
           <input
-            name="active"
             type="radio"
             checked={alwaysActive}
-            onChange={() => setAlwaysActive(true)}
             className="mr-2 bg-white"
+            onChange={() => {
+              setAlwaysActive(true)
+            }}
           />
           Alltid aktiv
         </label>
         <label className="w-30">
           <input
-            name="timed"
             type="radio"
             checked={!alwaysActive}
             className="mr-2 bg-white"
-            onChange={() => setAlwaysActive(false)}
-          />
+            onChange={() => {
+              setAlwaysActive(false)
+            }} />
           Aktiv fra - til
         </label>
       </div>
 
       {!alwaysActive &&
-        <div className="flex items-center w-full justify-end gap-2">
+        <div className="flex items-center w-full flex-wrap justify-end gap-2">
           <div>
             <label className="block mb-1">Aktiv fra</label>
             <input
@@ -57,9 +57,10 @@ export default function ActiveFromToPicker({ alwaysActive, setAlwaysActive, acti
               className={`w-50 bg-white p-2 rounded text-black ${isInvalid ? 'border border-red-500' : ''}`}
             />
           </div>
+          {isInvalid && <p className="text-red-500 w-full min-w-[100%] text-right text-sm">Sluttdato kan ikke være tidligere enn startdato</p>}
         </div>
       }
-      {isInvalid && <p className="text-red-500 text-sm">Sluttdato kan ikke være før startdato</p>}
+
     </div>
   );
 }

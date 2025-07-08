@@ -37,7 +37,6 @@ export default function QuestionList({ vitneBoksId, userId, questions }: Questio
 
     setNewQuestionText('');
   };
-
   return (
     <>
       <div className="w-full max-w-3xl space-y-4 mb-8">

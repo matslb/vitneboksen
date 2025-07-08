@@ -11,7 +11,7 @@ import { deleteVitneboks } from '../videoProcessorService';
 import Header from '../components/Header';
 import ToggleSwitch from '../components/ToggleSwitch';
 import QuestionList from '../components/QuestionList';
-import type Question from '../types/Question';
+import { mapVitneboks } from '../utils';
 
 export default function VitneboksDetail() {
   const { id } = useParams();
@@ -48,17 +48,7 @@ export default function VitneboksDetail() {
     onValue(vbRef, (snapshot) => {
       const data: Vitneboks = snapshot.val();
       if (!data) return;
-      setVitneboks({
-        id,
-        title: data.title,
-        createdOn: new Date(data.createdOn).toLocaleDateString(),
-        completedVideos: data.completedVideos || 0,
-        finalVideoProcessingStatus: data.finalVideoProcessingStatus,
-        videosToBeProcessed: data.videosToBeProcessed,
-        questions: Object.entries(data.questions).map(([qid, q]: [string, Question]) => ({ ...q, id: qid }))
-          .sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
-        isOpen: data.isOpen
-      });
+      setVitneboks(mapVitneboks(data));
     });
   }, [user, id, db]);
 

@@ -14,18 +14,16 @@ type QuestionBoxProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 export default function QuestionBox({ vitneboksId, userId, question }: QuestionBoxProps) {
     const db = getDatabase();
 
-    const [isAllwaysActive, setIsAllwaysActive] = useState(true);
+    const [alwaysActive, setAlwaysActive] = useState(question.allwaysActive);
+
     const handleDragStart = (e: React.DragEvent, id: string, order: number) => {
         e.dataTransfer.setData("text/plain", JSON.stringify({ id, order }));
     };
 
     const handleIsAllwaysActiveChange = (active: boolean) => {
-        setIsAllwaysActive(active);
-        if (!active) return;
-        set(ref(db, `${userId}/vitnebokser/${vitneboksId}/questions/${question.id}/activeFrom`), null);
-        set(ref(db, `${userId}/vitnebokser/${vitneboksId}/questions/${question.id}/activeTo`), null);
+        setAlwaysActive(active);
+        set(ref(db, `${userId}/vitnebokser/${vitneboksId}/questions/${question.id}/allwaysActive`), active);
     };
-
     const handleDrop = (e: React.DragEvent, targetId: string, targetOrder: number) => {
         const { id: draggedId, order: draggedOrder } = JSON.parse(e.dataTransfer.getData("text/plain"));
         if (!draggedId || draggedId === targetId) return;
@@ -49,7 +47,7 @@ export default function QuestionBox({ vitneboksId, userId, question }: QuestionB
             <span className="absolute top-2 right-4 cursor-move text-2xl" title="Dra for å endre rekkefølge">≡</span>
             <div className="flex w-full gap-2 justify-left mt-4">
                 <div
-                    className="w-[70%]"
+                    className="w-[80%]"
                 >
                     <label className="block mb-1">Spørsmålstekst</label>
                     <input
@@ -59,7 +57,7 @@ export default function QuestionBox({ vitneboksId, userId, question }: QuestionB
                         className="white w-full p-2 rounded text-black mb-1"
                     />
                 </div>
-                <div>
+                <div className="w-[20%]">
                     <label className="block mb-1">Opptakstid</label>
                     <QuestionDuration
                         recordingDuration={question.recordingDuration}
@@ -70,7 +68,7 @@ export default function QuestionBox({ vitneboksId, userId, question }: QuestionB
             <div className='mt-4'>
                 <ActiveFromToPicker
                     setAlwaysActive={handleIsAllwaysActiveChange}
-                    alwaysActive={isAllwaysActive}
+                    alwaysActive={alwaysActive}
                     activeFrom={dateStringToLocal(question.activeFrom!)}
                     activeTo={dateStringToLocal(question.activeTo!)}
                     onChangeTo={(to) => set(ref(db, `${userId}/vitnebokser/${vitneboksId}/questions/${question.id}/activeTo`), new Date(to).toISOString())}
@@ -79,9 +77,9 @@ export default function QuestionBox({ vitneboksId, userId, question }: QuestionB
             </div>
             <button
                 onClick={() => remove(ref(db, `${userId}/vitnebokser/${vitneboksId}/questions/${question.id}`))}
-                className="bg-danger text-white px-4 py-2 mt-8 rounded hover:bg-danger-200 mb-8"
+                className="bg-danger text-white px-4 py-2  rounded"
             >
-                Slett spørsmål
+                Slett
             </button>
         </div >
     );
