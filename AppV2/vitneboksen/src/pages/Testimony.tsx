@@ -13,6 +13,7 @@ import ThankYouScreen from '../components/TankYouScreen';
 import ismobile from "is-mobile";
 import { mapPublicVitneboks } from '../utils';
 import type Question from '../types/Question';
+import { FinalVideoStatus } from '../types/Vitneboks';
 
 export default function TestimonyPage() {
   const { vitneboksId } = useParams();
@@ -119,7 +120,7 @@ export default function TestimonyPage() {
           onClick={handleEnterFullscreen}
         >Fullskjerm</button>
       }
-      {!vitneboks.isOpen || vitneboks.questions.length === 0 ?
+      {!vitneboks.isOpen || vitneboks.questions.length === 0 || vitneboks.finalVideoProcessingStatus == FinalVideoStatus.started ?
         <div className="flex flex-col items-center justify-center flex-1 p-6 text-3xl">
           Kom tilbake senere. Her er det dessverre stengt 😓
         </div>
