@@ -43,8 +43,8 @@ export default function CameraAndMicAccessChecker() {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       stream.getTracks().forEach(track => track.stop());
       setHasAccess(true);
+      location.reload();
     } catch (err) {
-      console.error("User denied camera/microphone access", err);
       setHasAccess(false);
     }
   };
@@ -54,18 +54,16 @@ export default function CameraAndMicAccessChecker() {
   }
 
   return (
-    <div className="fixed top-2 left-2">
-      <div className="bg-danger shadow-xl rounded p-6 flex items-baseline gap-4 w-full">
-        <h2 className="text-lg font-semibold mb-4 text-black">
+      <div className=" flex flex-col bg-danger shadow-xl rounded items-center px-4 py-2 flex gap-2 w-full">
+        <h2 className="text-lg mb-4 text-black text-center ">
           Vitneboksen trenger tilgang til kamera og mikrofon
         </h2>
         <button
           onClick={requestAccess}
-          className="bg-primary-button text-black px-6 py-3 rounded hover:text-white hover:bg-secondary-bg"
+          className="bg-primary-button text-black min-w-25 h-12 rounded hover:text-white hover:bg-secondary-bg"
         >
           Gi tilgang
         </button>
       </div>
-    </div>
   );
 }

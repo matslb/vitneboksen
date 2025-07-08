@@ -9,7 +9,7 @@ import WaitingScreen from '../components/WaitingScreen';
 import Footer from '../components/Footer';
 import type PublicVitneboks from '../types/PublicVitneboks';
 import ThankYouScreen from '../components/TankYouScreen';
-import CameraAccessChecker from '../components/CameraAccessChecker';
+import ismobile from "is-mobile";
 
 export default function TestimonyPage() {
   const { vitneboksId } = useParams();
@@ -76,14 +76,12 @@ function enterFullscreen(element: HTMLElement) {
   };
   return (
     <div ref={divRef} className="flex flex-col min-h-screen bg-primary-bg text-primary-text">
-      {!isFullScreen && !waiting && !thankYouWaiting && !started &&
+      {!ismobile && !isFullScreen && !waiting && !thankYouWaiting && !started &&
         <button
         className="fixed top-2 left-2 bg-primary-button text-black px-4 py-2 rounded hover:text-white hover:bg-secondary-bg"
         onClick={handleEnterFullscreen}
         >Fullskjerm</button>
       }
-      <CameraAccessChecker />
-
       { !vitneboks.isOpen ?
        <div className="flex flex-col items-center justify-center flex-1 p-6 text-3xl">
           Kom tilbake senere. Her er det stengt.
