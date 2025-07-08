@@ -104,7 +104,9 @@ function enterFullscreen(element: HTMLElement) {
       {thankYouWaiting &&  (
         <ThankYouScreen seconds={30} setWaiting={setThankYouWaiting} />
       )}
-      <Footer />
+      { !started && !waiting && !thankYouWaiting &&
+        <Footer />
+      }
     </div>
   );
 }
