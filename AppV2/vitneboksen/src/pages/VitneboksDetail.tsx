@@ -129,9 +129,10 @@ export default function VitneboksDetail() {
   return (
     <div className="flex flex-col items-center min-h-screen bg-primary-bg text-primary-text ">
       <Header backButtonPath={"/admin/"} />
-      <h1 className="text-3xl font-bold mb-4">{vitneboks.title}</h1>
-      <p className="mb-8">Opprettet: {vitneboks.createdOn.toLocaleString()}</p>
-      <h2 className="text-2xl font-bold mb-4">Spørsmål</h2>
+        <label htmlFor="title" className='hidden'>Tittel</label>
+      <h1 className="text-3xl font-bold mb-4 bg-primary-bg">
+        <input type='text' name='title' className='rounded p-2  text-center' value={vitneboks.title} onChange={(e) => set(ref(db, `${user.uid}/vitnebokser/${id}/title`), e.currentTarget.value )} />
+        </h1>
       <div className="w-full max-w-3xl space-y-4 mb-8">
         {sortedQuestions.map((q) => (
           <div
@@ -142,21 +143,21 @@ export default function VitneboksDetail() {
             onDragOver={(e) => e.preventDefault()}
             onDrop={() => handleDrop(q.id)}
           >
-            <span className="absolute top-2 left-4 cursor-move text-xl" title="Dra for å endre rekkefølge">{q.order}</span>
+            <span className="absolute top-2 left-4 cursor-move text-xl" title="Dra for å endre rekkefølge">Spørsmål {q.order+1}</span>
             <span className="absolute top-2 right-4 cursor-move text-2xl" title="Dra for å endre rekkefølge">≡</span>
             <label className="block mb-1 mt-8">Spørsmålstekst</label>
             <input
               type="text"
               value={q.text}
               onChange={(e) => set(ref(db, `${user.uid}/vitnebokser/${id}/questions/${q.id}/text`), e.target.value)}
-              className="w-full p-2 rounded text-black mb-2"
+              className="white w-full p-2 rounded text-black mb-2"
             />
             <label className="block mb-1">Opptakstid (sekunder)</label>
             <input
               type="number"
               value={q.recordingDuration}
               onChange={(e) => set(ref(db, `${user.uid}/vitnebokser/${id}/questions/${q.id}/recordingDuration`), parseInt(e.target.value))}
-              className="w-full p-2 rounded text-black"
+              className="white w-full p-2 rounded text-black"
             />
             <div className='mt-4'>
               <ActiveFromToPicker 
@@ -186,13 +187,13 @@ export default function VitneboksDetail() {
           value={newQuestionText}
           onChange={(e) => setNewQuestionText(e.target.value)}
           placeholder="Spørsmålstekst"
-          className="w-full p-2 rounded text-black mb-4"
+          className="white w-full p-2 rounded text-black mb-4"
         />
         <label className="block mb-1">Opptakstid</label>
         <select
           value={newRecordingDuration}
           onChange={(e) => setNewRecordingDuration(parseInt(e.target.value))}
-          className="w-full p-2 rounded text-black mb-4"
+          className="white w-full p-2 rounded text-black mb-4"
         >
           <option value={10}>10 sekunder</option>
           <option value={15}>15 sekunder</option>
@@ -208,6 +209,7 @@ export default function VitneboksDetail() {
           Legg til spørsmål
         </button>
       </div>
+      <p className="">Opprettet: {vitneboks.createdOn.toLocaleString()}</p>
       <button
         onClick={handleDeleteVitneboks}
         className="bg-danger text-white px-4 py-2 mt-8 rounded hover:bg-danger-200 mb-8"

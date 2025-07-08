@@ -11,8 +11,8 @@
   --color-danger: oklch(0.5326 0.1224 26.17);
 }
 
-input,
-select {
+input.white,
+select.white {
   background-color: white;
 }
 
