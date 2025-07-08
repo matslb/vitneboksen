@@ -32,14 +32,14 @@ export default function QuestionBox({ vitneboksId, userId, question }: QuestionB
     };
     return (
         <div
-            className="bg-white/10 p-4 rounded shadow-md relative"
+            className="bg-white/10 py-6 px-4 rounded shadow-md relative"
             key={question.id}
             draggable
             onDragStart={(e) => handleDragStart(e, question.id, question.order)}
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => handleDrop(e, question.id, question.order)}
         >
-            <span className="cursor-move text-xl" title="Dra for å endre rekkefølge">Spørsmål {question.order + 1}</span>
+            <span className="cursor-move text-xl absolute w-8 text-center  bg-black/50 rounded-br rounded-tl top-0 left-0" title="Dra for å endre rekkefølge">{question.order + 1}</span>
             <span className="absolute top-2 right-4 cursor-move text-2xl" title="Dra for å endre rekkefølge">≡</span>
             <div className="flex w-full gap-2 justify-left mt-4">
                 <div

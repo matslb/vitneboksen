@@ -32,7 +32,7 @@ export default function VitneboksBox({ Vitneboks }: VitneboxBoxProps) {
             <h2 className="text-xl font-semibold min-h-14 max-w-80 break-all">{Vitneboks.title}</h2>
             {!isRecording &&
                 <div
-                    className="bg-black/40 text-white p-2 rounded-bl rounded-tr-[7px] absolute top-0 right-0"
+                    className="bg-black/40 text-white p-2 rounded-bl rounded-tr absolute top-0 right-0"
                 >{Vitneboks.isOpen ? "Åpen" : "Stengt"}
                 </div>
             }
