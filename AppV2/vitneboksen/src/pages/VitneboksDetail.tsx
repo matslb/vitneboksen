@@ -69,28 +69,30 @@ export default function VitneboksDetail() {
   };
 
   return (
-    <div className='bg-primary-bg min-h-screen'>
-      <div className="flex flex-col items-center text-primary-text">
-        <Header backButtonPath={"/admin/"} />
-        <div className='mb-8 bg-secondary-bg w-full max-w-5xl p-8 shadow-md rounded'>
-          <div className='flex justify-between'>
-            <p className="opacity-80">Opprettet: {vitneboks.createdOn.toLocaleString()}</p>
-            <ToggleSwitch label={vitneboks.isOpen ? "Åpen" : "Stengt"} checked={vitneboks.isOpen} onChange={(checked) => set(ref(db, `${user.uid}/vitnebokser/${id}/isOpen`), checked)} />
+    <>
+      <div className='bg-primary-bg min-h-screen'>
+        <div className="flex flex-col items-center text-primary-text">
+          <Header backButtonPath={"/admin/"} />
+          <div className='mb-8 bg-secondary-bg w-full max-w-5xl p-8 shadow-md rounded'>
+            <div className='flex justify-between'>
+              <p className="opacity-80">Opprettet: {vitneboks.createdOn.toLocaleString()}</p>
+              <ToggleSwitch label={vitneboks.isOpen ? "Åpen" : "Stengt"} checked={vitneboks.isOpen} onChange={(checked) => set(ref(db, `${user.uid}/vitnebokser/${id}/isOpen`), checked)} />
+            </div>
+            <label htmlFor="title" className='hidden'>Tittel</label>
+            <h1 className="text-3xl font-bold my-4  ">
+              <input type='text' name='title' maxLength={45} className='bg-white/10 rounded shadow-md p-2 w-[90%] text-left' value={vitneboks.title} onChange={(e) => set(ref(db, `${user.uid}/vitnebokser/${id}/title`), e.currentTarget.value)} />
+            </h1>
+            <QuestionList vitneBoksId={vitneboks.id} userId={user.uid} questions={vitneboks.questions} />
+            <button
+              onClick={handleDeleteVitneboks}
+              className="bg-danger text-white px-4 py-2 mt-8 rounded hover:bg-danger-200 mb-8"
+            >
+              Slett vitneboks
+            </button>
           </div>
-          <label htmlFor="title" className='hidden'>Tittel</label>
-          <h1 className="text-3xl font-bold my-4  ">
-            <input type='text' name='title' maxLength={45} className='bg-white/10 rounded shadow-md p-2 w-[90%] text-left' value={vitneboks.title} onChange={(e) => set(ref(db, `${user.uid}/vitnebokser/${id}/title`), e.currentTarget.value)} />
-          </h1>
-          <QuestionList vitneBoksId={vitneboks.id} userId={user.uid} questions={vitneboks.questions} />
-          <button
-            onClick={handleDeleteVitneboks}
-            className="bg-danger text-white px-4 py-2 mt-8 rounded hover:bg-danger-200 mb-8"
-          >
-            Slett vitneboks
-          </button>
         </div>
       </div>
       <Footer />
-    </div>
+    </>
   );
 }
