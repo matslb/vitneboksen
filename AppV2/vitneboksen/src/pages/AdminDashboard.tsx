@@ -101,7 +101,7 @@ export default function AdminDashboard() {
           <div className='p-8 rounded my-16 text-l bg-secondary-bg'>
             <h3 className='text-2xl'>Hvordan bruke VITNEBOKSEN?</h3>
             <br />
-            <p>Dette trenger du for å komme i gang med Vitneboksen:</p>
+            <p>Dette trenger du for å komme i gang:</p>
             <ol className='list px-8 py-4'>
               <li className='list-disc'>Et arrangement eller en hendelse du ønsker å dokumentere.</li>
               <li className='list-disc'>En PC eller Mac.</li>
