@@ -29,7 +29,7 @@ export default function VitneboksBox({ Vitneboks }: VitneboxBoxProps) {
     }, [db]);
     return (
         <div className="relative p-6">
-            <h2 className="text-xl font-semibold  max-w-80 break-all">{Vitneboks.title}</h2>
+            <h2 className="text-xl font-semibold min-h-14 max-w-80 break-all">{Vitneboks.title}</h2>
             {!isRecording &&
                 <div
                     className="bg-white/30 text-black p-2 rounded-bl rounded-tr-[7px] absolute top-0 right-0"
