@@ -57,17 +57,21 @@ export default function AdminDashboard() {
       <div className='bg-primary-bg min-h-screen'>
         <Header />
         <div className="max-w-[1024px] m-auto px-4 bg-primary-bg text-primary-text">
-          <h2 className="text-3xl font-bold mb-8 text-left">Dine vitnebokser</h2>
-          <ul className="flex flex items-center flex-wrap gap-4 w-full mb-16">
-            {vitnebokser.map((vb) => (
-              <li
-                key={vb.id}
-                className="rounded max-w-md w-full shadow-md bg-secondary-bg flex flex-col gap-2"
-              >
-                <VitneboksBox Vitneboks={vb} />
-              </li>
-            ))}
-          </ul>
+          {vitnebokser.length !== 0 &&
+            <>
+              <h2 className="text-3xl font-bold mb-8 text-left">Dine vitnebokser</h2>
+              <ul className="flex flex items-center flex-wrap gap-4 w-full mb-16">
+                {vitnebokser.map((vb) => (
+                  <li
+                    key={vb.id}
+                    className="rounded max-w-md w-full shadow-md bg-secondary-bg flex flex-col gap-2"
+                  >
+                    <VitneboksBox Vitneboks={vb} />
+                  </li>
+                ))}
+              </ul>
+            </>
+          }
           <div className="max-w-md w-full bg-secondary-bg rounded shadow-md p-6 mb-16">
             <h2 className="text-xl font-semibold mb-4">Opprett ny vitneboks</h2>
             <input
@@ -94,6 +98,22 @@ export default function AdminDashboard() {
                 Du kan bare ha to aktive vitnebokser
               </button>
             }
+          </div>
+          <div className='p-8 rounded my-16  text-xl bg-secondary-bg'>
+            <h3 className='text-2xl'>Hvordan bruke Vitneboksen?</h3>
+            <br />
+            <p>Dette trenger du for å komme i gang med Vitneboksen:</p>
+            <ol className='list px-16 py-4'>
+              <li className='list-disc'>Et arrangement eller en hendelse du ønsker å dokumentere.</li>
+              <li className='list-disc'>En PC eller Mac.</li>
+              <li className='list-disc'>Et webkamera og en mikrofon.</li>
+            </ol>
+            <p>Sånn gjør du det:</p>
+            <ol className='list px-16 py-4'>
+              <li className='list-decimal'>Opprett en Vitneboks, og legg til spørsmålene du vil at deltakerne skal svare på.</li>
+              <li className='list-decimal'>Kopier <span className='italic'>Vitnebokslinken</span> og åpne den i en nettleser (Chrome, Edge, eller Firefox) på PCen du skal bruke på arrangementet ditt.</li>
+              <li className='list-decimal'>Et webkamera og en mikrofon.</li>
+            </ol>
           </div>
         </div>
       </div>

@@ -64,8 +64,8 @@ export default function QuestionBox({ vitneboksId, userId, question }: QuestionB
             </div>
             <div className='mt-4'>
                 <ActiveFromToPicker
-                    setAlwaysActive={handleIsAllwaysActiveChange}
-                    alwaysActive={question.allwaysActive}
+                    setAllwaysActive={handleIsAllwaysActiveChange}
+                    allwaysActive={question.allwaysActive}
                     activeFrom={dateStringToLocal(question.activeFrom!)}
                     activeTo={dateStringToLocal(question.activeTo!)}
                     onChangeTo={(to) => set(ref(db, `${userId}/vitnebokser/${vitneboksId}/questions/${question.id}/activeTo`), new Date(to).toISOString())}

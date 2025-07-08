@@ -51,23 +51,16 @@ export default function VitneboksBox({ Vitneboks }: VitneboxBoxProps) {
                     </div>
                 </div>
             }
-
-            {Object.values(Vitneboks.questions).length > 0 ?
-                <div className="py-4">
-                    <label className="text-sm">Vitnebokslink</label>
-                    <input
-                        readOnly
-                        value={`${window.location.origin}/vitne/${Vitneboks.id}`}
-                        onClick={() => handleCopy(`${window.location.origin}/vitne/${Vitneboks.id}`, 'Vitnebokslink kopiert!')}
-                        className="w-full p-2 rounded bg-white text-black mb-2 cursor-pointer"
-                    />
-                    {copied && <p className="text-green-500 text-sm mt-1">{copied}</p>}
-                </div>
-                :
-                <div className="py-4">
-                    <p>Legg til spørsmål for å komme i gang.</p>
-                </div>
-            }
+            <div className="py-4">
+                <label className="text-sm">Vitnebokslink</label>
+                <input
+                    readOnly
+                    value={`${window.location.origin}/vitne/${Vitneboks.id}`}
+                    onClick={() => handleCopy(`${window.location.origin}/vitne/${Vitneboks.id}`, 'Vitnebokslink kopiert!')}
+                    className="w-full p-2 rounded bg-white text-black mb-2 cursor-pointer"
+                />
+                {copied && <p className="text-green-500 text-sm mt-1">{copied}</p>}
+            </div>
             <div className='flex justify-between gap-2'>
                 <p className="text-m "><span className='bg-black/40 text-white text-center min-w-9 inline-block rounded'>{Vitneboks.completedVideos}</span> Vitnesbyrd
                     {Vitneboks.videosToBeProcessed > 0 &&

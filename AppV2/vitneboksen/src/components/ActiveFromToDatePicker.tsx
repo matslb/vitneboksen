@@ -1,13 +1,13 @@
 interface ActiveFromToPickerProps {
   activeFrom: string;
   activeTo: string;
-  alwaysActive: boolean;
-  setAlwaysActive: (val: boolean) => void;
+  allwaysActive: boolean;
+  setAllwaysActive: (val: boolean) => void;
   onChangeFrom: (val: string) => void;
   onChangeTo: (val: string) => void;
 }
 
-export default function ActiveFromToPicker({ alwaysActive, setAlwaysActive, activeFrom, activeTo, onChangeFrom, onChangeTo }: ActiveFromToPickerProps) {
+export default function ActiveFromToPicker({ allwaysActive, setAllwaysActive, activeFrom, activeTo, onChangeFrom, onChangeTo }: ActiveFromToPickerProps) {
   const isInvalid = activeFrom && activeTo && new Date(activeTo) < new Date(activeFrom);
   return (
     <div className="mb-4 min-w-50 flex  gap-2">
@@ -15,10 +15,10 @@ export default function ActiveFromToPicker({ alwaysActive, setAlwaysActive, acti
         <label className="w-30">
           <input
             type="radio"
-            checked={alwaysActive}
+            checked={allwaysActive}
             className="mr-2 bg-white"
             onChange={() => {
-              setAlwaysActive(true)
+              setAllwaysActive(true)
             }}
           />
           Alltid aktiv
@@ -26,16 +26,16 @@ export default function ActiveFromToPicker({ alwaysActive, setAlwaysActive, acti
         <label className="w-30">
           <input
             type="radio"
-            checked={!alwaysActive}
+            checked={!allwaysActive}
             className="mr-2 bg-white"
             onChange={() => {
-              setAlwaysActive(false)
+              setAllwaysActive(false)
             }} />
           Aktiv fra - til
         </label>
       </div>
 
-      {!alwaysActive &&
+      {!allwaysActive &&
         <div className="flex items-center w-full flex-wrap justify-end gap-2">
           <div>
             <label className="block mb-1">Aktiv fra</label>

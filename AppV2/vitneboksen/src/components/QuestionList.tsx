@@ -16,7 +16,7 @@ export default function QuestionList({ vitneBoksId, userId, questions }: Questio
 
   const [newQuestionText, setNewQuestionText] = useState('');
   const [newRecordingDuration, setNewRecordingDuration] = useState(10);
-  const [alwaysActive, setAlwaysActive] = useState(true);
+  const [allwaysActive, setAllwaysActive] = useState(false);
   const [activeFrom, setActiveFrom] = useState('');
   const [activeTo, setActiveTo] = useState('');
 
@@ -31,7 +31,7 @@ export default function QuestionList({ vitneBoksId, userId, questions }: Questio
       recordingDuration: newRecordingDuration,
       activeFrom: activeFrom != "" ? dateStringToLocal(activeFrom) : "",
       activeTo: activeTo != "" ? dateStringToLocal(activeTo) : "",
-      alwaysActive: alwaysActive,
+      allwaysActive: allwaysActive,
       order: Object.keys(questions).length
     };
     push(questionsRef, newQuestion);
@@ -63,7 +63,7 @@ export default function QuestionList({ vitneBoksId, userId, questions }: Questio
         />
         <label className="block mb-1">Opptakstid</label>
         <QuestionDuration recordingDuration={newRecordingDuration} setRecordingDuration={setNewRecordingDuration} />
-        <ActiveFromToPicker alwaysActive={alwaysActive} setAlwaysActive={setAlwaysActive} activeFrom={activeFrom} activeTo={activeTo} onChangeFrom={setActiveFrom} onChangeTo={setActiveTo} />
+        <ActiveFromToPicker allwaysActive={allwaysActive} setAllwaysActive={setAllwaysActive} activeFrom={activeFrom} activeTo={activeTo} onChangeFrom={setActiveFrom} onChangeTo={setActiveTo} />
         <button
           onClick={handleAddQuestion}
           className="bg-primary-button text-black px-4 py-2 rounded hover:bg-secondary w-full"
