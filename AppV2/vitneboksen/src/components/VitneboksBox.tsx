@@ -67,28 +67,31 @@ export default function VitneboksBox({Vitneboks}: VitneboxBoxProps) {
                 >
                 Rediger
             </Link>
-
-            {Vitneboks.completedVideos > 1 && Vitneboks.finalVideoProcessingStatus == FinalVideoStatus.notStarted && 
-            <button 
-            onClick={() => startFinalVideoProcessing(Vitneboks.id)}
-            className=" flex gap-2 bg-primary-button  text-black px-4 py-2 rounded ">
-                Generer Vitneboksvideo
-            </button>
-            }
-            {Vitneboks.completedVideos > 0 && Vitneboks.finalVideoProcessingStatus == FinalVideoStatus.started && 
-            <button 
-            className="flex bg-primary-button-disabled disabled text-black px-4 py-2 rounded ">
-                <SpinnerIcon />
-                Vitneboksvideo mekkes nå
-            </button>
-            }
-            { Vitneboks.completedVideos > 0 && Vitneboks.finalVideoProcessingStatus == FinalVideoStatus.completed && 
-            <button 
-            onClick={() => downloadFinalVideo(Vitneboks.id)}
-            className="bg-primary-button text-black px-4 py-2 rounded">
-                Last ned Vitneboksvideo
-            </button>
-            }
+            {Vitneboks.videosToBeProcessed == 0 &&
+            <>
+                {Vitneboks.completedVideos > 1 && Vitneboks.finalVideoProcessingStatus == FinalVideoStatus.notStarted && 
+                    <button 
+                    onClick={() => startFinalVideoProcessing(Vitneboks.id)}
+                    className=" flex gap-2 bg-primary-button  text-black px-4 py-2 rounded ">
+                    Generer Vitneboksvideo
+                    </button>
+                }
+                {Vitneboks.completedVideos > 0 && Vitneboks.finalVideoProcessingStatus == FinalVideoStatus.started && 
+                    <button 
+                    className="flex bg-primary-button-disabled disabled text-black px-4 py-2 rounded ">
+                    <SpinnerIcon />
+                    Vitneboksvideo mekkes nå
+                    </button>
+                }
+                { Vitneboks.completedVideos > 0 && Vitneboks.finalVideoProcessingStatus == FinalVideoStatus.completed && 
+                    <button 
+                    onClick={() => downloadFinalVideo(Vitneboks.id)}
+                    className="bg-primary-button text-black px-4 py-2 rounded">
+                    Last ned Vitneboksvideo
+                    </button>
+                }
+            </>
+        }
             
         </div>
     </div>
