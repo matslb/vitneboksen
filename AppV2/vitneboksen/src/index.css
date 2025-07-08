@@ -30,3 +30,7 @@ button:not(.disabled):hover {
     opacity: 0;
   }
 }
+
+html {
+  background-color: oklch(0.4872 0.1977 283.03);
+}
