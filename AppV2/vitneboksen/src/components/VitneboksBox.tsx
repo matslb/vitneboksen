@@ -32,15 +32,15 @@ export default function VitneboksBox({ Vitneboks }: VitneboxBoxProps) {
             <h2 className="text-xl font-semibold min-h-14 max-w-80 break-all">{Vitneboks.title}</h2>
             {!isRecording &&
                 <div
-                    className="bg-white/30 text-black p-2 rounded-bl rounded-tr-[7px] absolute top-0 right-0"
+                    className="bg-black/40 text-white p-2 rounded-bl rounded-tr-[7px] absolute top-0 right-0"
                 >{Vitneboks.isOpen ? "Åpen" : "Stengt"}
                 </div>
             }
             {isRecording &&
                 <div
-                    className="bg-black/60 flex text-white p-2 rounded-bl rounded-tr-[7px] absolute top-0 right-0"
+                    className="bg-black/40 flex text-white p-2 rounded-bl rounded-tr-[7px] absolute top-0 right-0"
                 >
-                    <div style={{ color: "white" }}>REC</div>
+                    <div>REC</div>
                     <div className='p-1 m-1 w-2 h-2'
                         style={{
                             borderRadius: "50%",
@@ -69,14 +69,14 @@ export default function VitneboksBox({ Vitneboks }: VitneboxBoxProps) {
                 </div>
             }
             <div className='flex justify-between gap-2'>
-                <p className="text-m "><span className='bg-white/30 text-black text-center min-w-9 inline-block rounded'>{Vitneboks.completedVideos}</span> Vitnesbyrd
+                <p className="text-m "><span className='bg-black/40 text-white text-center min-w-9 inline-block rounded'>{Vitneboks.completedVideos}</span> Vitnesbyrd
                     {Vitneboks.videosToBeProcessed > 0 &&
                         <>
                             &nbsp;(&nbsp;<SpinnerIcon />{Vitneboks.videosToBeProcessed} til på vei)
                         </>
                     }
                 </p>
-                <p className="text-m mb-1"><span className='bg-white/30 text-center text-black min-w-9 inline-block rounded'>{Object.values(Vitneboks.questions)?.length}</span> Spørsmål</p>
+                <p className="text-m mb-1"><span className='bg-black/40 text-center text-white min-w-9 inline-block rounded'>{Object.values(Vitneboks.questions)?.length}</span> Spørsmål</p>
 
             </div>
             <div className="mt-4 text-right flex flex-row-reverse justify-between gap-6">
