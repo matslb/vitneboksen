@@ -98,7 +98,7 @@ export default function AdminDashboard() {
               </button>
             }
           </div>
-          <div className='p-8 rounded my-16  text-xl bg-secondary-bg'>
+          <div className='p-8 rounded my-16 text-xl bg-secondary-bg'>
             <h3 className='text-2xl'>Hvordan bruke VITNEBOKSEN?</h3>
             <br />
             <p>Dette trenger du for å komme i gang med Vitneboksen:</p>
@@ -113,6 +113,8 @@ export default function AdminDashboard() {
               <li className='list-decimal'>Kopier <span className='italic'>Vitnebokslinken</span> og åpne den i en nettleser (Chrome, Edge, eller Firefox) på PCen du skal bruke på arrangementet ditt.</li>
               <li className='list-decimal'>Send inn dine første ofre.</li>
             </ol>
+
+            <p className='text-sm'>... og du, det kan ta litt tid før en video er ferdigbehandlet. Frykt ikke, den går nok igjennom til slutt.</p>
           </div>
         </div>
       </div>
