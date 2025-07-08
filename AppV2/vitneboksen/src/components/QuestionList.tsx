@@ -41,6 +41,9 @@ export default function QuestionList({ vitneBoksId, userId, questions }: Questio
   return (
     <>
       <div className="w-full space-y-4 mb-8">
+        {questions.length > 0 &&
+          <h2 className="text-xl font-semibold mb-4">Spørsmål</h2>
+        }
         {questions.map((q) => (
           <QuestionBox
             key={q.id}

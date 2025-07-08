@@ -78,10 +78,11 @@ export default function VitneboksDetail() {
               <p className="opacity-80">Opprettet: {vitneboks.createdOn.toLocaleString()}</p>
               <ToggleSwitch label={vitneboks.isOpen ? "Åpen" : "Stengt"} checked={vitneboks.isOpen} onChange={(checked) => set(ref(db, `${user.uid}/vitnebokser/${id}/isOpen`), checked)} />
             </div>
+            <h2 className="text-xl font-semibold my-4">Tittel</h2>
             <label htmlFor="title" className='hidden'>Tittel</label>
-            <h1 className="text-3xl font-bold my-4  ">
+            <p className="text-3xl font-bold my-4  ">
               <input type='text' name='title' maxLength={45} className='bg-white/10 rounded shadow-md p-2 w-[100%] text-left' value={vitneboks.title} onChange={(e) => set(ref(db, `${user.uid}/vitnebokser/${id}/title`), e.currentTarget.value)} />
-            </h1>
+            </p>
             <QuestionList vitneBoksId={vitneboks.id} userId={user.uid} questions={vitneboks.questions} />
             <button
               onClick={handleDeleteVitneboks}
