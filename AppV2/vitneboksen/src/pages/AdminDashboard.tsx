@@ -110,7 +110,7 @@ export default function AdminDashboard() {
             <p>Sånn gjør du det:</p>
             <ol className='list px-8 py-4'>
               <li className='list-decimal'>Opprett en Vitneboks, og legg til spørsmålene du vil at deltakerne skal svare på.</li>
-              <li className='list-decimal'>Kopier <span className='italic'>Vitnebokslinken</span> og åpne den i en nettleser (Chrome, Edge, eller Firefox) på PCen du skal bruke på arrangementet ditt.</li>
+              <li className='list-decimal'>Kopier <span className='italic'>Vitnebokslinken</span> og åpne den i en nettleser (Chrome, Edge, eller Firefox) på PCen du skal bruke under arrangementet ditt.</li>
               <li className='list-decimal'>Send inn dine første ofre.</li>
             </ol>
 
