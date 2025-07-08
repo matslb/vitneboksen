@@ -83,10 +83,18 @@ function enterFullscreen(element: HTMLElement) {
         >Fullskjerm</button>
       }
       <CameraAccessChecker />
-      {!started && (!waiting && !thankYouWaiting ) && (
-        <WelcomeScreen onStart={handleStart} recordingTime={currentQuestion.recordingDuration} title={vitneboks.title}/>
-      )}
-    
+
+      { !vitneboks.isOpen ?
+       <div className="flex flex-col items-center justify-center flex-1 p-6 text-3xl">
+          Kom tilbake senere. Her er det stengt.
+        </div>
+        :
+        <>
+          {!started && (!waiting && !thankYouWaiting ) && (
+            <WelcomeScreen onStart={handleStart} recordingTime={currentQuestion.recordingDuration} title={vitneboks.title}/>
+            )}
+          </>
+        }
 
       {waiting &&  (
         <WaitingScreen seconds={3} setWaiting={setWaiting} />

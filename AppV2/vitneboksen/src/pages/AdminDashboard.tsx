@@ -30,6 +30,7 @@ export default function AdminDashboard() {
         videosToBeProcessed: value.videosToBeProcessed,
         finalVideoProcessingStatus: value.finalVideoProcessingStatus,
         questions: value.questions || [],
+        isOpen: value.isOpen
       } as Vitneboks));
       setVitnebokser(parsed);
     });
@@ -45,6 +46,7 @@ export default function AdminDashboard() {
       completedVideos: 0,
       finalVideoProcessingStatus: FinalVideoStatus.notStarted,
       questions: [],
+      isOpen: true
     };
     const vitneboksRef = ref(db, `${uid}/vitnebokser/${newVitneboks.id}`);
     set(vitneboksRef, newVitneboks);

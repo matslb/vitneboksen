@@ -12,6 +12,7 @@ import { dateStringToLocal } from '../utils';
 import Footer from '../components/Footer';
 import { deleteVitneboks } from '../videoProcessorService';
 import Header from '../components/Header';
+import ToggleSwitch from '../components/ToggleSwitch';
 
 export default function VitneboksDetail() {
   const { id } = useParams();
@@ -42,7 +43,8 @@ export default function VitneboksDetail() {
     set(publicVitneboksRef, {
       questions: vitneboks.questions,
       title: vitneboks.title,
-      uid: user!.uid
+      uid: user!.uid,
+      isOpen: vitneboks.isOpen
     } as PublicVitneboks);
   },[vitneboks]);
 
@@ -61,6 +63,7 @@ export default function VitneboksDetail() {
         finalVideoProcessingStatus: data.finalVideoProcessingStatus,
         videosToBeProcessed: data.videosToBeProcessed,
         questions: data.questions || [],
+        isOpen: data.isOpen
       });
     });
   }, [user, id, db]);
@@ -129,7 +132,8 @@ export default function VitneboksDetail() {
   return (
     <div className="flex flex-col items-center min-h-screen bg-primary-bg text-primary-text ">
       <Header backButtonPath={"/admin/"} />
-        <label htmlFor="title" className='hidden'>Tittel</label>
+      <ToggleSwitch label='Status' checked={vitneboks.isOpen} onChange={(checked) => set(ref(db, `${user.uid}/vitnebokser/${id}/isOpen`), checked)} />
+      <label htmlFor="title" className='hidden'>Tittel</label>
       <h1 className="text-3xl font-bold mb-4 bg-primary-bg">
         <input type='text' name='title' className='rounded p-2  text-center' value={vitneboks.title} onChange={(e) => set(ref(db, `${user.uid}/vitnebokser/${id}/title`), e.currentTarget.value )} />
         </h1>
