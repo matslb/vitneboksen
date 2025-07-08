@@ -54,8 +54,8 @@ export default function CameraAndMicAccessChecker() {
   }
 
   return (
-      <div className=" flex flex-col bg-danger shadow-xl rounded items-center px-4 py-2 flex gap-2 w-full">
-        <h2 className="text-lg mb-4 text-black text-center ">
+      <div className="flex flex-col bg-danger shadow-xl rounded items-center p-4 flex gap-2 w-full">
+        <h2 className="text-lg text-black text-center ">
           Vitneboksen trenger tilgang til kamera og mikrofon
         </h2>
         <button

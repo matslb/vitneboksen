@@ -20,6 +20,10 @@ button:not(.disabled):hover {
   cursor: pointer;
 }
 
+.blinker {
+  animation: blinker 1.5s ease infinite;
+}
+
 @keyframes blinker {
   50% {
     opacity: 0;

@@ -95,7 +95,7 @@ function enterFullscreen(element: HTMLElement) {
         }
 
       {waiting &&  (
-        <WaitingScreen seconds={3} setWaiting={setWaiting} />
+        <WaitingScreen seconds={3} withBeep={true} setWaiting={setWaiting} />
       )}
 
       { started && !waiting  && !thankYouWaiting && (

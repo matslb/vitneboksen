@@ -132,7 +132,10 @@ export default function VitneboksDetail() {
   return (
     <div className="flex flex-col items-center min-h-screen bg-primary-bg text-primary-text ">
       <Header backButtonPath={"/admin/"} />
-      <ToggleSwitch label='Status' checked={vitneboks.isOpen} onChange={(checked) => set(ref(db, `${user.uid}/vitnebokser/${id}/isOpen`), checked)} />
+      <div className='flex'>
+        <div className='blinker h-2 w-2 bg-green-600 rounded-full'></div>
+        <ToggleSwitch label={vitneboks.isOpen ? "Åpen" : "Lukket"} checked={vitneboks.isOpen} onChange={(checked) => set(ref(db, `${user.uid}/vitnebokser/${id}/isOpen`), checked)} />
+      </div>
       <label htmlFor="title" className='hidden'>Tittel</label>
       <h1 className="text-3xl font-bold mb-4 bg-primary-bg">
         <input type='text' name='title' className='rounded p-2  text-center' value={vitneboks.title} onChange={(e) => set(ref(db, `${user.uid}/vitnebokser/${id}/title`), e.currentTarget.value )} />
