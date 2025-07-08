@@ -50,8 +50,8 @@ export default function QuestionList({ vitneBoksId, userId, questions }: Questio
           />
         ))}
       </div>
+      <h2 className="text-xl font-semibold mb-4">Legg til nytt spørsmål</h2>
       <div className="w-full  bg-white/10 rounded shadow-md p-6  mb-8">
-        <h2 className="text-xl font-semibold mb-4">Legg til nytt spørsmål</h2>
         <div
           style={{
             gridTemplateColumns: "4fr 2fr"
