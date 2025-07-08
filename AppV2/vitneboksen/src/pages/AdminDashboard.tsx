@@ -59,7 +59,6 @@ export default function AdminDashboard() {
         <div className="max-w-[1024px] m-auto px-4 bg-primary-bg text-primary-text">
           {vitnebokser.length !== 0 &&
             <>
-              <h2 className="text-3xl font-bold mb-8 text-left">Dine vitnebokser</h2>
               <ul className="flex flex items-center flex-wrap gap-4 w-full mb-16">
                 {vitnebokser.map((vb) => (
                   <li
