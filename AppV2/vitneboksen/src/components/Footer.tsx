@@ -2,7 +2,7 @@ import sponsorLogo from '../assets/spritjakt.png';
 
 export default function Footer() {
   return (
-    <footer className="w-full flex flex-wrap justify-evenly items-center gap-4 mt-auto bg-secondary-bg text-primary-text  py-6">
+    <footer className=" bottom-0 w-full flex flex-wrap justify-evenly items-center gap-4 mt-auto bg-secondary-bg text-primary-text  py-6">
       <div className="flex flex-row items-center gap-2">
         <span>Sponset av</span>
         <a

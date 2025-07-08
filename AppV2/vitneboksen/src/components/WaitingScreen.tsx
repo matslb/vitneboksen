@@ -31,7 +31,11 @@ export default function WaitingScreen({ seconds, withBeep, setWaiting }: Waiting
         <audio src={beep} autoPlay />
       }
       <img src={tvTestImage} className='fixed max-w-100% md:h-full image' />
-      <div className="text-[275%] top-[10.5%] text-center w-100 h-100 top-0 absolute"> {countdown}</div>
+      <div className="text-[275%] top-[10%] rounded text-center bg-black/100 px-9 py-3 absolute">
+        Vennligst vent
+        <br />
+        {countdown}
+      </div>
     </div>
   );
 }

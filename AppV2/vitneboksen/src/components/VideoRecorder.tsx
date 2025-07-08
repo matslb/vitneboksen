@@ -107,7 +107,7 @@ export default function VideoRecorder({ question, vitneboksId, uid, onFinish }: 
           style={{
             background: "rgba(0,0,0,0.55)",
           }}
-          className="fixed bottom-32 2xl:text-5xl font-semibold p-6 max-w-wd m-8 text-3xl rounded text-shadow-s">{question.text}</h2>
+          className="fixed bottom-32 2xl:text-5xl font-semibold p-6 w-90% max-w-6xl text-3xl rounded text-shadow-s">{question.text}</h2>
       </div>
       <div className='fixed top-8 bottom-8 left-8 right-8 m-auto left-0 right-0 flex w-90% max-w-7xl flex justify-between 1 p-8'>
         <div className='absolute top-0 left-0 rounded-tl border-l-3 border-t-3 h-60 w-60 border-black opacity-55'> </div>

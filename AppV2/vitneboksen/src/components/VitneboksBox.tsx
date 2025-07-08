@@ -64,7 +64,7 @@ export default function VitneboksBox({ Vitneboks }: VitneboxBoxProps) {
                     {copied && <p className="text-green-500 text-sm mt-1">{copied}</p>}
                 </div>
                 :
-                <div>
+                <div className="py-4">
                     <p>Legg til spørsmål for å komme i gang.</p>
                 </div>
             }

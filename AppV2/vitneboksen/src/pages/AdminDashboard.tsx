@@ -53,45 +53,47 @@ export default function AdminDashboard() {
 
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-primary-bg text-primary-text">
+    <div className='bg-primary-bg min-h-screen'>
       <Header />
-      <h2 className="text-3xl font-bold mb-8">Dine vitnebokser</h2>
-      <ul className="flex flex-col items-center gap-4 w-full mb-16">
-        {vitnebokser.map((vb) => (
-          <li
-            key={vb.id}
-            className="border border-muted rounded-lg max-w-md w-full shadow-md bg-secondary-bg flex flex-col gap-2"
-          >
-            <VitneboksBox Vitneboks={vb} />
-          </li>
-        ))}
-      </ul>
-      <div className="max-w-md w-full bg-secondary-bg rounded-lg shadow-lg p-6 mb-16 border border-muted">
-        <h2 className="text-xl font-semibold mb-4">Opprett ny vitneboks</h2>
-        <input
-          type="text"
-          value={newTitle}
-          onChange={(e) => setNewTitle(e.target.value)}
-          maxLength={45}
-          placeholder="Navn på arrangement"
-          className="w-full p-2 rounded  bg-white text-black mb-4 border border-gray-300"
-        />
-        {vitnebokser.length <= 1 ?
-          <button
-            onClick={handleCreate}
-            className="bg-primary-button hover:text-white  text-black px-4 py-2 rounded hover:bg-secondary-bg w-full"
-          >
-            Opprett
-          </button>
-          :
-          <button
-            onClick={handleCreate}
-            disabled={true}
-            className="bg-primary-button hover:text-white  disabled opacity-40 cursor-not-allowed text-black px-4 py-2 rounded w-full"
-          >
-            Du kan bare ha to aktive vitnebokser
-          </button>
-        }
+      <div className="max-w-[1024px] m-auto px-4 bg-primary-bg text-primary-text">
+        <h2 className="text-3xl font-bold mb-8 text-left">Dine vitnebokser</h2>
+        <ul className="flex flex items-center flex-wrap gap-4 w-full mb-16">
+          {vitnebokser.map((vb) => (
+            <li
+              key={vb.id}
+              className="border border-muted rounded-lg max-w-md w-full shadow-md bg-secondary-bg flex flex-col gap-2"
+            >
+              <VitneboksBox Vitneboks={vb} />
+            </li>
+          ))}
+        </ul>
+        <div className="max-w-md w-full bg-secondary-bg rounded-lg shadow-lg p-6 mb-16 border border-muted">
+          <h2 className="text-xl font-semibold mb-4">Opprett ny vitneboks</h2>
+          <input
+            type="text"
+            value={newTitle}
+            onChange={(e) => setNewTitle(e.target.value)}
+            maxLength={45}
+            placeholder="Navn på arrangement"
+            className="w-full p-2 rounded  bg-white text-black mb-4 border border-gray-300"
+          />
+          {vitnebokser.length <= 1 ?
+            <button
+              onClick={handleCreate}
+              className="bg-primary-button hover:text-white  text-black px-4 py-2 rounded hover:bg-secondary-bg w-full"
+            >
+              Opprett
+            </button>
+            :
+            <button
+              onClick={handleCreate}
+              disabled={true}
+              className="bg-primary-button hover:text-white  disabled opacity-40 cursor-not-allowed text-black px-4 py-2 rounded w-full"
+            >
+              Du kan bare ha to aktive vitnebokser
+            </button>
+          }
+        </div>
       </div>
       <Footer />
     </div>
