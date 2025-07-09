@@ -38,19 +38,18 @@ export default function AdminDashboard() {
       questions: [],
       isOpen: true
     };
-    const res = await createSession(newVitneboks.id, uid);
-    if (res) {
-      const vitneboksRef = ref(db, `${uid}/vitnebokser/${newVitneboks.id}`);
-      set(vitneboksRef, newVitneboks);
+    const vitneboksRef = ref(db, `${uid}/vitnebokser/${newVitneboks.id}`);
+    set(vitneboksRef, newVitneboks);
 
-      const publicVitneboksRef = ref(db, `publicVitnebokser/${newVitneboks.id}`);
+    const publicVitneboksRef = ref(db, `publicVitnebokser/${newVitneboks.id}`);
 
-      set(publicVitneboksRef, {
-        questions: newVitneboks.questions,
-        title: newVitneboks.title,
-        uid: uid
-      } as PublicVitneboks);
-    }
+    set(publicVitneboksRef, {
+      questions: newVitneboks.questions,
+      title: newVitneboks.title,
+      uid: uid
+    } as PublicVitneboks);
+
+    createSession(newVitneboks.id, uid);
     setNewTitle('');
   };
 
