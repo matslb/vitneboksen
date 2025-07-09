@@ -7,7 +7,7 @@ import type PublicVitneboks from '../types/PublicVitneboks';
 
 import LoadingFullScreen from '../components/LoadingFullScreen';
 import Footer from '../components/Footer';
-import { deleteVitneboks, forceUpdateVitneboksStatus } from '../videoProcessorService';
+import { deleteVitneboks, downloadSessionFiles, forceUpdateVitneboksStatus } from '../videoProcessorService';
 import Header from '../components/Header';
 import ToggleSwitch from '../components/ToggleSwitch';
 import QuestionList from '../components/QuestionList';
@@ -102,8 +102,8 @@ export default function VitneboksDetail() {
             }
             <div className='flex justify-between mb-4 mt-2'>
               <VideoStats completed={vitneboks.completedVideos} inProgress={vitneboks.videosToBeProcessed} />
-              <GenerateVideoButton Vitneboks={vitneboks} />
               <ToggleSwitch label={vitneboks.isOpen ? "Åpen" : "Stengt"} checked={vitneboks.isOpen} onChange={(checked) => set(ref(db, `${user.uid}/vitnebokser/${id}/isOpen`), checked)} />
+              <GenerateVideoButton Vitneboks={vitneboks} showZip={true} />
             </div>
             <h2 className="text-xl font-semibold my-4">Tittel</h2>
             <label htmlFor="title" className='hidden'>Tittel</label>

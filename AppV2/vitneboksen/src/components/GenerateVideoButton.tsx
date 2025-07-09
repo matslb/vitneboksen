@@ -1,14 +1,15 @@
 import { FinalVideoStatus, type Vitneboks } from '../types/Vitneboks';
-import { downloadFinalVideo, startFinalVideoProcessing } from '../videoProcessorService';
+import { downloadFinalVideo, downloadSessionFiles, startFinalVideoProcessing } from '../videoProcessorService';
 import SpinnerIcon from './SpinnerIcon';
 
 type GenerateVideoButtonProps = {
-    Vitneboks: Vitneboks
+    Vitneboks: Vitneboks,
+    showZip: boolean,
 };
 
-export default function GenerateVideoButton({ Vitneboks }: GenerateVideoButtonProps) {
+export default function GenerateVideoButton({ Vitneboks, showZip = false }: GenerateVideoButtonProps) {
     return (
-        <>
+        <div className='flex flex-col items-end'>
             {Vitneboks.videosToBeProcessed == 0 &&
                 <>
                     {
@@ -35,5 +36,8 @@ export default function GenerateVideoButton({ Vitneboks }: GenerateVideoButtonPr
                     }
                 </>
             }
-        </>);
+            {showZip && Vitneboks.completedVideos > 0 &&
+                <button className='hover:underline' onClick={() => downloadSessionFiles(Vitneboks.id)}>Last ned råfiler (zip)</button>
+            }
+        </div >);
 }

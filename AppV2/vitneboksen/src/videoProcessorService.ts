@@ -56,3 +56,9 @@ export async function downloadFinalVideo(vitneboksId: string){
     const urlWithQueryParam = `${API_URL}download-final-video?sessionKey=${vitneboksId}`;
     window.open(urlWithQueryParam, '_blank');
 }
+
+export async function downloadSessionFiles(vitneboksId: string){
+    const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
+    const urlWithQueryParam = `${API_URL}download-session-files?sessionKey=${vitneboksId}`;
+    window.open(urlWithQueryParam, '_blank');
+}
