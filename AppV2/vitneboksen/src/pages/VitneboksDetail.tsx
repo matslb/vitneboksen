@@ -13,15 +13,24 @@ import ToggleSwitch from '../components/ToggleSwitch';
 import QuestionList from '../components/QuestionList';
 import { mapVitneboks, vitneboksTimeRemaining } from '../utils';
 import VideoStats from '../components/VideoStats';
+import GenerateVideoButton from '../components/GenerateVideoButton';
 
 export default function VitneboksDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [vitneboks, setVitneboks] = useState<Vitneboks | null>(null);
   const [user, setUser] = useState<User | null>(null);
-
+  const [isRecording, setIsRecording] = useState(false);
   const auth = getAuth();
   const db = getDatabase();
+
+  useEffect(() => {
+    if (vitneboks == null) return;
+    onValue(ref(db, `/activeSessions/${vitneboks.id}`), (snapshot) => {
+      const data: boolean = snapshot.val();
+      setIsRecording(data);
+    });
+  }, [db, vitneboks]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -68,15 +77,32 @@ export default function VitneboksDetail() {
     await deleteVitneboks(id);
     navigate('/admin');
   };
+  console.log(vitneboks.videosToBeProcessed);
 
   return (
     <>
       <div className='bg-primary-bg min-h-screen'>
         <div className="flex flex-col items-center text-primary-text">
           <Header backButtonPath={"/admin/"} />
-          <div className='mb-8 bg-secondary-bg w-full max-w-5xl p-8 shadow-md rounded'>
-            <div className='flex justify-between mb-4'>
+          <div className='relative mb-8 bg-secondary-bg w-full max-w-5xl p-8 shadow-md rounded'>
+            {isRecording &&
+              <div
+                className="bg-black/40 flex text-white px-2 py-1 rounded-bl rounded-tr absolute top-0 right-0"
+              >
+                <div>REC</div>
+                <div className='p-1 m-1 w-2 h-2'
+                  style={{
+                    borderRadius: "50%",
+                    backgroundColor: "red",
+                    animation: "blinker 1s infinite",
+                  }}
+                >
+                </div>
+              </div>
+            }
+            <div className='flex justify-between mb-4 mt-2'>
               <VideoStats completed={vitneboks.completedVideos} inProgress={vitneboks.videosToBeProcessed} />
+              <GenerateVideoButton Vitneboks={vitneboks} />
               <ToggleSwitch label={vitneboks.isOpen ? "Åpen" : "Stengt"} checked={vitneboks.isOpen} onChange={(checked) => set(ref(db, `${user.uid}/vitnebokser/${id}/isOpen`), checked)} />
             </div>
             <h2 className="text-xl font-semibold my-4">Tittel</h2>
@@ -86,7 +112,7 @@ export default function VitneboksDetail() {
             </p>
             <QuestionList vitneBoksId={vitneboks.id} userId={user.uid} questions={vitneboks.questions} />
             <div className='flex justify-between items-end gap-4'>
-              {vitneboks.finalVideoProcessingStatus == FinalVideoStatus.started || vitneboks.videosToBeProcessed > 0 &&
+              {(vitneboks.finalVideoProcessingStatus === FinalVideoStatus.started || vitneboks.videosToBeProcessed > 0 || isRecording) &&
                 <div className='flex flex-col align-left gap-4'>
                   <span>
                     Tror du noe har gått galt?

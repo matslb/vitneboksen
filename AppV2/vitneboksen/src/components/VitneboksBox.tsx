@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { FinalVideoStatus, type Vitneboks } from "../types/Vitneboks"
-import SpinnerIcon from "./SpinnerIcon"
+import { type Vitneboks } from "../types/Vitneboks"
 import { Link } from "react-router-dom";
-import { downloadFinalVideo, startFinalVideoProcessing } from "../videoProcessorService";
 import { getDatabase, onValue, ref } from "firebase/database";
 import VideoStats from "./VideoStats";
+import GenerateVideoButton from "./GenerateVideoButton";
 
 interface VitneboxBoxProps {
     Vitneboks: Vitneboks
@@ -39,7 +38,7 @@ export default function VitneboksBox({ Vitneboks }: VitneboxBoxProps) {
             }
             {isRecording &&
                 <div
-                    className="bg-black/40 flex text-white p-2 rounded-bl rounded-tr-[7px] absolute top-0 right-0"
+                    className="bg-black/40 flex text-white p-2 rounded-bl rounded-tr absolute top-0 right-0"
                 >
                     <div>REC</div>
                     <div className='p-1 m-1 w-2 h-2'
@@ -73,31 +72,7 @@ export default function VitneboksBox({ Vitneboks }: VitneboxBoxProps) {
                 >
                     Rediger
                 </Link>
-                {Vitneboks.videosToBeProcessed == 0 &&
-                    <>
-                        {Vitneboks.completedVideos > 1 && Vitneboks.finalVideoProcessingStatus == FinalVideoStatus.notStarted &&
-                            <button
-                                onClick={() => startFinalVideoProcessing(Vitneboks.id)}
-                                className=" flex gap-2 bg-primary-button  text-black px-4 py-2 rounded hover:text-white hover:bg-secondary-bg">
-                                Generer Vitneboksvideo
-                            </button>
-                        }
-                        {Vitneboks.completedVideos > 0 && Vitneboks.finalVideoProcessingStatus == FinalVideoStatus.started &&
-                            <button
-                                className="flex bg-primary-button-disabled disabled text-black px-4 py-2 rounded hover:text-white hover:bg-secondary-bg">
-                                <SpinnerIcon />
-                                Vitneboksvideo mekkes nå
-                            </button>
-                        }
-                        {Vitneboks.completedVideos > 0 && Vitneboks.finalVideoProcessingStatus == FinalVideoStatus.completed &&
-                            <button
-                                onClick={() => downloadFinalVideo(Vitneboks.id)}
-                                className="bg-primary-button text-black px-4 py-2 rounded hover:text-white hover:bg-secondary-bg">
-                                Last ned Vitneboksvideo
-                            </button>
-                        }
-                    </>
-                }
+                <GenerateVideoButton Vitneboks={Vitneboks} />
             </div>
 
         </div>

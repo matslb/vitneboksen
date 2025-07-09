@@ -44,6 +44,13 @@ export async function forceUpdateVitneboksStatus(vitneboksId: string){
     return response.ok;
 }
 
+export async function createSession(vitneboksId: string, uid: string){
+    const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
+    const urlWithQueryParam = `${API_URL}create-session?sessionKey=${vitneboksId}&uid=${uid}`;
+    const response = await fetch(urlWithQueryParam, { method: "Get" });
+    return response.ok;
+}
+
 export async function downloadFinalVideo(vitneboksId: string){
     const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
     const urlWithQueryParam = `${API_URL}download-final-video?sessionKey=${vitneboksId}`;

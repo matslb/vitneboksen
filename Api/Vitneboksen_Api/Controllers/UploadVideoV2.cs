@@ -11,9 +11,8 @@ public static class UploadVideoV2
     {
         var blobService = new BlobServiceClient(constring);
 
-        var uid = req.Query["uid"].ToString();
         var sessionKey = req.Query["sessionKey"].ToString();
-        if (uid == null || sessionKey == null)
+        if (sessionKey == null)
         {
             return Results.BadRequest();
         }
@@ -21,10 +20,7 @@ public static class UploadVideoV2
 
         if (containerClient == null)
         {
-            containerClient = blobService.GetBlobContainerClient($"{sessionKey}-{uid.ToLowerInvariant()}");
-            await containerClient.CreateAsync();
-            containerClient.SetMetadata(new Dictionary<string, string> { { "created", DateTime.Now.ToString() } });
-            firebaseService.SetDeletionFromDate(sessionKey, DateTime.Now);
+            return Results.BadRequest();
         }
 
         if (containerClient.GetBlobs().Count(b => b.Name.Contains("webm")) >= 50)

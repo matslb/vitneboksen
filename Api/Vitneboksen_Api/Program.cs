@@ -34,6 +34,8 @@ var firebaseService = new FirebaseService(new FirebaseConfig
     AuthSecret = firesharpSecrets.GetValue<string>("AuthSecret"),
 });
 
+app.MapGet("/create-session", async Task<IResult> (HttpRequest request) => await CreateSession.Run(request, constring: storageConnectionString, firebaseService: firebaseService));
+
 app.MapGet("/force-update", async Task<IResult> (HttpRequest request) => await ForceUpdateSessionStatus.Run(request, constring: storageConnectionString, firebaseService: firebaseService));
 
 app.MapPost("/upload-testimony/v2", async Task<IResult> (HttpRequest request) => await UploadVideoV2.Run(request, videoType: Constants.VideoTypes.Testimonial, constring: storageConnectionString, firebaseService: firebaseService));

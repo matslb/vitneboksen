@@ -43,7 +43,7 @@ export default function WaitingScreen({ seconds, withBeep, setWaiting }: Waiting
         </>
       }
       <img src={tvTestImage} className='fixed max-w-100% md:h-full image' />
-      <div className="text-[275%] top-[10%] rounded text-center bg-black/100 px-6 w-100 py-3 absolute">
+      <div className="text-[275%] top-[9%] rounded text-center bg-black/100 px-6 w-100 py-3 absolute">
         Opptak om
         <br />
         {countdown}

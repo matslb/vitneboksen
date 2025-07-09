@@ -7,6 +7,7 @@ import Footer from '../components/Footer';
 import { generateVitneboksId, mapVitneboks } from '../utils';
 import Header from '../components/Header';
 import VitneboksBox from '../components/VitneboksBox';
+import { createSession } from '../videoProcessorService';
 
 export default function AdminDashboard() {
   const [vitnebokser, setVitnebokser] = useState<Vitneboks[]>([]);
@@ -25,7 +26,7 @@ export default function AdminDashboard() {
     });
   }, [uid]);
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!newTitle.trim() || !uid) return;
     const newVitneboks: Vitneboks = {
       id: generateVitneboksId(),
@@ -37,17 +38,19 @@ export default function AdminDashboard() {
       questions: [],
       isOpen: true
     };
-    const vitneboksRef = ref(db, `${uid}/vitnebokser/${newVitneboks.id}`);
-    set(vitneboksRef, newVitneboks);
+    const res = await createSession(newVitneboks.id, uid);
+    if (res) {
+      const vitneboksRef = ref(db, `${uid}/vitnebokser/${newVitneboks.id}`);
+      set(vitneboksRef, newVitneboks);
 
-    const publicVitneboksRef = ref(db, `publicVitnebokser/${newVitneboks.id}`);
+      const publicVitneboksRef = ref(db, `publicVitnebokser/${newVitneboks.id}`);
 
-    set(publicVitneboksRef, {
-      questions: newVitneboks.questions,
-      title: newVitneboks.title,
-      uid: uid
-    } as PublicVitneboks);
-
+      set(publicVitneboksRef, {
+        questions: newVitneboks.questions,
+        title: newVitneboks.title,
+        uid: uid
+      } as PublicVitneboks);
+    }
     setNewTitle('');
   };
 
@@ -87,7 +90,7 @@ export default function AdminDashboard() {
             {vitnebokser.length <= 1 ?
               <button
                 onClick={handleCreate}
-                className="bg-primary-button hover:text-white  text-black px-4 py-2 rounded hover:text-white hover:bg-secondary-bg w-full"
+                className="bg-primary-button hover:text-white  text-black px-4 py-2 rounded hover:bg-secondary-bg w-full"
               >
                 Opprett
               </button>
@@ -95,7 +98,7 @@ export default function AdminDashboard() {
               <button
                 onClick={handleCreate}
                 disabled={true}
-                className="bg-primary-button hover:text-white  disabled opacity-40 cursor-not-allowed text-black px-4 py-2 rounded w-full"
+                className="bg-primary-button disabled opacity-40 cursor-not-allowed text-black px-4 py-2 rounded w-full"
               >
                 Du kan bare ha to aktive vitnebokser
               </button>

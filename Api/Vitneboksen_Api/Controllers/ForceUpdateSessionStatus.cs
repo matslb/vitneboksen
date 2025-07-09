@@ -35,6 +35,8 @@ public static class ForceUpdateSessionStatus
             firebaseService.SetFinalVideoProcessingStatus(sessionKey, FirebaseService.FinalVideoProcessingStatus.notStarted);
         }
 
+        firebaseService.SetIsSessionRecording(sessionKey, false);
+
         return Results.NoContent();
     }
 }

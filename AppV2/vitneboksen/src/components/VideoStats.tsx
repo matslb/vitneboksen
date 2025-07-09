@@ -7,12 +7,12 @@ interface VideoStatsProps {
 
 export default function VideoStats({ completed, inProgress }: VideoStatsProps) {
     return (
-        <p className="text-m "><span className='bg-black/40 text-white text-center min-w-9 inline-block rounded'>{completed}</span> Vitnesbyrd
+        <div className="text-m "><span className='bg-black/40 text-white text-center min-w-9 inline-block rounded'>{completed}</span> Vitnesbyrd
             {inProgress > 0 &&
                 <>
                     &nbsp;(&nbsp;<SpinnerIcon />{inProgress} på vei )
                 </>
             }
-        </p>
+        </div>
     );
 }

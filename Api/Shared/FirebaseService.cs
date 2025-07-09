@@ -26,6 +26,11 @@ public class FirebaseService(FirebaseConfig firebaseConfig)
         firebaseClient.Set($"publicVitnebokser/{sessionKey}/finalVideoProcessingStatus", status);
     }
 
+    public void SetIsSessionRecording(string sessionKey, bool isRecording)
+    {
+        firebaseClient.Set($"activeSessions/{sessionKey}", isRecording);
+    }
+
     public string GetSessionName(string sessionKey)
     {
         var uid = GetUidFromSessionKey(sessionKey);
