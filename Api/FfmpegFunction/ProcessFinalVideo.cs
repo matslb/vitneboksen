@@ -57,7 +57,7 @@ namespace FfmpegFunction
                 var sessionName = _firebaseService.GetSessionName(sessionKey);
                 _logger.LogInformation("Session name fetched from Firebase");
 
-                var blobs = containerClient.GetBlobs().Where(blob => blob.Name.EndsWith(".mp4"));
+                var blobs = containerClient.GetBlobs().Where(blob => blob.Name.EndsWith(".mp4") && blob.Name != Constants.FinalVideoFileName);
                 var transitions = await CreateTransitionsFromBlobs(blobs.ToList(), tempPath);
                 //Intro
                 var introSourcePath = Path.Combine(tempPath, Constants.IntroFileName);
