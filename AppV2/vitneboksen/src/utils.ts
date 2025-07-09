@@ -65,7 +65,8 @@ export const GetSupportedMimeType = () => {
 };
 
 export const mapVitneboks = (vitneboksRaw: any) => {
-  const questions = vitneboksRaw?.questions 
+  if(vitneboksRaw == undefined || vitneboksRaw == null) return null;
+  const questions = vitneboksRaw!.questions 
   ? ( Object.entries(vitneboksRaw.questions).map(([id, q]: [string, any]) => ({ ...q, id })) as Question[])
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0)) : [];
   return {

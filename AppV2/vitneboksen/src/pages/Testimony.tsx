@@ -31,8 +31,10 @@ export default function TestimonyPage() {
     if (!started) {
       const unsubscribe = onValue(vitneboksRef, (snapshot) => {
         const vitneboks = mapVitneboks(snapshot.val());
-        setFilteredQuestions(filterQuestions(vitneboks.questions));
-        setVitneboks(vitneboks);
+        if (vitneboks) {
+          setFilteredQuestions(filterQuestions(vitneboks.questions));
+          setVitneboks(vitneboks);
+        }
         setLoading(false);
       });
 
