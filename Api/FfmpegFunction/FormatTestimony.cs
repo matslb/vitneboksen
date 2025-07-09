@@ -81,10 +81,13 @@ namespace FfmpegFunction
                     string outputFilePath = Path.Combine(tempPath, processedFileMetadata.GetVideoFileName());
 
                     var ffmpegCmd = FfmpegCommandBuilder.WithText(videoFilePath, subtitleText, outputFilePath, fontSize: 50, TextPlacement.Subtitle);
-
-                    var commandResult = await Helpers.ExecuteFFmpegCommand(ffmpegCmd, 120, cancellation);
+                    var startTime = DateTime.Now;
+                    var commandResult = await Helpers.ExecuteFFmpegCommand(ffmpegCmd, 320, cancellation);
+                    var endTime = DateTime.Now;
+                    _logger.LogInformation("Encoding video took {time}s", (endTime - startTime).TotalSeconds);
 
                     var fileInfo = new FileInfo(outputFilePath);
+                    _logger.LogInformation(fileInfo.FullName, fileInfo.Length, fileInfo);
                     if (fileInfo.Exists && fileInfo.Length > 0)
                     {
                         using var fileStream = new FileStream(outputFilePath, FileMode.Open);
