@@ -82,7 +82,7 @@ namespace FfmpegFunction
 
                     var ffmpegCmd = FfmpegCommandBuilder.WithText(videoFilePath, subtitleText, outputFilePath, fontSize: 50, TextPlacement.Subtitle);
 
-                    var commandResult = await Helpers.ExecuteFFmpegCommand(ffmpegCmd, 180, cancellation);
+                    var commandResult = await Helpers.ExecuteFFmpegCommand(ffmpegCmd, 120, cancellation);
 
                     var fileInfo = new FileInfo(outputFilePath);
                     if (fileInfo.Exists && fileInfo.Length > 0)
