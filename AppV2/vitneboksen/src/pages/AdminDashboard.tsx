@@ -72,15 +72,18 @@ export default function AdminDashboard() {
             </>
           }
           <div className="max-w-md w-full bg-secondary-bg rounded shadow-md p-6 mb-16">
-            <h2 className="text-xl font-semibold mb-4">Opprett ny vitneboks</h2>
-            <input
-              type="text"
-              value={newTitle}
-              onChange={(e) => setNewTitle(e.target.value)}
-              maxLength={45}
-              placeholder="Navn på arrangement"
-              className="w-full p-2 rounded bg-white text-black mb-4"
-            />
+            <label>
+              <h2 className="text-xl font-semibold mb-4">Opprett ny vitneboks</h2>
+              <input
+                type="text"
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+                maxLength={45}
+                placeholder="Navn på arrangement"
+                className="w-full p-2 rounded bg-white text-black mb-4"
+              />
+            </label>
+
             {vitnebokser.length <= 1 ?
               <button
                 onClick={handleCreate}
@@ -97,6 +100,9 @@ export default function AdminDashboard() {
                 Du kan bare ha to aktive vitnebokser
               </button>
             }
+            <p>
+              Vitneboksen og tilhørende videoer blir slettet automatisk etter 7 dager.
+            </p>
           </div>
           <div className='p-8 rounded my-16 text-l bg-secondary-bg'>
             <h3 className='text-2xl'>Hvordan bruke VITNEBOKSEN?</h3>

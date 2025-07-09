@@ -40,7 +40,7 @@ export default function QuestionList({ vitneBoksId, userId, questions }: Questio
   };
   return (
     <>
-      <div className="w-full space-y-4 mb-8">
+      <div className="w-full mb-8">
         {questions.length > 0 &&
           <h2 className="text-xl font-semibold mb-4">Spørsmål</h2>
         }
@@ -59,7 +59,7 @@ export default function QuestionList({ vitneBoksId, userId, questions }: Questio
           style={{
             gridTemplateColumns: "4fr 2fr"
           }}
-          className="grid gap-4 justify-left mt-4">
+          className="grid gap-4 justify-left">
           <div>
             <label className="block mb-1">Spørsmålstekst</label>
             <input

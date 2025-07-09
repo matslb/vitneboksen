@@ -11,7 +11,7 @@ import { deleteVitneboks } from '../videoProcessorService';
 import Header from '../components/Header';
 import ToggleSwitch from '../components/ToggleSwitch';
 import QuestionList from '../components/QuestionList';
-import { mapVitneboks } from '../utils';
+import { dateStringToLocal, mapVitneboks, vitneboksTimeRemaining } from '../utils';
 
 export default function VitneboksDetail() {
   const { id } = useParams();
@@ -75,7 +75,7 @@ export default function VitneboksDetail() {
           <Header backButtonPath={"/admin/"} />
           <div className='mb-8 bg-secondary-bg w-full max-w-5xl p-8 shadow-md rounded'>
             <div className='flex justify-between'>
-              <p className="opacity-80">Opprettet: {vitneboks.createdOn.toLocaleString()}</p>
+              <p className="opacity-80">Opprettet: {new Date(vitneboks.createdOn).toLocaleDateString()} - {vitneboksTimeRemaining(vitneboks.createdOn)} igjen.</p>
               <ToggleSwitch label={vitneboks.isOpen ? "Åpen" : "Stengt"} checked={vitneboks.isOpen} onChange={(checked) => set(ref(db, `${user.uid}/vitnebokser/${id}/isOpen`), checked)} />
             </div>
             <h2 className="text-xl font-semibold my-4">Tittel</h2>

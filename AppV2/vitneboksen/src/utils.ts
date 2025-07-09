@@ -8,12 +8,20 @@ export const dateStringToLocal = (dateString: string) => {
     const pad = (n: number) => n.toString().padStart(2, '0');
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 };
+export const vitneboksTimeRemaining = (dateString: string) => {
+  const startDate = new Date(dateString);
+  const expiryDate = new Date(startDate);
+  expiryDate.setDate(expiryDate.getDate() + 7);
 
-export const dateStringToUtc = (dateString: string) => {
-    const date = new Date(dateString);
-    const pad = (n: number) => n.toString().padStart(2, '0');
-    return `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())}T${pad(date.getUTCHours())}:${pad(date.getUTCMinutes())}`;
-}
+  const now = new Date();
+  const diffMs = expiryDate.getTime() - now.getTime();
+  
+  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diffMs / (1000 * 60 * 60)) % 24);
+  
+  return `${days} dager ${hours} timer`;
+};
+
 
 export const GetRecordingConstrains = () => {
     return { video: {
@@ -60,7 +68,7 @@ export const mapVitneboks = (vitneboksRaw: any) => {
   ? ( Object.entries(vitneboksRaw.questions).map(([id, q]: [string, any]) => ({ ...q, id })) as Question[])
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0)) : [];  return {
     ...vitneboksRaw,
-    createdOn: new Date(vitneboksRaw.createdOn).toLocaleDateString(),
+    createdOn: vitneboksRaw.createdOn,
     questions,
   };
 }
