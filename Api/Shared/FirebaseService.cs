@@ -44,6 +44,9 @@ public class FirebaseService(FirebaseConfig firebaseConfig)
     {
         var uid = GetUidFromSessionKey(sessionKey);
         firebaseClient.Delete($"{uid}/vitnebokser/{sessionKey}");
+        firebaseClient.Delete($"publicVitnebokser/{sessionKey}");
+        firebaseClient.Delete($"activeSessions/{sessionKey}");
+
     }
 
     public void SetDeletionFromDate(string sessionKey, DateTimeOffset date)
