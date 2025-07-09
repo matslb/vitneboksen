@@ -52,7 +52,7 @@ export async function createSession(vitneboksId: string, uid: string, userToken:
 
 export async function downloadFinalVideo(vitneboksId: string, userToken: string){
   const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
-  const urlWithQueryParam = `${API_URL}download-final-video?userToken=${userToken}?sessionKey=${vitneboksId}`;
+  const urlWithQueryParam = `${API_URL}download-final-video?userToken=${userToken}&sessionKey=${vitneboksId}`;
   window.open(urlWithQueryParam, '_blank');
 }
 
