@@ -16,4 +16,5 @@ export interface Vitneboks {
   finalVideoProcessingStatus: FinalVideoStatus;
   questions: Question[];
   isOpen: boolean;
+  uid: string;
 }

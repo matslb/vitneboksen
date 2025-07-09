@@ -44,15 +44,18 @@ export default function QuestionList({ vitneBoksId, userId, questions }: Questio
         {questions.length > 0 &&
           <h2 className="text-xl font-semibold mb-4">Spørsmål</h2>
         }
-        {questions.map((q) => (
-          <QuestionBox
-            key={q.id}
-            userId={userId}
-            vitneboksId={vitneBoksId}
-            question={q}
-          />
-        ))}
-      </div>
+        <ul className="flex flex-col gap-4">
+          {questions.map((q) => (
+            <li key={q.id}>
+              <QuestionBox
+                userId={userId}
+                vitneboksId={vitneBoksId}
+                question={q}
+              />
+            </li>
+          ))}
+        </ul>
+      </div >
       <h2 className="text-xl font-semibold mb-4">Legg til nytt spørsmål</h2>
       <div className="w-full  bg-white/10 rounded shadow-md p-6  mb-8">
         <div

@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import type PublicVitneboks from "./types/PublicVitneboks";
 import type Question from "./types/Question";
 
 export const dateStringToLocal = (dateString: string) => {
@@ -73,16 +72,6 @@ export const mapVitneboks = (vitneboksRaw: any) => {
     createdOn: vitneboksRaw.createdOn,
     questions,
   };
-}
-
-export const mapPublicVitneboks = (vitneboksRaw: any) => {
-  const questions = vitneboksRaw?.questions 
-  ? ( Object.entries(vitneboksRaw.questions).map(([id, q]: [string, any]) => ({ ...q, id })) as Question[])
-    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0)) : [];
-  return {
-    ...vitneboksRaw,
-    questions: questions,
-  } as PublicVitneboks;
 }
 
 export const generateVitneboksId = () => {

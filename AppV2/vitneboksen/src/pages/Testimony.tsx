@@ -7,15 +7,14 @@ import LoadingFullScreen from '../components/LoadingFullScreen';
 import WelcomeScreen from '../components/WelcomeScreen';
 import VideoRecorder from '../components/VideoRecorder';
 import WaitingScreen from '../components/WaitingScreen';
-import type PublicVitneboks from '../types/PublicVitneboks';
 import ThankYouScreen from '../components/TankYouScreen';
-import { mapPublicVitneboks } from '../utils';
 import type Question from '../types/Question';
-import { FinalVideoStatus } from '../types/Vitneboks';
+import { FinalVideoStatus, type Vitneboks } from '../types/Vitneboks';
+import { mapVitneboks } from '../utils';
 
 export default function TestimonyPage() {
   const { vitneboksId } = useParams();
-  const [vitneboks, setVitneboks] = useState<PublicVitneboks | null>(null);
+  const [vitneboks, setVitneboks] = useState<Vitneboks | null>(null);
   const [loading, setLoading] = useState(true);
   const [started, setStarted] = useState(false);
   const [waiting, setWaiting] = useState(false);
@@ -30,7 +29,7 @@ export default function TestimonyPage() {
 
     if (!started) {
       const unsubscribe = onValue(vitneboksRef, (snapshot) => {
-        const vitneboks = mapPublicVitneboks(snapshot.val());
+        const vitneboks = mapVitneboks(snapshot.val());
         vitneboks.questions = filterQuestions(vitneboks.questions);
         setVitneboks(vitneboks);
         setLoading(false);
@@ -118,7 +117,7 @@ export default function TestimonyPage() {
           onClick={handleEnterFullscreen}
         >Fullskjerm</button>
       }
-      {!vitneboks.isOpen || vitneboks.questions.length === 0 || vitneboks.finalVideoProcessingStatus == FinalVideoStatus.started ?
+      {!vitneboks.isOpen || vitneboks.questions.length === 0 || vitneboks.finalVideoProcessingStatus == FinalVideoStatus.started || (vitneboks.completedVideos + vitneboks.videosToBeProcessed) >= 50 ?
         <div className="flex flex-col items-center justify-center flex-1 p-6 text-3xl">
           Kom tilbake senere. Her er det dessverre stengt 😓
         </div>

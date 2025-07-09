@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getDatabase, ref, onValue, set, remove } from 'firebase/database';
 import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
 import { FinalVideoStatus, type Vitneboks } from '../types/Vitneboks';
-import type PublicVitneboks from '../types/PublicVitneboks';
 
 import LoadingFullScreen from '../components/LoadingFullScreen';
 import Footer from '../components/Footer';
@@ -43,13 +42,7 @@ export default function VitneboksDetail() {
     if (vitneboks === null) return;
 
     const publicVitneboksRef = ref(db, `publicVitnebokser/${vitneboks.id}`);
-    set(publicVitneboksRef, {
-      questions: vitneboks.questions,
-      title: vitneboks.title,
-      uid: user!.uid,
-      isOpen: vitneboks.isOpen,
-      finalVideoProcessingStatus: vitneboks.finalVideoProcessingStatus
-    } as PublicVitneboks);
+    set(publicVitneboksRef, vitneboks);
   }, [vitneboks]);
 
   useEffect(() => {

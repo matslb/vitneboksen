@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { getDatabase, ref, onValue, set } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
 import { FinalVideoStatus, type Vitneboks } from '../types/Vitneboks';
-import type PublicVitneboks from '../types/PublicVitneboks';
 import Footer from '../components/Footer';
 import { generateVitneboksId, mapVitneboks } from '../utils';
 import Header from '../components/Header';
@@ -36,18 +35,15 @@ export default function AdminDashboard() {
       completedVideos: 0,
       finalVideoProcessingStatus: FinalVideoStatus.notStarted,
       questions: [],
-      isOpen: true
+      isOpen: true,
+      uid: uid
     };
     const vitneboksRef = ref(db, `${uid}/vitnebokser/${newVitneboks.id}`);
     set(vitneboksRef, newVitneboks);
 
     const publicVitneboksRef = ref(db, `publicVitnebokser/${newVitneboks.id}`);
 
-    set(publicVitneboksRef, {
-      questions: newVitneboks.questions,
-      title: newVitneboks.title,
-      uid: uid
-    } as PublicVitneboks);
+    set(publicVitneboksRef, newVitneboks);
 
     createSession(newVitneboks.id, uid);
     setNewTitle('');
