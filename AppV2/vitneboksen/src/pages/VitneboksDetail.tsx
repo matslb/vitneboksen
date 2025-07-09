@@ -59,10 +59,9 @@ export default function VitneboksDetail() {
 
     if (!confirm("Er du sikker på at du vil slette denne vitneboksen? Dette kan ikke angres.")) return;
 
-    const vbRef = ref(db, `${user.uid}/vitnebokser/${id}`);
-    const publicRef = ref(db, `publicVitnebokser/${id}`);
-    remove(vbRef);
-    remove(publicRef);
+    remove(ref(db, `${user.uid}/vitnebokser/${id}`));
+    remove(ref(db, `publicVitnebokser/${id}`));
+    remove(ref(db, `activeSessions/${id}`));
 
     await deleteVitneboks(id);
     navigate('/admin');
