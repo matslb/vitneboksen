@@ -20,7 +20,8 @@ export default function AdminDashboard() {
     if (!uid) return;
     const vitnebokserRef = ref(db, `${uid}/vitnebokser`);
     onValue(vitnebokserRef, (snapshot) => {
-      const data = snapshot.val() || {};
+      const data = snapshot.val();
+      console.log(data);
       setVitnebokser(Object.values(data).map(v => mapVitneboks(v)))
     });
 
