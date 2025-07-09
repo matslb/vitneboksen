@@ -39,7 +39,7 @@ export default function TimelineEditor({
                                     className="rounded min-h-[135px] w-60"
                                 />
                                 <div className="flex justify-between items-center m-2">
-                                    <div className="text-sm text-white ">{date.toLocaleDateString()} - kl {date.getHours()}:{date.getMinutes()}</div>
+                                    <div className="text-sm text-white ">{date.toLocaleDateString()} - kl {date.getHours()}:{date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()}</div>
                                     <button
                                         onClick={() => handleDelete(videoId)}
                                         className="px-3 py-1 text-sm rounded bg-danger text-white hover:bg-red-700"
