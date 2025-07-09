@@ -34,7 +34,7 @@ public static class FfmpegCommandBuilder
             ? $":enable='between(t,{startTime.Value.ToString(CultureInfo.InvariantCulture)},{endTime.Value.ToString(CultureInfo.InvariantCulture)})'"
             : ""; // No enable option, text is shown for the whole duration.
 
-        return $"-i \"{sourceVideoPath}\" " +
+        return $"-y -fflags +genpts -i \"{sourceVideoPath}\" " +
                $"-filter:a \"loudnorm=I=-16:TP=-1.5:LRA=11\" " +
                $"-vf \"scale=1920:1080:force_original_aspect_ratio=decrease," +
                $"pad=1920:1080:(1920-iw)/2:(1080-ih)/2," +
