@@ -12,6 +12,7 @@ import Header from '../components/Header';
 import ToggleSwitch from '../components/ToggleSwitch';
 import QuestionList from '../components/QuestionList';
 import { mapVitneboks, vitneboksTimeRemaining } from '../utils';
+import VideoStats from '../components/VideoStats';
 
 export default function VitneboksDetail() {
   const { id } = useParams();
@@ -37,7 +38,8 @@ export default function VitneboksDetail() {
       questions: vitneboks.questions,
       title: vitneboks.title,
       uid: user!.uid,
-      isOpen: vitneboks.isOpen
+      isOpen: vitneboks.isOpen,
+      finalVideoProcessingStatus: vitneboks.finalVideoProcessingStatus
     } as PublicVitneboks);
   }, [vitneboks]);
 
@@ -73,14 +75,15 @@ export default function VitneboksDetail() {
         <div className="flex flex-col items-center text-primary-text">
           <Header backButtonPath={"/admin/"} />
           <div className='mb-8 bg-secondary-bg w-full max-w-5xl p-8 shadow-md rounded'>
-            <div className='flex justify-between'>
-              <p className="opacity-80">
-                {vitneboks.deletionFromDate &&
-                  <>Slettes automatisk om {vitneboksTimeRemaining(vitneboks.deletionFromDate)}</>
-                }
-              </p>
+            <div className='flex justify-between mb-4'>
+              <VideoStats completed={vitneboks.completedVideos} inProgress={vitneboks.videosToBeProcessed} />
               <ToggleSwitch label={vitneboks.isOpen ? "Åpen" : "Stengt"} checked={vitneboks.isOpen} onChange={(checked) => set(ref(db, `${user.uid}/vitnebokser/${id}/isOpen`), checked)} />
             </div>
+            <p className="opacity-80">
+              {vitneboks.deletionFromDate &&
+                <>Slettes automatisk om {vitneboksTimeRemaining(vitneboks.deletionFromDate)}</>
+              }
+            </p>
             <h2 className="text-xl font-semibold my-4">Tittel</h2>
             <label htmlFor="title" className='hidden'>Tittel</label>
             <p className="text-3xl font-bold my-4  ">

@@ -4,6 +4,7 @@ import SpinnerIcon from "./SpinnerIcon"
 import { Link } from "react-router-dom";
 import { downloadFinalVideo, startFinalVideoProcessing } from "../videoProcessorService";
 import { getDatabase, onValue, ref } from "firebase/database";
+import VideoStats from "./VideoStats";
 
 interface VitneboxBoxProps {
     Vitneboks: Vitneboks
@@ -62,15 +63,8 @@ export default function VitneboksBox({ Vitneboks }: VitneboxBoxProps) {
                 {copied && <p className="text-green-500 text-sm mt-1">{copied}</p>}
             </div>
             <div className='flex justify-between gap-2'>
-                <p className="text-m "><span className='bg-black/40 text-white text-center min-w-9 inline-block rounded'>{Vitneboks.completedVideos}</span> Vitnesbyrd
-                    {Vitneboks.videosToBeProcessed > 0 &&
-                        <>
-                            &nbsp;(&nbsp;<SpinnerIcon />{Vitneboks.videosToBeProcessed} på vei )
-                        </>
-                    }
-                </p>
+                <VideoStats completed={Vitneboks.completedVideos} inProgress={Vitneboks.videosToBeProcessed} />
                 <p className="text-m mb-1"><span className='bg-black/40 text-center text-white min-w-9 inline-block rounded'>{Object.values(Vitneboks.questions)?.length}</span> Spørsmål</p>
-
             </div>
             <div className="mt-4 text-right flex flex-row-reverse justify-between gap-6">
                 <Link
