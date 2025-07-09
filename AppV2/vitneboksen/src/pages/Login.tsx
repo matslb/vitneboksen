@@ -26,7 +26,7 @@ export default function Login() {
         <button
           type="button"
           onClick={handleLogin}
-          className="bg-primary-button hover:bg-secondary-button text-black text-2xl px-8 py-4 rounded shadow-md"
+          className="bg-primary-button text-black text-2xl px-8 py-4 rounded shadow-md hover:text-white hover:bg-secondary-bg"
         >
           Logg inn med Google
         </button>

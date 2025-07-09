@@ -18,7 +18,7 @@ export default function Header({ backButtonPath }: HeaderProps) {
         {backButtonPath !== undefined &&
           <Link
             to={backButtonPath}
-            className="bg-primary-button text-black px-4 py-2 rounded"
+            className="bg-primary-button text-black px-4 py-2 rounded hover:text-white hover:bg-secondary-bg"
           >
             Tilbake
           </Link>

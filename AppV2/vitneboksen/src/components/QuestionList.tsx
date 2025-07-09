@@ -80,7 +80,7 @@ export default function QuestionList({ vitneBoksId, userId, questions }: Questio
         <div className="flex justify-end">
           <button
             onClick={handleAddQuestion}
-            className="bg-primary-button text-black px-4 py-2 rounded hover:bg-secondary "
+            className="bg-primary-button text-black px-4 py-2 rounded hover:text-white hover:bg-secondary-bg"
           >
             Legg til spørsmål
           </button>

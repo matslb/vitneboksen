@@ -102,7 +102,7 @@ namespace FfmpegFunction
 
                     _firebaseService.SetFinalVideoProcessingStatus(fileMetaData.SessionKey, FirebaseService.FinalVideoProcessingStatus.notStarted);
                     _firebaseService.SetToBeProcessedCount(fileMetaData.SessionKey, unprocessedContainer.GetBlobs().Count(blob => blob.Name.Contains(".webm") && blob.Name.Contains(fileMetaData.SessionKey)));
-                    _firebaseService.SetCompletedVideosCount(fileMetaData.SessionKey, sessionContainer.GetBlobs().Count(blob => blob.Name.Contains(".mp4")));
+                    _firebaseService.SetCompletedVideosCount(fileMetaData.SessionKey, sessionContainer.GetBlobs().Count(blob => blob.Name.Contains(".mp4") && blob.Name != Constants.FinalVideoFileName));
                 }
             }
             catch (Exception e)

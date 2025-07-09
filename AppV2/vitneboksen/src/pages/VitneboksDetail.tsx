@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getDatabase, ref, onValue, set, remove } from 'firebase/database';
 import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
-import { type Vitneboks } from '../types/Vitneboks';
+import { FinalVideoStatus, type Vitneboks } from '../types/Vitneboks';
 import type PublicVitneboks from '../types/PublicVitneboks';
 
 import LoadingFullScreen from '../components/LoadingFullScreen';
 import Footer from '../components/Footer';
-import { deleteVitneboks } from '../videoProcessorService';
+import { deleteVitneboks, forceUpdateVitneboksStatus } from '../videoProcessorService';
 import Header from '../components/Header';
 import ToggleSwitch from '../components/ToggleSwitch';
 import QuestionList from '../components/QuestionList';
@@ -85,7 +85,20 @@ export default function VitneboksDetail() {
               <input type='text' name='title' maxLength={45} className='bg-white/10 rounded shadow-md p-2 w-[100%] text-left' value={vitneboks.title} onChange={(e) => set(ref(db, `${user.uid}/vitnebokser/${id}/title`), e.currentTarget.value)} />
             </p>
             <QuestionList vitneBoksId={vitneboks.id} userId={user.uid} questions={vitneboks.questions} />
-            <div className='flex justify-end w-full items-center gap-4'>
+            <div className='flex justify-between items-end gap-4'>
+              {vitneboks.finalVideoProcessingStatus == FinalVideoStatus.started || vitneboks.videosToBeProcessed > 0 &&
+                <div className='flex flex-col align-left gap-4'>
+                  <span>
+                    Tror du noe har gått galt?
+                  </span>
+                  <button
+                    onClick={() => forceUpdateVitneboksStatus(vitneboks.id)}
+                    className="bg-primary-button w-45 text-black px-4 py-2 rounded hover:text-white hover:bg-secondary-bg"
+                  >
+                    Tving statussjekk
+                  </button>
+                </div>
+              }
               <p className="opacity-80">
                 {vitneboks.deletionFromDate &&
                   <>Slettes automatisk om {vitneboksTimeRemaining(vitneboks.deletionFromDate)}</>
@@ -93,11 +106,10 @@ export default function VitneboksDetail() {
               </p>
               <button
                 onClick={handleDeleteVitneboks}
-                className="bg-danger text-white px-4 py-2 mt-8 rounded hover:bg-danger-200 mb-8"
+                className="bg-danger text-white px-4 py-2 rounded"
               >
                 Slett vitneboks
               </button>
-
             </div>
           </div>
         </div>

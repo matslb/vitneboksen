@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export async function uploadVideoToProcessor(videoBlob: Blob, vitneboksId: string, uid: string, question: string) {
   const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
 
@@ -33,6 +34,13 @@ export async function deleteVitneboks(vitneboksId: string){
     const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
     const urlWithQueryParam = `${API_URL}delete-session?sessionKey=${vitneboksId}`;
     const response = await fetch(urlWithQueryParam, { method: "DELETE" });
+    return response.ok;
+}
+
+export async function forceUpdateVitneboksStatus(vitneboksId: string){
+    const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
+    const urlWithQueryParam = `${API_URL}force-update?sessionKey=${vitneboksId}`;
+    const response = await fetch(urlWithQueryParam, { method: "Get" });
     return response.ok;
 }
 

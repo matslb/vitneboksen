@@ -87,7 +87,7 @@ export default function AdminDashboard() {
             {vitnebokser.length <= 1 ?
               <button
                 onClick={handleCreate}
-                className="bg-primary-button hover:text-white  text-black px-4 py-2 rounded hover:bg-secondary-bg w-full"
+                className="bg-primary-button hover:text-white  text-black px-4 py-2 rounded hover:text-white hover:bg-secondary-bg w-full"
               >
                 Opprett
               </button>
