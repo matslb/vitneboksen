@@ -15,6 +15,7 @@ import { mapVitneboks } from '../utils';
 export default function TestimonyPage() {
   const { vitneboksId } = useParams();
   const [vitneboks, setVitneboks] = useState<Vitneboks | null>(null);
+  const [filteredQuestions, setFilteredQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const [started, setStarted] = useState(false);
   const [waiting, setWaiting] = useState(false);
@@ -30,7 +31,7 @@ export default function TestimonyPage() {
     if (!started) {
       const unsubscribe = onValue(vitneboksRef, (snapshot) => {
         const vitneboks = mapVitneboks(snapshot.val());
-        vitneboks.questions = filterQuestions(vitneboks.questions);
+        setFilteredQuestions(filterQuestions(vitneboks.questions));
         setVitneboks(vitneboks);
         setLoading(false);
       });
@@ -55,10 +56,10 @@ export default function TestimonyPage() {
   useEffect(() => {
     const intervalId = setInterval(() => {
       if (vitneboks === null || started || waiting) return;
-      vitneboks!.questions = filterQuestions(vitneboks!.questions);
+      setFilteredQuestions(filterQuestions(vitneboks!.questions));
       setVitneboks(vitneboks);
-      if (vitneboks.questions.findIndex(q => q.id === currentQuestion?.id) === -1) {
-        setCurrentQuestionIndex(vitneboks.questions[0].order);
+      if (filteredQuestions.findIndex(q => q.id === currentQuestion?.id) === -1) {
+        setCurrentQuestionIndex(filteredQuestions[0]?.order ?? 0);
       }
     }, 1000);
     return () => clearInterval(intervalId);
@@ -107,7 +108,7 @@ export default function TestimonyPage() {
     }
   };
 
-  const currentQuestion = vitneboks.questions.find(q => q.order === currentQuestionIndex);
+  const currentQuestion = filteredQuestions.find(q => q.order === currentQuestionIndex);
 
   return (
     <div ref={divRef} className="flex flex-col min-h-screen bg-primary-bg text-primary-text">
@@ -117,7 +118,7 @@ export default function TestimonyPage() {
           onClick={handleEnterFullscreen}
         >Fullskjerm</button>
       }
-      {!vitneboks.isOpen || vitneboks.questions.length === 0 || vitneboks.finalVideoProcessingStatus == FinalVideoStatus.started || (vitneboks.completedVideos + vitneboks.videosToBeProcessed) >= 50 ?
+      {!vitneboks.isOpen || filteredQuestions.length === 0 || vitneboks.finalVideoProcessingStatus == FinalVideoStatus.started || (vitneboks.completedVideos + vitneboks.videosToBeProcessed) >= 50 ?
         <div className="flex flex-col items-center justify-center flex-1 p-6 text-3xl">
           Kom tilbake senere. Her er det dessverre stengt 😓
         </div>
