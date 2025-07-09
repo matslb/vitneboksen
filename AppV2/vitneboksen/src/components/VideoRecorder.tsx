@@ -100,7 +100,7 @@ export default function VideoRecorder({ question, vitneboksId, onFinish }: Video
   return (
     <>
       <div className="flex flex-col items-center justify-center fixed bg-black top-0 left-0 right-0 bottom-0 flex-1 ">
-        <video ref={videoRef} className="fixed top-0 bottom-0 min-h-full max-w-none -scale-x-100" />
+        <video ref={videoRef} className="fixed top-0 bottom-0 min-h-full max-w-[100vw] -scale-x-100" />
         <h2
           style={{
             background: "rgba(0,0,0,0.55)",
