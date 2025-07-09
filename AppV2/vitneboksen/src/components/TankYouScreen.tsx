@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 
 interface ThankYouScreenProps {
-    setWaiting: (isWaiting: boolean) => void;
-    seconds: number;
+  setWaiting: (isWaiting: boolean) => void;
+  seconds: number;
 }
 
 export default function ThankYouScreen({ seconds, setWaiting }: ThankYouScreenProps) {
@@ -25,9 +25,9 @@ export default function ThankYouScreen({ seconds, setWaiting }: ThankYouScreenPr
 
   return (
     <div className="flex flex-col items-center justify-center flex-1 p-6">
-      <h2 className="text-3xl font-bold mb-4">Takk til deg!</h2>
-      <p className="text-lg">Vitneboksen åpner igjen om {countdown} sekunder…</p>
-      <p className="text-2xl mt-16 ">Nå kan du vinke inn neste, og bare kul'n</p>
+      <h2 className="text-7xl font-bold mb-16">Takk til deg!</h2>
+      <p className="text-5xl my-4 ">Nå kan du vinke inn neste, og bare kul'n</p>
+      <p className="text-3xl my-4">Vitneboksen åpner igjen om {countdown} sekunder…</p>
     </div>
   );
 }
