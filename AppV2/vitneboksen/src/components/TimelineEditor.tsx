@@ -25,13 +25,13 @@ export default function TimelineEditor({
             <h3 className="text-xl font-bold">Vitnesbyrd</h3>
             <div className="bg-white/10 rounded p-4 my-4 overflow-x-auto">
                 <VideoStats completed={vitneboks.completedVideos} inProgress={vitneboks.videosToBeProcessed} />
-                <div className="flex gap-2 py-4">
+                <div className="flex gap-2 my-4 overflow-x-scroll">
                     {vitneboks.completedVideoIds.map((videoId) => {
-                        const formatted = new Date(Number(videoId));
+                        const date = new Date(Number(videoId));
                         return (
                             <div
                                 key={videoId}
-                                className="bg-black/50 rounded shadow-md p-1 rounded "
+                                className="bg-black/50 rounded shadow-md p-1 rounded shrink-0"
                             >
                                 <img
                                     src={`${API_URL}getgif/${videoId}?sessionKey=${vitneboks.id}&userToken=${userToken}`}
@@ -39,7 +39,7 @@ export default function TimelineEditor({
                                     className="rounded min-h-[135px] w-60"
                                 />
                                 <div className="flex justify-between items-center m-2">
-                                    <div className="text-sm text-white ">{formatted.toDateString()}</div>
+                                    <div className="text-sm text-white ">{date.toLocaleDateString()} - kl {date.getHours()}:{date.getMinutes()}</div>
                                     <button
                                         onClick={() => handleDelete(videoId)}
                                         className="px-3 py-1 text-sm rounded bg-danger text-white hover:bg-red-700"

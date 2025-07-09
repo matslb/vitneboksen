@@ -38,7 +38,7 @@ app.MapPost("/upload-testimony/v2", async Task<IResult> (HttpRequest request) =>
 app.MapGet("/create-session", async Task<IResult> (HttpRequest request) => await CreateSession.Run(request, constring: storageConnectionString, firebaseService: firebaseService));
 app.MapGet("/force-update", async Task<IResult> (HttpRequest request) => await ForceUpdateSessionStatus.Run(request, constring: storageConnectionString, firebaseService: firebaseService));
 
-app.MapGet("/getgif/{fileName}", async (HttpRequest request, string fileName) => await GetGif.Run(request, fileName, constring: storageConnectionString, firebaseService));
+app.MapGet("/getgif/{fileName}", async (HttpRequest request, HttpResponse response, string fileName) => await GetGif.Run(request, response, fileName, storageConnectionString, firebaseService));
 app.MapGet("/download-session-files", async Task<IResult> (HttpRequest request) => await DownloadSessionFiles.Run(request, storageConnectionString, firebaseService));
 app.MapGet("/start-final-video-processing", async Task<IResult> (HttpRequest request) => await StartFinalVideoProcessing.Run(request, storageConnectionString, firebaseService));
 app.MapGet("/download-final-video", async Task<IResult> (HttpRequest request) => await DownloadFinalVideo.Run(request, storageConnectionString, firebaseService));

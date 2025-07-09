@@ -2,10 +2,9 @@
 using Shared;
 
 namespace Vitneboksen_Api.Controllers;
-
 public static class GetGif
 {
-    public static async Task<IResult> Run(HttpRequest req, string fileName, string constring, FirebaseService firebaseService)
+    public static async Task<IResult> Run(HttpRequest req, HttpResponse res, string fileName, string constring, FirebaseService firebaseService)
     {
         var blobService = new BlobServiceClient(constring);
 
@@ -36,10 +35,15 @@ public static class GetGif
             return Results.NotFound("GIF not found.");
         }
 
-        var stream = new MemoryStream();
-        await gifBlob.DownloadToAsync(stream);
-        stream.Position = 0;
+        var stream = await gifBlob.OpenReadAsync();
 
-        return Results.File(stream, contentType: "image/gif", fileDownloadName: fileName);
+        // Here you fully control the response
+        res.ContentType = "image/gif";
+        res.Headers["Cache-Control"] = "private, max-age=600";
+        res.Headers["Content-Disposition"] = $"inline; filename=\"{fileName}.gif\"";
+
+        await stream.CopyToAsync(res.Body);
+
+        return Results.Empty;
     }
 }
