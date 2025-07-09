@@ -3,6 +3,7 @@ using Azure.Storage.Blobs;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Shared;
 using System;
 using System.Globalization;
 using System.Threading.Tasks;
@@ -13,10 +14,16 @@ public class DeleteOldSessions
 {
     private readonly ILogger _logger;
     private readonly IConfiguration _configuration;
+    private readonly FirebaseService _firebaseService;
     public DeleteOldSessions(ILoggerFactory loggerFactory, IConfiguration configuration)
     {
         _logger = loggerFactory.CreateLogger<DeleteOldSessions>();
         _configuration = configuration;
+        _firebaseService = new FirebaseService(new FireSharp.Config.FirebaseConfig
+        {
+            AuthSecret = Environment.GetEnvironmentVariable("FireSharp__AuthSecret"),
+            BasePath = Environment.GetEnvironmentVariable("FireSharp__BasePath"),
+        });
     }
 
     [Function("DeleteOldSessions")]
@@ -46,10 +53,15 @@ public class DeleteOldSessions
                     continue;
                 }
 
-                if (now - createdDate > TimeSpan.FromDays(30))
+                if (now - createdDate > TimeSpan.FromDays(7))
                 {
                     await containerClient.DeleteIfExistsAsync();
-                    _logger.LogInformation($"Deleted container: {container.Name}");
+                    _logger.LogInformation($"Deleted container: {container.Name} in Azure");
+
+                    var sessionKey = container.Name.Split("-")[0];
+                    _firebaseService.DeleteSession(sessionKey);
+                    _logger.LogInformation($"Deleted vitneboks in Firebase: {sessionKey}.");
+
                 }
             }
             catch (RequestFailedException ex)

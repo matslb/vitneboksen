@@ -16,7 +16,7 @@ export default function QuestionList({ vitneBoksId, userId, questions }: Questio
 
   const [newQuestionText, setNewQuestionText] = useState('');
   const [newRecordingDuration, setNewRecordingDuration] = useState(10);
-  const [allwaysActive, setAllwaysActive] = useState(false);
+  const [allwaysActive, setAllwaysActive] = useState(true);
   const [activeFrom, setActiveFrom] = useState('');
   const [activeTo, setActiveTo] = useState('');
 

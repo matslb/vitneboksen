@@ -13,7 +13,6 @@
 
         public static class VideoTypes
         {
-            public static string ActionShot = nameof(ActionShot);
             public static string Testimonial = nameof(Testimonial);
         }
     }

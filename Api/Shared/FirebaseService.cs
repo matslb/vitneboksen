@@ -38,6 +38,12 @@ public class FirebaseService(FirebaseConfig firebaseConfig)
         return firebaseResponse.ResultAs<string>();
     }
 
+    public void DeleteSession(string sessionKey)
+    {
+        var uid = GetUidFromSessionKey(sessionKey);
+        firebaseClient.Delete($"{uid}/vitnebokser/{sessionKey}");
+    }
+
     public enum FinalVideoProcessingStatus
     {
         notStarted = 0,
