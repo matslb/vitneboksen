@@ -23,6 +23,7 @@ public class FirebaseService(FirebaseConfig firebaseConfig)
     {
         var uid = GetUidFromSessionKey(sessionKey);
         firebaseClient.Set($"{uid}/vitnebokser/{sessionKey}/finalVideoProcessingStatus", status);
+        firebaseClient.Set($"publicVitnebokser/{sessionKey}/finalVideoProcessingStatus", status);
     }
 
     public string GetSessionName(string sessionKey)
