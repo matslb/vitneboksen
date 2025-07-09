@@ -6,7 +6,7 @@ import { FinalVideoStatus, type Vitneboks } from '../types/Vitneboks';
 
 import LoadingFullScreen from '../components/LoadingFullScreen';
 import Footer from '../components/Footer';
-import { deleteVitneboks, forceUpdateVitneboksStatus } from '../videoProcessorService';
+import { deleteVitneboks, forceUpdateVitneboksStatus } from '../vitneboksService';
 import Header from '../components/Header';
 import ToggleSwitch from '../components/ToggleSwitch';
 import QuestionList from '../components/QuestionList';
@@ -20,6 +20,7 @@ export default function VitneboksDetail() {
   const [vitneboks, setVitneboks] = useState<Vitneboks | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isRecording, setIsRecording] = useState(false);
+  const [userToken, setUserToken] = useState("");
   const auth = getAuth();
   const db = getDatabase();
 
@@ -37,6 +38,14 @@ export default function VitneboksDetail() {
     });
     return () => unsubscribe();
   }, [auth]);
+
+  useEffect(() => {
+    const db = getDatabase();
+    onValue(ref(db, `/userTokens/${user?.uid}`), (snapshot) => {
+      const data: string = snapshot.val();
+      setUserToken(data);
+    });
+  }, [user])
 
   useEffect(() => {
     if (vitneboks === null) return;
@@ -62,12 +71,12 @@ export default function VitneboksDetail() {
     if (!user?.uid || !id) return;
 
     if (!confirm("Er du sikker på at du vil slette denne vitneboksen? Dette kan ikke angres.")) return;
+    await deleteVitneboks(id, userToken);
 
     remove(ref(db, `${user.uid}/vitnebokser/${id}`));
     remove(ref(db, `publicVitnebokser/${id}`));
     remove(ref(db, `activeSessions/${id}`));
 
-    await deleteVitneboks(id);
     navigate('/admin');
   };
   console.log(vitneboks.videosToBeProcessed);
@@ -110,7 +119,7 @@ export default function VitneboksDetail() {
                     Tror du noe har gått galt?
                   </span>
                   <button
-                    onClick={() => forceUpdateVitneboksStatus(vitneboks.id)}
+                    onClick={() => forceUpdateVitneboksStatus(vitneboks.id, userToken)}
                     className="bg-primary-button w-45 text-black px-4 py-2 rounded hover:text-white hover:bg-secondary-bg"
                   >
                     Tving statussjekk

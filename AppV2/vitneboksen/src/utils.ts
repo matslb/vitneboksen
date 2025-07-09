@@ -81,3 +81,13 @@ export const generateVitneboksId = () => {
     return v.toString(16);
   });
 };
+
+export const generateStrongToken = (): string =>  {
+  const bytes = new Uint8Array(64);
+  crypto.getRandomValues(bytes);
+
+  return btoa(String.fromCharCode(...bytes))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+}

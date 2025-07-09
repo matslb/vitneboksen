@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { GetRecordingConstrains, videoExtension } from '../utils';
 import type Question from '../types/Question';
-import { uploadVideoToProcessor } from '../videoProcessorService';
+import { uploadVideoToProcessor } from '../vitneboksService';
 import { getDatabase, ref, set } from 'firebase/database';
 
 interface VideoRecorderProps {

@@ -1,6 +1,8 @@
+import { useEffect, useState } from 'react';
 import { FinalVideoStatus, type Vitneboks } from '../types/Vitneboks';
-import { downloadFinalVideo, downloadSessionFiles, startFinalVideoProcessing } from '../videoProcessorService';
+import { downloadFinalVideo, downloadSessionFiles, startFinalVideoProcessing } from '../vitneboksService';
 import SpinnerIcon from './SpinnerIcon';
+import { getDatabase, onValue, ref } from 'firebase/database';
 
 type GenerateVideoButtonProps = {
     Vitneboks: Vitneboks,
@@ -8,19 +10,25 @@ type GenerateVideoButtonProps = {
 };
 
 export default function GenerateVideoButton({ Vitneboks, showZip = false }: GenerateVideoButtonProps) {
+    const [userToken, setUserToken] = useState('');
+    useEffect(() => {
+        const db = getDatabase();
+        onValue(ref(db, `/userTokens/${Vitneboks.uid}`), (snapshot) => {
+            const data: string = snapshot.val();
+            setUserToken(data);
+        });
+    }, [])
     return (
-
         <>
             {Vitneboks.completedVideos > 0 &&
                 <div>
-
                     {Vitneboks.videosToBeProcessed === 0 &&
                         <div className='flex flex-col items-end'>
                             <>
                                 {
                                     Vitneboks.completedVideos > 1 && Vitneboks.finalVideoProcessingStatus == FinalVideoStatus.notStarted &&
                                     <button
-                                        onClick={() => startFinalVideoProcessing(Vitneboks.id)}
+                                        onClick={() => startFinalVideoProcessing(Vitneboks.id, userToken)}
                                         className=" flex gap-2 bg-primary-button  text-black px-4 py-2 rounded hover:text-white hover:bg-secondary-bg">
                                         Generer Vitneboksvideo
                                     </button>
@@ -34,7 +42,7 @@ export default function GenerateVideoButton({ Vitneboks, showZip = false }: Gene
                                 }
                                 {Vitneboks.completedVideos > 0 && Vitneboks.finalVideoProcessingStatus == FinalVideoStatus.completed &&
                                     <button
-                                        onClick={() => downloadFinalVideo(Vitneboks.id)}
+                                        onClick={() => downloadFinalVideo(Vitneboks.id, userToken)}
                                         className="bg-primary-button text-black px-4 py-2 rounded hover:text-white hover:bg-secondary-bg">
                                         Last ned Vitneboksvideo
                                     </button>
@@ -43,7 +51,7 @@ export default function GenerateVideoButton({ Vitneboks, showZip = false }: Gene
                         </div >
                     }
                     {(showZip && Vitneboks.completedVideos > 0) &&
-                        <button className='hover:underline' onClick={() => downloadSessionFiles(Vitneboks.id)}>Last ned råfiler (zip)</button>
+                        <button className='hover:underline' onClick={() => downloadSessionFiles(Vitneboks.id, userToken)}>Last ned råfiler (zip)</button>
                     }
                 </div >
             }

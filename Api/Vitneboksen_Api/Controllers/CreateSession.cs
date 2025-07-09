@@ -11,10 +11,17 @@ public static class CreateSession
 
         var uid = req.Query["uid"].ToString();
         var sessionKey = req.Query["sessionKey"].ToString();
-        if (uid == null || sessionKey == null)
+        var userToken = req.Query["userToken"].ToString();
+
+        if (uid == null || sessionKey == null || userToken == null)
         {
             return Results.BadRequest();
         }
+
+        var authorized = firebaseService.AuthourizeUser(sessionKey, userToken, uid);
+        if (!authorized)
+            return Results.Unauthorized();
+
         var containerClient = Helpers.GetContainerBySessionKey(blobService, sessionKey);
 
         if (containerClient == null)

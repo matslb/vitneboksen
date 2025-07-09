@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { type JSX } from 'react';
+import React, { useEffect, type JSX } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AdminDashboard from './pages/AdminDashboard';
@@ -10,6 +10,8 @@ import Login from './pages/Login';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import LoadingFullScreen from './components/LoadingFullScreen';
 import './index.css';
+import { generateStrongToken } from './utils';
+import { getDatabase, ref, set } from 'firebase/database';
 
 const auth = getAuth();
 
@@ -17,10 +19,15 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const [loading, setLoading] = React.useState(true);
   const [user, setUser] = React.useState<any>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);
       setLoading(false);
+
+      const token = generateStrongToken();
+      const db = getDatabase();
+      set(ref(db, `/userTokens/${firebaseUser!.uid}`), token);
+
     });
     return () => unsubscribe();
   }, []);

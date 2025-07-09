@@ -6,12 +6,12 @@ import Footer from '../components/Footer';
 import { generateVitneboksId, mapVitneboks } from '../utils';
 import Header from '../components/Header';
 import VitneboksBox from '../components/VitneboksBox';
-import { createSession } from '../videoProcessorService';
+import { createSession } from '../vitneboksService';
 
 export default function AdminDashboard() {
   const [vitnebokser, setVitnebokser] = useState<Vitneboks[]>([]);
   const [newTitle, setNewTitle] = useState('');
-
+  const [userToken, setUserToken] = useState('');
   const auth = getAuth();
   const db = getDatabase();
   const uid = auth.currentUser?.uid;
@@ -23,6 +23,12 @@ export default function AdminDashboard() {
       const data = snapshot.val() || {};
       setVitnebokser(Object.values(data).map(v => mapVitneboks(v)))
     });
+
+    onValue(ref(db, `/userTokens/${uid}`), (snapshot) => {
+      const data: string = snapshot.val();
+      setUserToken(data);
+    });
+
   }, [uid]);
 
   const handleCreate = async () => {
@@ -45,10 +51,9 @@ export default function AdminDashboard() {
 
     set(publicVitneboksRef, newVitneboks);
 
-    createSession(newVitneboks.id, uid);
+    createSession(newVitneboks.id, uid, userToken);
     setNewTitle('');
   };
-
 
   return (
     <>

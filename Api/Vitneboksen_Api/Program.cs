@@ -34,19 +34,14 @@ var firebaseService = new FirebaseService(new FirebaseConfig
     AuthSecret = firesharpSecrets.GetValue<string>("AuthSecret"),
 });
 
+app.MapPost("/upload-testimony/v2", async Task<IResult> (HttpRequest request) => await UploadVideoV2.Run(request, videoType: Constants.VideoTypes.Testimonial, constring: storageConnectionString, firebaseService: firebaseService));
 app.MapGet("/create-session", async Task<IResult> (HttpRequest request) => await CreateSession.Run(request, constring: storageConnectionString, firebaseService: firebaseService));
-
 app.MapGet("/force-update", async Task<IResult> (HttpRequest request) => await ForceUpdateSessionStatus.Run(request, constring: storageConnectionString, firebaseService: firebaseService));
 
-app.MapPost("/upload-testimony/v2", async Task<IResult> (HttpRequest request) => await UploadVideoV2.Run(request, videoType: Constants.VideoTypes.Testimonial, constring: storageConnectionString, firebaseService: firebaseService));
 
-app.MapGet("/download-session-files", async Task<IResult> (HttpRequest request) => await DownloadSessionFiles.Run(request, storageConnectionString));
-
+app.MapGet("/download-session-files", async Task<IResult> (HttpRequest request) => await DownloadSessionFiles.Run(request, storageConnectionString, firebaseService));
 app.MapGet("/start-final-video-processing", async Task<IResult> (HttpRequest request) => await StartFinalVideoProcessing.Run(request, storageConnectionString, firebaseService));
-
 app.MapGet("/download-final-video", async Task<IResult> (HttpRequest request) => await DownloadFinalVideo.Run(request, storageConnectionString, firebaseService));
-
-app.MapDelete("/delete-session", async Task<IResult> (HttpRequest request) => await DeleteSession.Run(request, storageConnectionString));
-
+app.MapDelete("/delete-session", async Task<IResult> (HttpRequest request) => await DeleteSession.Run(request, storageConnectionString, firebaseService));
 
 app.Run();

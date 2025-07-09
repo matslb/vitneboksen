@@ -8,7 +8,17 @@ public static class DownloadFinalVideo
     {
         var blobService = new Azure.Storage.Blobs.BlobServiceClient(constring);
 
-        string sessionKey = req.Query["sessionKey"];
+        var sessionKey = req.Query["sessionKey"].ToString();
+        var userToken = req.Query["userToken"].ToString();
+
+        if (sessionKey == null || userToken == null)
+        {
+            return Results.BadRequest();
+        }
+
+        var authorized = firebaseService.AuthourizeUser(sessionKey, userToken);
+        if (!authorized)
+            return Results.Unauthorized();
 
         var containerClient = Helpers.GetContainerBySessionKey(blobService, sessionKey);
         if (containerClient == null)

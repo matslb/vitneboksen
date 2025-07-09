@@ -56,6 +56,14 @@ public class FirebaseService(FirebaseConfig firebaseConfig)
         firebaseClient.Set($"{uid}/vitnebokser/{sessionKey}/deletionFromDate", date.ToUniversalTime());
     }
 
+    public bool AuthourizeUser(string sessionKey, string userToken, string? uid = null)
+    {
+        if (uid == null)
+            uid = GetUidFromSessionKey(sessionKey);
+        var storedToken = firebaseClient.Get($"userTokens/{uid}").ResultAs<string>();
+        return userToken.Equals(storedToken);
+    }
+
     public enum FinalVideoProcessingStatus
     {
         notStarted = 0,
