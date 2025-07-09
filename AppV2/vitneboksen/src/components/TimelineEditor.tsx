@@ -25,7 +25,7 @@ export default function TimelineEditor({
             <h3 className="text-xl font-bold">Vitnesbyrd</h3>
             <div className="bg-white/10 rounded p-4 my-4 overflow-x-auto">
                 <VideoStats completed={vitneboks.completedVideos} inProgress={vitneboks.videosToBeProcessed} />
-                <div className="flex gap-2 my-4 overflow-x-scroll">
+                <div className="flex gap-2 my-4 overflow-x-scroll pb-1">
                     {vitneboks.completedVideoIds.map((videoId) => {
                         const date = new Date(Number(videoId));
                         return (
