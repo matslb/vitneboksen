@@ -35,7 +35,7 @@ export default function TimelineEditor({
                             >
                                 <img
                                     src={`${API_URL}getgif/${videoId}?sessionKey=${vitneboks.id}&userToken=${userToken}`}
-                                    alt="Ingen gif, her har det nok oppstått problemer. Slett denne dersom Vitneboksvideoen ikke blir som forventet"
+                                    alt="Ingen gif. Noe har gått feil. Slett denne dersom Vitneboksvideoen ikke blir som forventet"
                                     className="rounded min-h-[135px] w-60"
                                 />
                                 <div className="flex justify-between items-center m-2">
