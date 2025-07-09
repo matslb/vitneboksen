@@ -67,10 +67,13 @@ export const GetSupportedMimeType = () => {
 export const mapVitneboks = (vitneboksRaw: any) => {
   const questions = vitneboksRaw?.questions 
   ? ( Object.entries(vitneboksRaw.questions).map(([id, q]: [string, any]) => ({ ...q, id })) as Question[])
-    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0)) : [];  return {
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0)) : [];
+    console.log(vitneboksRaw.completedVideoIds)
+  return {
     ...vitneboksRaw,
     createdOn: vitneboksRaw.createdOn,
     questions,
+    completedVideoIds: Object.values(vitneboksRaw.completedVideoIds)
   };
 }
 

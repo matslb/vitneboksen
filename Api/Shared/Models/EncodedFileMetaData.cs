@@ -1,21 +1,22 @@
 ﻿namespace Shared.Models;
 
 public class EncodedFileMetaData(
-    DateTimeOffset createdOn,
-    string videoType
+    DateTimeOffset createdOn
     )
 {
     public DateTimeOffset CreatedOn { get; } = createdOn;
-    public string VideoType { get; } = videoType;
 
     public string GetVideoFileName()
     {
-        return $"{CreatedOn.ToUnixTimeMilliseconds()}-{VideoType}.mp4";
+        return $"{CreatedOn.ToUnixTimeMilliseconds()}.mp4";
     }
-
+    public string GetGifFileName()
+    {
+        return $"{CreatedOn.ToUnixTimeMilliseconds()}.gif";
+    }
     public static EncodedFileMetaData GetVideoFileMetaDataFromFileName(string fileName)
     {
-        var metadata = fileName.Split(".").First().Split("-");
-        return new EncodedFileMetaData(createdOn: DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(metadata[0])), videoType: metadata[1]);
+        var metadata = fileName.Split(".").First();
+        return new EncodedFileMetaData(createdOn: DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(metadata)));
     }
 }

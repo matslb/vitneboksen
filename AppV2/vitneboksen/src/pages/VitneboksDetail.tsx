@@ -11,8 +11,7 @@ import Header from '../components/Header';
 import ToggleSwitch from '../components/ToggleSwitch';
 import QuestionList from '../components/QuestionList';
 import { mapVitneboks, vitneboksTimeRemaining } from '../utils';
-import VideoStats from '../components/VideoStats';
-import GenerateVideoButton from '../components/GenerateVideoButton';
+import TimelineEditor from '../components/TimelineEditor';
 
 export default function VitneboksDetail() {
   const { id } = useParams();
@@ -79,7 +78,6 @@ export default function VitneboksDetail() {
 
     navigate('/admin');
   };
-  console.log(vitneboks.videosToBeProcessed);
 
   return (
     <>
@@ -102,16 +100,15 @@ export default function VitneboksDetail() {
                 </div>
               </div>
             }
-            <div className='flex justify-between mb-4 mt-2'>
-              <VideoStats completed={vitneboks.completedVideos} inProgress={vitneboks.videosToBeProcessed} />
+            <div className='flex justify-end '>
               <ToggleSwitch label={vitneboks.isOpen ? "Åpen" : "Stengt"} checked={vitneboks.isOpen} onChange={(checked) => set(ref(db, `${user.uid}/vitnebokser/${id}/isOpen`), checked)} />
-              <GenerateVideoButton Vitneboks={vitneboks} showZip={true} />
             </div>
-            <h2 className="text-xl font-semibold my-4">Tittel</h2>
+            <h2 className="text-xl font-semibold">Tittel</h2>
             <p className="text-3xl font-bold my-4  ">
               <input type='text' name='title' maxLength={45} className='bg-white/10 rounded shadow-md py-6 px-4 w-[100%] text-left' value={vitneboks.title} onChange={(e) => set(ref(db, `${user.uid}/vitnebokser/${id}/title`), e.currentTarget.value)} />
             </p>
             <QuestionList vitneBoksId={vitneboks.id} userId={user.uid} questions={vitneboks.questions} />
+            <TimelineEditor userToken={userToken} vitneboks={vitneboks} />
             <div className='flex justify-between items-end gap-4'>
               {(vitneboks.finalVideoProcessingStatus === FinalVideoStatus.started || vitneboks.videosToBeProcessed > 0 || isRecording) &&
                 <div className='flex flex-col align-left gap-4'>

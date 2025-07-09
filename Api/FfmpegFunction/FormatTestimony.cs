@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.Functions.Worker;
+﻿using Azure.Storage.Blobs;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -76,7 +77,7 @@ namespace FfmpegFunction
                 }
                 else
                 {
-                    var processedFileMetadata = new EncodedFileMetaData(fileMetaData.CreatedOn, fileMetaData.VideoType);
+                    var processedFileMetadata = new EncodedFileMetaData(fileMetaData.CreatedOn);
                     string outputFilePath = Path.Combine(tempPath, processedFileMetadata.GetVideoFileName());
 
                     var ffmpegCmd = FfmpegCommandBuilder.WithText(videoFilePath, subtitleText, outputFilePath, fontSize: 50, TextPlacement.Subtitle);
@@ -97,12 +98,16 @@ namespace FfmpegFunction
                     await videofileBlobClient.DeleteIfExistsAsync();
                     await subfileBlobclient.DeleteIfExistsAsync();
 
+                    await GenerateAndUploadPreviewGif(tempPath, processedFileMetadata, sessionContainer);
+
                     var blob = sessionContainer.GetBlobClient(Constants.FinalVideoFileName);
                     await blob.DeleteIfExistsAsync();
 
                     _firebaseService.SetFinalVideoProcessingStatus(fileMetaData.SessionKey, FirebaseService.FinalVideoProcessingStatus.notStarted);
                     _firebaseService.SetToBeProcessedCount(fileMetaData.SessionKey, unprocessedContainer.GetBlobs().Count(blob => blob.Name.Contains(".webm") && blob.Name.Contains(fileMetaData.SessionKey)));
-                    _firebaseService.SetCompletedVideosCount(fileMetaData.SessionKey, sessionContainer.GetBlobs().Count(blob => blob.Name.Contains(".mp4") && blob.Name != Constants.FinalVideoFileName));
+                    _firebaseService.SetCompletedVideosCount(fileMetaData.SessionKey, sessionContainer.GetBlobs());
+                    _firebaseService.SetCompletedVideos(fileMetaData.SessionKey, sessionContainer.GetBlobs());
+
                 }
             }
             catch (Exception e)
@@ -117,5 +122,29 @@ namespace FfmpegFunction
             return;
         }
 
+        private async Task GenerateAndUploadPreviewGif(string tempPath, EncodedFileMetaData fileMeta, BlobContainerClient sessionContainer)
+        {
+            var videoFilePath = Path.Combine(tempPath, fileMeta.GetVideoFileName());
+            var gifFilePath = Path.Combine(tempPath, fileMeta.GetGifFileName());
+
+            var command = FfmpegCommandBuilder.GenerateGifPreview(videoFilePath, gifFilePath);
+            var commandResult = await Helpers.ExecuteFFmpegCommand(command, 180);
+
+            if (!commandResult.Success)
+            {
+                _logger.LogError("Could not create gif", commandResult.Exception);
+            }
+
+            var fileInfo = new FileInfo(gifFilePath);
+            if (fileInfo.Exists && fileInfo.Length > 0)
+            {
+                using var fileStream = new FileStream(gifFilePath, FileMode.Open);
+                await sessionContainer.UploadBlobAsync(Path.GetFileName(gifFilePath), fileStream);
+            }
+            else
+            {
+                throw new Exception("FFmpeg processing failed.");
+            }
+        }
     }
 }

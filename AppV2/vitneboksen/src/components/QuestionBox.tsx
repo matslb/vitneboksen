@@ -23,7 +23,6 @@ export default function QuestionBox({ vitneboksId, userId, question }: QuestionB
     const handleDrop = (e: React.DragEvent, targetId: string, targetOrder: number) => {
         const { id: draggedId, order: draggedOrder } = JSON.parse(e.dataTransfer.getData("text/plain"));
         if (!draggedId || draggedId === targetId) return;
-        console.log(targetId, targetOrder);
         const updates: Record<string, number> = {};
         updates[`${draggedId}/order`] = targetOrder;
         updates[`${targetId}/order`] = draggedOrder;

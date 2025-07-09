@@ -42,7 +42,8 @@ export default function AdminDashboard() {
       finalVideoProcessingStatus: FinalVideoStatus.notStarted,
       questions: [],
       isOpen: true,
-      uid: uid
+      uid: uid,
+      completedVideoIds: []
     };
     const vitneboksRef = ref(db, `${uid}/vitnebokser/${newVitneboks.id}`);
     set(vitneboksRef, newVitneboks);

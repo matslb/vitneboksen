@@ -15,13 +15,12 @@ export async function uploadVideoToProcessor(videoBlob: Blob, vitneboksId: strin
   formData.append("sub", question);
 
   window.addEventListener("beforeunload", handleBeforeUnload);
-  const response = await fetch(`${API_URL}upload-testimony/v2?sessionKey=${vitneboksId}`, {
+  await fetch(`${API_URL}upload-testimony/v2?sessionKey=${vitneboksId}`, {
     method: "POST",
     body: formData
   });
 
   window.removeEventListener("beforeunload", handleBeforeUnload);
-  console.log(response);
 }
 
 export async function startFinalVideoProcessing(vitneboksId: string, userToken: string){
@@ -61,4 +60,18 @@ export async function downloadSessionFiles(vitneboksId: string, userToken: strin
   const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
   const urlWithQueryParam = `${API_URL}download-session-files?sessionKey=${vitneboksId}&userToken=${userToken}`;
   window.open(urlWithQueryParam, '_blank');
+}
+
+export async function GetGifFromVideoId(vitneboksId: string, videoId: string, userToken: string){
+  const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
+  const urlWithQueryParam = `${API_URL}get-gif/${videoId}?sessionKey=${vitneboksId}&userToken=${userToken}`;
+  const response = await fetch(urlWithQueryParam, { method: "Get" });
+  return response.ok;
+}
+
+export async function deleteVideo(vitneboksId: string, videoId: string, userToken: string){
+  const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
+  const urlWithQueryParam = `${API_URL}delete-video/${videoId}?sessionKey=${vitneboksId}&userToken=${userToken}`;
+  const response = await fetch(urlWithQueryParam, { method: "DELETE" });
+  return response.ok;
 }

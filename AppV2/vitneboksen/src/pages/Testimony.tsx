@@ -138,7 +138,6 @@ export default function TestimonyPage() {
         <VideoRecorder
           question={currentQuestion}
           onFinish={handleRecordingFinished}
-          uid={vitneboks.uid}
           vitneboksId={vitneboksId!}
         />
       )

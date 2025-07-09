@@ -25,7 +25,8 @@ public static class ForceUpdateSessionStatus
         {
             return Results.NotFound("Not found");
         }
-        firebaseService.SetCompletedVideosCount(sessionKey, containerClient.GetBlobs().Count(blob => blob.Name.Contains(".mp4") && blob.Name != Constants.FinalVideoFileName));
+        firebaseService.SetCompletedVideosCount(sessionKey, containerClient.GetBlobs());
+        firebaseService.SetCompletedVideos(sessionKey, containerClient.GetBlobs());
 
         var unprocessedContainer = Helpers.GetUnprocessedContainer(blobService);
         firebaseService.SetToBeProcessedCount(sessionKey, unprocessedContainer.GetBlobs().Count(blob => blob.Name.Contains(".webm") && blob.Name.Contains(sessionKey)));

@@ -7,11 +7,10 @@ import { getDatabase, ref, set } from 'firebase/database';
 interface VideoRecorderProps {
   question: Question;
   vitneboksId: string;
-  uid: string;
   onFinish: () => void;
 }
 
-export default function VideoRecorder({ question, vitneboksId, uid, onFinish }: VideoRecorderProps) {
+export default function VideoRecorder({ question, vitneboksId, onFinish }: VideoRecorderProps) {
   const [countdown, setCountdown] = useState(question.recordingDuration);
   const videoRef = useRef<HTMLVideoElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -95,8 +94,7 @@ export default function VideoRecorder({ question, vitneboksId, uid, onFinish }: 
   }, [question, onFinish]);
 
   const uploadToServer = async (blob: Blob) => {
-    console.log('Uploading video blob for vitneboks', vitneboksId);
-    await uploadVideoToProcessor(blob, vitneboksId, uid, question.text);
+    await uploadVideoToProcessor(blob, vitneboksId, question.text);
   };
 
   return (

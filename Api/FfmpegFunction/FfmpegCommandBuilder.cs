@@ -45,6 +45,13 @@ public static class FfmpegCommandBuilder
                $"\"{outputVideoPath}\"";
     }
 
+    public static string GenerateGifPreview(string sourceVideoPath, string outputGifPath, int width = 320)
+    {
+        // This selects 1 frame every 3 seconds, and encodes it into a GIF at 3 fps.
+        return $"-y -i \"{sourceVideoPath}\" " +
+               $"-vf \"select='not(mod(t,3))',scale={width}:-1:flags=lanczos\" " +
+               $"-r 3 -gifflags -offsetting \"{outputGifPath}\"";
+    }
     internal static string ConcatVideos(string fileListPath, string outputFilePath)
     {
         return $"-f concat -safe 0 -i {fileListPath} -c:v copy -c:a copy {outputFilePath}";

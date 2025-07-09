@@ -23,7 +23,7 @@ export default function GenerateVideoButton({ Vitneboks, showZip = false }: Gene
             {Vitneboks.completedVideos > 0 &&
                 <div>
                     {Vitneboks.videosToBeProcessed === 0 &&
-                        <div className='flex flex-col items-end'>
+                        <div className='flex flex-col items-start'>
                             <>
                                 {
                                     Vitneboks.completedVideos > 1 && Vitneboks.finalVideoProcessingStatus == FinalVideoStatus.notStarted &&

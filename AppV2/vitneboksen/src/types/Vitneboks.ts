@@ -13,6 +13,7 @@ export interface Vitneboks {
   deletionFromDate?: string;
   videosToBeProcessed: number;
   completedVideos:number;
+  completedVideoIds: string[];
   finalVideoProcessingStatus: FinalVideoStatus;
   questions: Question[];
   isOpen: boolean;
