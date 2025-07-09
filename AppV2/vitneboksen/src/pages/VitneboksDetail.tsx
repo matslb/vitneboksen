@@ -11,7 +11,7 @@ import { deleteVitneboks } from '../videoProcessorService';
 import Header from '../components/Header';
 import ToggleSwitch from '../components/ToggleSwitch';
 import QuestionList from '../components/QuestionList';
-import { dateStringToLocal, mapVitneboks, vitneboksTimeRemaining } from '../utils';
+import { mapVitneboks, vitneboksTimeRemaining } from '../utils';
 
 export default function VitneboksDetail() {
   const { id } = useParams();
