@@ -7,7 +7,7 @@ import type PublicVitneboks from '../types/PublicVitneboks';
 
 import LoadingFullScreen from '../components/LoadingFullScreen';
 import Footer from '../components/Footer';
-import { deleteVitneboks, downloadSessionFiles, forceUpdateVitneboksStatus } from '../videoProcessorService';
+import { deleteVitneboks, forceUpdateVitneboksStatus } from '../videoProcessorService';
 import Header from '../components/Header';
 import ToggleSwitch from '../components/ToggleSwitch';
 import QuestionList from '../components/QuestionList';

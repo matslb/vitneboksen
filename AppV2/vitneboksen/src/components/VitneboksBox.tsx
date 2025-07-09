@@ -72,7 +72,7 @@ export default function VitneboksBox({ Vitneboks }: VitneboxBoxProps) {
                 >
                     Rediger
                 </Link>
-                <GenerateVideoButton Vitneboks={Vitneboks} />
+                <GenerateVideoButton showZip={false} Vitneboks={Vitneboks} />
             </div>
 
         </div>
