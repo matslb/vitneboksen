@@ -24,6 +24,7 @@ public static class UploadVideoV2
             containerClient = blobService.GetBlobContainerClient($"{sessionKey}-{uid.ToLowerInvariant()}");
             await containerClient.CreateAsync();
             containerClient.SetMetadata(new Dictionary<string, string> { { "created", DateTime.Now.ToString() } });
+            firebaseService.SetDeletionFromDate(sessionKey, DateTime.Now);
         }
 
         if (containerClient.GetBlobs().Count(b => b.Name.Contains("webm")) >= 50)

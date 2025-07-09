@@ -75,7 +75,11 @@ export default function VitneboksDetail() {
           <Header backButtonPath={"/admin/"} />
           <div className='mb-8 bg-secondary-bg w-full max-w-5xl p-8 shadow-md rounded'>
             <div className='flex justify-between'>
-              <p className="opacity-80">Opprettet: {new Date(vitneboks.createdOn).toLocaleDateString()} - {vitneboksTimeRemaining(vitneboks.createdOn)} igjen.</p>
+              <p className="opacity-80">
+                {vitneboks.deletionFromDate &&
+                  <>Slettes automatisk om {vitneboksTimeRemaining(vitneboks.deletionFromDate)}</>
+                }
+              </p>
               <ToggleSwitch label={vitneboks.isOpen ? "Åpen" : "Stengt"} checked={vitneboks.isOpen} onChange={(checked) => set(ref(db, `${user.uid}/vitnebokser/${id}/isOpen`), checked)} />
             </div>
             <h2 className="text-xl font-semibold my-4">Tittel</h2>

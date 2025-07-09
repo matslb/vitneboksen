@@ -101,7 +101,7 @@ export default function AdminDashboard() {
               </button>
             }
             <p>
-              Vitneboksen og tilhørende videoer blir slettet automatisk etter 7 dager.
+              En vitneboks blir automatisk slettet 7 dager etter første vitnesbyrd (video) er lastet opp.
             </p>
           </div>
           <div className='p-8 rounded my-16 text-l bg-secondary-bg'>

@@ -10,6 +10,7 @@ export interface Vitneboks {
   id: string;
   title: string;
   createdOn: string;
+  deletionFromDate?: string;
   videosToBeProcessed: number;
   completedVideos:number;
   finalVideoProcessingStatus: FinalVideoStatus;

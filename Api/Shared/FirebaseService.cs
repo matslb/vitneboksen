@@ -44,6 +44,12 @@ public class FirebaseService(FirebaseConfig firebaseConfig)
         firebaseClient.Delete($"{uid}/vitnebokser/{sessionKey}");
     }
 
+    public void SetDeletionFromDate(string sessionKey, DateTimeOffset date)
+    {
+        var uid = GetUidFromSessionKey(sessionKey);
+        firebaseClient.Set($"{uid}/vitnebokser/{sessionKey}/deletionFromDate", date.ToUniversalTime());
+    }
+
     public enum FinalVideoProcessingStatus
     {
         notStarted = 0,
