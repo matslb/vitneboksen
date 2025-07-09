@@ -79,23 +79,26 @@ export default function VitneboksDetail() {
               <VideoStats completed={vitneboks.completedVideos} inProgress={vitneboks.videosToBeProcessed} />
               <ToggleSwitch label={vitneboks.isOpen ? "Åpen" : "Stengt"} checked={vitneboks.isOpen} onChange={(checked) => set(ref(db, `${user.uid}/vitnebokser/${id}/isOpen`), checked)} />
             </div>
-            <p className="opacity-80">
-              {vitneboks.deletionFromDate &&
-                <>Slettes automatisk om {vitneboksTimeRemaining(vitneboks.deletionFromDate)}</>
-              }
-            </p>
             <h2 className="text-xl font-semibold my-4">Tittel</h2>
             <label htmlFor="title" className='hidden'>Tittel</label>
             <p className="text-3xl font-bold my-4  ">
               <input type='text' name='title' maxLength={45} className='bg-white/10 rounded shadow-md p-2 w-[100%] text-left' value={vitneboks.title} onChange={(e) => set(ref(db, `${user.uid}/vitnebokser/${id}/title`), e.currentTarget.value)} />
             </p>
             <QuestionList vitneBoksId={vitneboks.id} userId={user.uid} questions={vitneboks.questions} />
-            <button
-              onClick={handleDeleteVitneboks}
-              className="bg-danger text-white px-4 py-2 mt-8 rounded hover:bg-danger-200 mb-8"
-            >
-              Slett vitneboks
-            </button>
+            <div className='flex justify-end w-full items-center gap-4'>
+              <p className="opacity-80">
+                {vitneboks.deletionFromDate &&
+                  <>Slettes automatisk om {vitneboksTimeRemaining(vitneboks.deletionFromDate)}</>
+                }
+              </p>
+              <button
+                onClick={handleDeleteVitneboks}
+                className="bg-danger text-white px-4 py-2 mt-8 rounded hover:bg-danger-200 mb-8"
+              >
+                Slett vitneboks
+              </button>
+
+            </div>
           </div>
         </div>
       </div>
