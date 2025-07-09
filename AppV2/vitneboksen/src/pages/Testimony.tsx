@@ -58,12 +58,12 @@ export default function TestimonyPage() {
       if (vitneboks === null || started || waiting) return;
       setFilteredQuestions(filterQuestions(vitneboks!.questions));
       setVitneboks(vitneboks);
-      if (filteredQuestions.findIndex(q => q.id === currentQuestion?.id) === -1) {
-        setCurrentQuestionIndex(filteredQuestions[0]?.order ?? 0);
+      if (filteredQuestions.findIndex(q => q.id === filteredQuestions[currentQuestionIndex]?.id) === -1) {
+        setCurrentQuestionIndex(0);
       }
     }, 1000);
     return () => clearInterval(intervalId);
-  }, [vitneboks]);
+  }, [vitneboks, started, waiting, filteredQuestions, currentQuestionIndex]);
 
 
   if (loading) return <LoadingFullScreen />;
@@ -81,13 +81,13 @@ export default function TestimonyPage() {
 
   const setNextQuestion = () => {
     if (currentQuestion == undefined)
-      setCurrentQuestionIndex(vitneboks.questions[0].order);
+      setCurrentQuestionIndex(filteredQuestions[0].order);
 
-    const nextQuestion = vitneboks.questions.find(q => q.order > currentQuestion!.order);
+    const nextQuestion = filteredQuestions.find(q => q.order > currentQuestion!.order);
     if (nextQuestion != undefined)
       setCurrentQuestionIndex(nextQuestion.order);
     else
-      setCurrentQuestionIndex(vitneboks.questions[0].order);
+      setCurrentQuestionIndex(filteredQuestions[0].order);
   };
 
   function enterFullscreen(element: HTMLElement) {
@@ -108,7 +108,7 @@ export default function TestimonyPage() {
     }
   };
 
-  const currentQuestion = filteredQuestions.find(q => q.order === currentQuestionIndex);
+  const currentQuestion = filteredQuestions[currentQuestionIndex];
 
   return (
     <div ref={divRef} className="flex flex-col min-h-screen bg-primary-bg text-primary-text">
