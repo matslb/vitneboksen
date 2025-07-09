@@ -19,7 +19,7 @@ export default function GenerateVideoButton({ Vitneboks, showZip = false }: Gene
         });
     }, [])
     return (
-        <>
+        <div>
             {Vitneboks.completedVideos > 0 &&
                 <div>
                     {Vitneboks.videosToBeProcessed === 0 &&
@@ -55,6 +55,6 @@ export default function GenerateVideoButton({ Vitneboks, showZip = false }: Gene
                     }
                 </div >
             }
-        </>
+        </div>
     );
 }
