@@ -99,7 +99,6 @@ export default function VitneboksDetail() {
               <GenerateVideoButton Vitneboks={vitneboks} showZip={true} />
             </div>
             <h2 className="text-xl font-semibold my-4">Tittel</h2>
-            <label htmlFor="title" className='hidden'>Tittel</label>
             <p className="text-3xl font-bold my-4  ">
               <input type='text' name='title' maxLength={45} className='bg-white/10 rounded shadow-md py-6 px-4 w-[100%] text-left' value={vitneboks.title} onChange={(e) => set(ref(db, `${user.uid}/vitnebokser/${id}/title`), e.currentTarget.value)} />
             </p>
