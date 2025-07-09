@@ -1,19 +1,6 @@
+[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
+
 # vitneboksen
 
 Host ditt eget realityprogram med vitneboksen.
 [http://vitneboksen.no/](http://vitneboksen.no/)
-
-## Frontend:
-
-Run `npm install`
-
-Create `.env`: And set `REACT_APP_API=` to something like `localhost:5000` or whatever your backend URL is
-
-Run `npm start`
-
-## Backend:
-
-1.  Create a `Azure Storage account` if you don't already have one
-1.  Set `Blob anonymous access` to `Enabled`
-1.  as
-    2.ab
