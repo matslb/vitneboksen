@@ -95,18 +95,12 @@ namespace FfmpegFunction
                         throw new Exception("FFmpeg processing failed.");
                     }
 
-                    await videofileBlobClient.DeleteIfExistsAsync();
-                    await subfileBlobclient.DeleteIfExistsAsync();
-
                     await GenerateAndUploadPreviewGif(tempPath, processedFileMetadata, sessionContainer);
 
                     var blob = sessionContainer.GetBlobClient(Constants.FinalVideoFileName);
                     await blob.DeleteIfExistsAsync();
 
-                    _firebaseService.SetFinalVideoProcessingStatus(fileMetaData.SessionKey, FirebaseService.FinalVideoProcessingStatus.notStarted);
-                    _firebaseService.SetToBeProcessedCount(fileMetaData.SessionKey, unprocessedContainer.GetBlobs().Count(blob => blob.Name.Contains(".webm") && blob.Name.Contains(fileMetaData.SessionKey)));
-                    _firebaseService.SetCompletedVideosCount(fileMetaData.SessionKey, sessionContainer.GetBlobs());
-                    _firebaseService.SetCompletedVideos(fileMetaData.SessionKey, sessionContainer.GetBlobs());
+
 
                 }
             }
@@ -117,6 +111,13 @@ namespace FfmpegFunction
             finally
             {
                 Directory.Delete(tempPath, true);
+                await videofileBlobClient.DeleteIfExistsAsync();
+                await subfileBlobclient.DeleteIfExistsAsync();
+
+                _firebaseService.SetToBeProcessedCount(fileMetaData.SessionKey, unprocessedContainer.GetBlobs().Count(blob => blob.Name.Contains(".webm") && blob.Name.Contains(fileMetaData.SessionKey)));
+                _firebaseService.SetFinalVideoProcessingStatus(fileMetaData.SessionKey, FirebaseService.FinalVideoProcessingStatus.notStarted);
+                _firebaseService.SetCompletedVideosCount(fileMetaData.SessionKey, sessionContainer.GetBlobs());
+                _firebaseService.SetCompletedVideos(fileMetaData.SessionKey, sessionContainer.GetBlobs());
             }
 
             return;
