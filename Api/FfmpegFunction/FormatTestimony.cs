@@ -102,14 +102,37 @@ namespace FfmpegFunction
 
                     var blob = sessionContainer.GetBlobClient(Constants.FinalVideoFileName);
                     await blob.DeleteIfExistsAsync();
-
-
-
                 }
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Could not process file {fileName}", fileMetaData.GetVideoFileName());
+                try
+                {
+                    // Get or create the "failed" container
+                    var failedContainer = blobService.GetBlobContainerClient("failed");
+                    await failedContainer.CreateIfNotExistsAsync();
+
+                    // Upload original video
+                    blobContentStream.Position = 0; // reset stream
+                    var failedVideoBlob = failedContainer.GetBlobClient(blobName);
+                    await failedVideoBlob.UploadAsync(blobContentStream, overwrite: true);
+
+                    // Upload subtitle if it exists
+                    if (subfileBlobclient.Exists())
+                    {
+                        var failedSubBlob = failedContainer.GetBlobClient(fileMetaData.GetSubFileName());
+                        var subContent = await subfileBlobclient.DownloadContentAsync();
+                        using var subStream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(subContent.Value.Content.ToString()));
+                        await failedSubBlob.UploadAsync(subStream, overwrite: true);
+                    }
+
+                    _logger.LogInformation("Failed files uploaded to 'failed' container.");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to upload files to 'failed' container.");
+                }
             }
             finally
             {
