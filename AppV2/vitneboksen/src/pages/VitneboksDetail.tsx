@@ -82,9 +82,9 @@ export default function VitneboksDetail() {
   return (
     <>
       <div className='bg-primary-bg min-h-screen'>
-        <div className="flex flex-col items-center text-primary-text">
-          <Header backButtonPath={"/admin/"} />
-          <div className='relative mb-8 bg-secondary-bg w-full max-w-5xl p-8 shadow-md rounded'>
+        <Header backButtonPath={"/admin/"} />
+        <div className="flex flex-col items-center text-primary-text p-2">
+          <div className='relative mb-8 bg-secondary-bg w-full max-w-5xl p-4 md:p-8 shadow-md rounded'>
             {isRecording &&
               <div
                 className="bg-black/40 flex text-white px-2 py-1 rounded-bl rounded-tr absolute top-0 right-0"

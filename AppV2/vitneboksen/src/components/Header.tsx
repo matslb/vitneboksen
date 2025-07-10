@@ -14,7 +14,7 @@ export default function Header({ backButtonPath }: HeaderProps) {
           <LogoutButton />
         </div>
       </header>
-      <div className="max-w-[1024px] py-2 mx-auto ">
+      <div className="max-w-[1024px] p-2 mx-auto ">
         {backButtonPath !== undefined &&
           <Link
             to={backButtonPath}
