@@ -10,7 +10,7 @@
   },
   "extensions": {
     "blobs": {
-   //   "maxDegreeOfParallelism": 1
+     "maxDegreeOfParallelism": 1
     }
   }
 }
