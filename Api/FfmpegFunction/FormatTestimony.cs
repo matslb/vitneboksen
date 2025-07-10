@@ -82,7 +82,7 @@ namespace FfmpegFunction
 
                     var ffmpegCmd = FfmpegCommandBuilder.WithText(videoFilePath, subtitleText, outputFilePath, fontSize: 50, TextPlacement.Subtitle);
                     var startTime = DateTime.Now;
-                    var commandResult = await Helpers.ExecuteFFmpegCommand(ffmpegCmd, 60, cancellation);
+                    var commandResult = await Helpers.ExecuteFFmpegCommand(ffmpegCmd, 200, cancellation);
                     var endTime = DateTime.Now;
                     _logger.LogInformation("Encoding video took {time}s", (endTime - startTime).TotalSeconds);
 
