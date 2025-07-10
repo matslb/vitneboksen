@@ -1,5 +1,5 @@
 import type { Vitneboks } from "../types/Vitneboks";
-import { deleteVideo } from "../vitneboksService";
+import { deleteVideo, downloadSingleVideo } from "../vitneboksService";
 import GenerateVideoButton from "./GenerateVideoButton";
 import VideoStats from "./VideoStats";
 
@@ -32,15 +32,21 @@ export default function TimelineEditor({
                             return (
                                 <div
                                     key={videoId}
-                                    className="bg-black/50 rounded shadow-md p-1 rounded shrink-0"
+                                    className="relative bg-black/50 rounded shadow-md p-1 rounded shrink-0"
                                 >
+                                    <div className=" absolute top-1 left-1 bg-black/60 py-1 rounded-br rounded-tl  px-2 text-sm text-white ">kl {date.getHours() < 10 ? `0${date.getHours()}` : date.getHours()}:{date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()}</div>
                                     <img
                                         src={`${API_URL}getgif/${videoId}?sessionKey=${vitneboks.id}&userToken=${userToken}`}
                                         alt="Ingen gif. Noe har gått galt. Slett denne dersom Vitneboksvideoen ikke blir som forventet"
                                         className="rounded min-h-[135px] w-60"
                                     />
                                     <div className="flex justify-between items-center m-2">
-                                        <div className="text-sm text-white ">{date.toLocaleDateString()} - kl {date.getHours() < 10 ? `0${date.getHours()}` : date.getHours()}:{date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()}</div>
+                                        <button
+                                            onClick={() => downloadSingleVideo(vitneboks.id, videoId, userToken)}
+                                            className="px-3 py-1 text-sm rounded bg-primary-button text-black hover:bg-secondary-bg hover:text-white"
+                                        >
+                                            Last ned
+                                        </button>
                                         <button
                                             onClick={() => handleDelete(videoId)}
                                             className="px-3 py-1 text-sm rounded bg-danger text-white hover:bg-red-700"

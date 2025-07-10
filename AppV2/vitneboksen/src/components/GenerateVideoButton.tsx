@@ -30,7 +30,7 @@ export default function GenerateVideoButton({ Vitneboks, showZip = false }: Gene
                                     <button
                                         onClick={() => startFinalVideoProcessing(Vitneboks.id, userToken)}
                                         className=" flex gap-2 bg-primary-button  text-black px-4 py-2 rounded hover:text-white hover:bg-secondary-bg">
-                                        Generer Vitneboksvideo
+                                        Sett sammen Vitneboksvideo
                                     </button>
                                 }
                                 {Vitneboks.completedVideos > 0 && Vitneboks.finalVideoProcessingStatus == FinalVideoStatus.started &&
@@ -51,7 +51,7 @@ export default function GenerateVideoButton({ Vitneboks, showZip = false }: Gene
                         </div >
                     }
                     {(showZip && Vitneboks.completedVideos > 0) &&
-                        <button className='mt-2 hover:underline' onClick={() => downloadSessionFiles(Vitneboks.id, userToken)}>Last ned råfiler (zip)</button>
+                        <button className='mt-2 hover:underline' onClick={() => downloadSessionFiles(Vitneboks.id, userToken)}>Last ned råfiler (.zip)</button>
                     }
                 </div >
             }

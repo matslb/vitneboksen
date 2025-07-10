@@ -75,3 +75,10 @@ export async function deleteVideo(vitneboksId: string, videoId: string, userToke
   const response = await fetch(urlWithQueryParam, { method: "DELETE" });
   return response.ok;
 }
+
+export async function downloadSingleVideo(vitneboksId: string,videoId: string, userToken: string){
+  const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
+  const urlWithQueryParam = `${API_URL}video/${videoId}/download?userToken=${userToken}&sessionKey=${vitneboksId}`;
+  window.open(urlWithQueryParam, '_blank');
+}
+

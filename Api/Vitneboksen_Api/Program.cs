@@ -42,6 +42,8 @@ app.MapGet("/getgif/{fileName}", async (HttpRequest request, HttpResponse respon
 app.MapGet("/download-session-files", async Task<IResult> (HttpRequest request) => await DownloadSessionFiles.Run(request, storageConnectionString, firebaseService));
 app.MapGet("/start-final-video-processing", async Task<IResult> (HttpRequest request) => await StartFinalVideoProcessing.Run(request, storageConnectionString, firebaseService));
 app.MapGet("/download-final-video", async Task<IResult> (HttpRequest request) => await DownloadFinalVideo.Run(request, storageConnectionString, firebaseService));
+app.MapGet("/video/{fileName}/download", async Task<IResult> (HttpRequest request, string fileName) => await DownloadSingleVideo.Run(request, fileName, storageConnectionString, firebaseService));
+
 app.MapDelete("/delete-session", async Task<IResult> (HttpRequest request) => await DeleteSession.Run(request, storageConnectionString, firebaseService));
 app.MapDelete("/delete-video/{fileName}", async Task<IResult> (HttpRequest request, string fileName) => await DeleteVideo.Run(request, fileName, storageConnectionString, firebaseService));
 
