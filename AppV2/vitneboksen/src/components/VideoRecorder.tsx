@@ -3,6 +3,7 @@ import { GetRecordingConstrains, videoExtension } from '../utils';
 import type Question from '../types/Question';
 import { uploadVideoToProcessor } from '../vitneboksService';
 import { getDatabase, ref, set } from 'firebase/database';
+import fixWebmDuration from 'webm-duration-fix';
 
 interface VideoRecorderProps {
   question: Question;
@@ -52,9 +53,13 @@ export default function VideoRecorder({ question, vitneboksId, onFinish }: Video
       };
 
       recorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: videoExtension });
-        uploadToServer(blob);
-        if (mounted) onFinish();
+        setTimeout(() => {
+          const blob = new Blob(chunksRef.current, { type: videoExtension });
+          fixWebmDuration(blob).then((fixedBlob) => {
+            uploadToServer(fixedBlob);
+            if (mounted) onFinish();
+          });
+        }, 100);
       };
 
       recorder.start();
