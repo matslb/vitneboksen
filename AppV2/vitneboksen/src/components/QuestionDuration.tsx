@@ -15,7 +15,6 @@ export default function QuestionDuration({ recordingDuration, setRecordingDurati
             <option value={15}>15 sekunder</option>
             <option value={20}>20 sekunder</option>
             <option value={25}>25 sekunder</option>
-            <option value={30}>30 sekunder</option>
         </select>
 
     );
