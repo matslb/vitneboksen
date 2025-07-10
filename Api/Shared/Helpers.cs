@@ -88,6 +88,7 @@ namespace Shared
             {
                 if (!string.IsNullOrEmpty(e.Data)) errorBuilder.AppendLine(e.Data);
             };
+
             var timeout = TimeSpan.FromSeconds(timeoutInSeconds);
             try
             {
@@ -99,6 +100,9 @@ namespace Shared
                 cts.CancelAfter(timeout);
 
                 await process.WaitForExitAsync(cts.Token);
+
+                // Ensure all output/error data has been read & flushed
+                process.WaitForExit();
 
                 if (process.ExitCode != 0)
                 {
@@ -123,6 +127,7 @@ namespace Shared
                 return new FFmpegResult(false, ex);
             }
         }
+
 
         public static bool IsRunningOnWindows()
         {
