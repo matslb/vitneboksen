@@ -133,7 +133,7 @@ export default function TestimonyPage() {
       }
 
       {waiting && (
-        <WaitingScreen seconds={3} withBeep={true} setWaiting={setWaiting} />
+        <WaitingScreen seconds={3} questionText={currentQuestion.text} withBeep={true} setWaiting={setWaiting} />
       )}
 
       {started && !waiting && !thankYouWaiting && currentQuestion && (

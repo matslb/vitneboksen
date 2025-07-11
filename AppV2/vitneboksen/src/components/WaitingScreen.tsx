@@ -5,11 +5,12 @@ import beep from '../assets/beep-09.mp3';
 import finalBeep from '../assets/beep-08b.mp3';
 interface WaitingScreenProps {
   setWaiting: (isWaiting: boolean) => void;
-  withBeep: boolean
+  withBeep: boolean;
   seconds: number;
+  questionText: string;
 }
 
-export default function WaitingScreen({ seconds, withBeep, setWaiting }: WaitingScreenProps) {
+export default function WaitingScreen({ seconds, withBeep, setWaiting, questionText }: WaitingScreenProps) {
   const [countdown, setCountdown] = useState(seconds);
   const beepRef = useRef<HTMLAudioElement>(null);
 
@@ -43,11 +44,12 @@ export default function WaitingScreen({ seconds, withBeep, setWaiting }: Waiting
         </>
       }
       <img src={tvTestImage} className='fixed max-w-100% md:h-full image' />
-      <div className="text-[275%] top-[9%] rounded text-center bg-black/100 px-6 w-100 py-3 absolute">
+      <div className="text-[250%] top-[9%] rounded text-center bg-black/100 px-6 w-100 py-3 absolute">
         Opptak om
         <br />
         {countdown}
       </div>
+       <h2 className="fixed bottom-auto top-auto 2xl:text-5xl bg-black/90 font-semibold p-6 max-w-6xl text-5xl rounded text-shadow-s">{questionText}</h2>
     </div>
   );
 }
