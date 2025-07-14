@@ -40,7 +40,7 @@ public static class FfmpegCommandBuilder
                $"pad=1920:1080:(1920-iw)/2:(1080-ih)/2," +
                $"drawtext=text='{escapedSubtitles}':font='Arial':fontcolor=white:fontsize={fontSize}:" +
                $"x=(w-text_w)/2:y={verticalPosition}:shadowcolor=black:shadowx=4:shadowy=4{enableOption}\" " +
-               $"-r 30 -c:v libx264 -preset ultrafast -c:a aac -b:a 192k -ar 48000 -ac 2 " +
+               $"-r 30 -c:v libx264 -preset medium -crf 23 -c:a aac -b:a 128k -ar 48000 -ac 2 " +
                $"-movflags +faststart " +
                $"\"{outputVideoPath}\"";
 
