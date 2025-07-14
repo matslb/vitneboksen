@@ -120,7 +120,7 @@ export default function TestimonyPage() {
           onClick={handleEnterFullscreen}
         >Fullskjerm</button>
       }
-      {!vitneboks.isOpen || filteredQuestions.length === 0 || vitneboks.finalVideoProcessingStatus == FinalVideoStatus.started || (vitneboks.completedVideos + vitneboks.videosToBeProcessed) >= 50 ?
+      {!vitneboks.isOpen || filteredQuestions.length === 0 || vitneboks.finalVideoProcessingStatus == FinalVideoStatus.started || (vitneboks.completedVideos + vitneboks.videosToBeProcessed) >= 70 ?
         <div className="flex flex-col items-center justify-center flex-1 p-6 text-3xl">
           Kom tilbake senere. Her er det dessverre stengt 😓
         </div>
@@ -133,7 +133,7 @@ export default function TestimonyPage() {
       }
 
       {waiting && (
-        <WaitingScreen seconds={3} withBeep={true} setWaiting={setWaiting} />
+        <WaitingScreen seconds={3} questionText={currentQuestion.text} withBeep={true} setWaiting={setWaiting} />
       )}
 
       {started && !waiting && !thankYouWaiting && currentQuestion && (

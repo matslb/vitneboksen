@@ -23,7 +23,7 @@ public static class UploadVideoV2
             return Results.BadRequest();
         }
 
-        if (containerClient.GetBlobs().Count(b => b.Name.Contains("webm")) >= 50)
+        if (containerClient.GetBlobs().Count(b => b.Name.Contains("webm")) >= 70)
         {
             return Results.BadRequest("Video upload limit reached");
         }
