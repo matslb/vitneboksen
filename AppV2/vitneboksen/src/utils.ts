@@ -10,7 +10,7 @@ export const dateStringToLocal = (dateString: string) => {
 export const vitneboksTimeRemaining = (dateString: string) => {
   const startDate = new Date(dateString);
   const expiryDate = new Date(startDate);
-  expiryDate.setDate(expiryDate.getDate() + 7);
+  expiryDate.setDate(expiryDate.getDate() + 30);
 
   const now = new Date();
   const diffMs = expiryDate.getTime() - now.getTime();

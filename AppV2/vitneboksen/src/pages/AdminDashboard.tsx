@@ -106,7 +106,7 @@ export default function AdminDashboard() {
               </button>
             }
             <p>
-              En vitneboks blir automatisk slettet etter 7 dager.
+              En vitneboks blir automatisk slettet etter 30 dager.
             </p>
           </div>
           <div className='p-8 rounded my-16 text-l bg-secondary-bg'>
