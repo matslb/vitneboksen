@@ -18,7 +18,7 @@ export const vitneboksTimeRemaining = (dateString: string) => {
   const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
   const hours = Math.floor((diffMs / (1000 * 60 * 60)) % 24);
   if(days > 0){
-    return `${days} dager og ${hours} timer pikk`;
+    return `${days} dager og ${hours} timer`;
   }
     return `${hours} timer`;
 };
