@@ -10,7 +10,7 @@ export const dateStringToLocal = (dateString: string) => {
 export const vitneboksTimeRemaining = (dateString: string) => {
   const startDate = new Date(dateString);
   const expiryDate = new Date(startDate);
-  expiryDate.setDate(expiryDate.getDate() + 30);
+  expiryDate.setDate(expiryDate.getDate() + 60);
 
   const now = new Date();
   const diffMs = expiryDate.getTime() - now.getTime();
@@ -18,7 +18,7 @@ export const vitneboksTimeRemaining = (dateString: string) => {
   const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
   const hours = Math.floor((diffMs / (1000 * 60 * 60)) % 24);
   if(days > 0){
-    return `${days} dager og ${hours} timer`;
+    return `${days} dager og ${hours} timer pikk`;
   }
     return `${hours} timer`;
 };

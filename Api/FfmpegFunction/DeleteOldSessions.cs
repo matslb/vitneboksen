@@ -53,7 +53,7 @@ public class DeleteOldSessions
                     continue;
                 }
 
-                if (now - createdDate > TimeSpan.FromDays(30))
+                if (now - createdDate > TimeSpan.FromDays(60))
                 {
                     await containerClient.DeleteIfExistsAsync();
                     _logger.LogInformation($"Deleted container: {container.Name} in Azure");
