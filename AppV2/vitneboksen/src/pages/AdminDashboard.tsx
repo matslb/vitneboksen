@@ -41,6 +41,7 @@ export default function AdminDashboard() {
       videosToBeProcessed: 0,
       completedVideos: 0,
       finalVideoProcessingStatus: FinalVideoStatus.notStarted,
+      failedVideoIds: [],
       questions: [],
       isOpen: true,
       uid: uid,
