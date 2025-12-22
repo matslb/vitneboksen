@@ -86,7 +86,7 @@ public class FirebaseService(FirebaseConfig firebaseConfig)
     public void SetFailedVideoIds(string sessionKey, List<BlobItem> blobItems)
     {
         var uid = GetUidFromSessionKey(sessionKey);
-        firebaseClient.Set($"{uid}/vitnebokser/{sessionKey}/failedVideoIds", blobItems.Select(b => UnEncodedFileMetaData.GetVideoFileMetaDataFromFileName(b.Name).Id));
+        firebaseClient.Set($"{uid}/vitnebokser/{sessionKey}/failedVideoIds", blobItems.Select(b => UnEncodedFileMetaData.GetVideoFileMetaDataFromFileName(b.Name).CreatedOnString));
     }
 
     public enum FinalVideoProcessingStatus

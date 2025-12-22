@@ -84,8 +84,8 @@ export async function downloadSingleVideo(vitneboksId: string,videoId: string, u
 
 export async function retryFailedVideo(vitneboksId: string, videoId: string, userToken: string){
   const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
-  const urlWithQueryParam = `${API_URL}retry-video/${videoId}?sessionKey=${vitneboksId}&userToken=${userToken}`;
-  const response = await fetch(urlWithQueryParam, { method: "POST" });
+  const urlWithQueryParam = `${API_URL}retry/${videoId}?sessionKey=${vitneboksId}&userToken=${userToken}`;
+  const response = await fetch(urlWithQueryParam, { method: "GET" });
   return response.ok;
 }
 

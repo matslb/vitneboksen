@@ -3,6 +3,7 @@
 public class UnEncodedFileMetaData(
     Guid id,
     DateTimeOffset createdOn,
+    string createdOnString,
     string videoType,
     string sessionKey,
     string fileType
@@ -10,6 +11,7 @@ public class UnEncodedFileMetaData(
 {
     public Guid Id { get; } = id;
     public DateTimeOffset CreatedOn { get; } = createdOn;
+    public string CreatedOnString { get; } = createdOnString;
     public string VideoType { get; } = videoType;
     public string SessionKey { get; } = sessionKey;
     public string FileType { get; } = fileType;
@@ -33,6 +35,7 @@ public class UnEncodedFileMetaData(
         return new UnEncodedFileMetaData(
                 id: Guid.Parse(metadata[0]),
                 createdOn: DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(metadata[1])),
+                createdOnString: metadata[1],
                 videoType: metadata[2],
                 sessionKey: metadata[3],
                 fileType: extension
