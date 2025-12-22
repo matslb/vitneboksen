@@ -39,12 +39,13 @@ export default function AdminDashboard() {
       createdOn: new Date(Date.now()).toISOString(),
       videosToBeProcessed: 0,
       completedVideos: 0,
-      maxVideoCount: 0,
+      maxStorage: 0,
       finalVideoProcessingStatus: FinalVideoStatus.notStarted,
       failedVideoIds: [],
       questions: [],
       isOpen: true,
       uid: uid,
+      sessionStorageUsage: 0,
       completedVideoIds: []
     };
     const vitneboksRef = ref(db, `${uid}/vitnebokser/${newVitneboks.id}`);

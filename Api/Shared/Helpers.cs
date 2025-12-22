@@ -23,7 +23,7 @@ namespace Shared
             return blobService.GetBlobContainerClient(container.Name);
         }
 
-        public static bool IsSessionFull(Pageable<BlobItem> blobs) => blobs.Count(b => b.Name.EndsWith(".webm") || b.Name.EndsWith(".mp4")) >= Constants.MaxVideosPerSession;
+        public static bool IsSessionFull(Pageable<BlobItem> blobs) => blobs.Count(b => b.Name.EndsWith(".webm") || b.Name.EndsWith(".mp4")) >= Constants.MaxStoragePerSession;
 
         public static BlobContainerClient GetUnprocessedContainer(BlobServiceClient blobService) => blobService.GetBlobContainerClient(Constants.UnprocessedContainer);
 

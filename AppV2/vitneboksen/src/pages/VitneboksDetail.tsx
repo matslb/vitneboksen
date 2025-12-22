@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getDatabase, ref, onValue, set, remove } from 'firebase/database';
 import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
-import { type Vitneboks } from '../types/Vitneboks';
+import { FinalVideoStatus, type Vitneboks } from '../types/Vitneboks';
 
 import LoadingFullScreen from '../components/LoadingFullScreen';
 import Footer from '../components/Footer';
-import { deleteVitneboks } from '../vitneboksService';
+import { deleteVitneboks, forceUpdateVitneboksStatus } from '../vitneboksService';
 import Header from '../components/Header';
 import ToggleSwitch from '../components/ToggleSwitch';
 import QuestionList from '../components/QuestionList';
@@ -111,6 +111,19 @@ export default function VitneboksDetail() {
             <QuestionList vitneBoksId={vitneboks.id} userId={user.uid} questions={vitneboks.questions} />
             <TimelineEditor userToken={userToken} vitneboks={vitneboks} />
             <div className='flex justify-between items-end gap-4'>
+            {(vitneboks.finalVideoProcessingStatus === FinalVideoStatus.started || vitneboks.videosToBeProcessed > 0 || isRecording || true) &&
+                <div className='flex flex-col align-left gap-4'>
+                  <span>
+                    Tror du noe har gått galt?
+                  </span>
+                  <button
+                    onClick={() => forceUpdateVitneboksStatus(vitneboks.id, userToken)}
+                    className="bg-primary-button w-45 text-black px-4 py-2 rounded hover:text-white hover:bg-secondary-bg"
+                  >
+                    Tving statussjekk
+                  </button>
+                </div>
+              }
               <p className="opacity-80">
                 {vitneboks.deletionFromDate &&
                   <>Slettes automatisk om {vitneboksTimeRemaining(vitneboks.deletionFromDate)}</>

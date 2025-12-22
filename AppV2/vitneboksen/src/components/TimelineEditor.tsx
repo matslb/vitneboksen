@@ -77,7 +77,7 @@ export default function TimelineEditor({
         <>
             <h3 className="text-xl font-bold">Vitnesbyrd</h3>
             <div className="bg-white/10 rounded p-4 my-4 overflow-x-auto">
-                <VideoStats completed={vitneboks.completedVideos} inProgress={vitneboks.videosToBeProcessed} max={vitneboks.maxVideoCount} sessionStorageUsage={vitneboks.sessionStorageUsage} />
+                <VideoStats completed={vitneboks.completedVideos} inProgress={vitneboks.videosToBeProcessed} max={vitneboks.maxStorage} sessionStorageUsage={vitneboks.sessionStorageUsage} />
                 {vitneboks.completedVideoIds.length > 0 &&
                     <div className="flex gap-2 my-4 overflow-x-scroll pb-1">
                         {vitneboks.completedVideoIds.map((videoId) => {
