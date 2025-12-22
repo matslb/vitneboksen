@@ -50,7 +50,9 @@ public static class ForceUpdateSessionStatus
 
         firebaseService.SetIsSessionRecording(sessionKey, false);
         firebaseService.SetFailedVideoIds(sessionKey, Helpers.GetFailedVideosInSession(blobService, sessionKey));
-        
+        firebaseService.SetMaxVideoCount(sessionKey);
+        firebaseService.SetFinalVideoProcessingStatus(sessionKey, FirebaseService.FinalVideoProcessingStatus.started);
+
         return Results.NoContent();
     }
 }

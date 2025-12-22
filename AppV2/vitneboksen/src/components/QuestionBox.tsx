@@ -19,6 +19,10 @@ export default function QuestionBox({ vitneboksId, userId, question }: QuestionB
 
     const handleIsAllwaysActiveChange = (active: boolean) => {
         set(ref(db, `${userId}/vitnebokser/${vitneboksId}/questions/${question.id}/allwaysActive`), active);
+        if (!active) {
+            set(ref(db, `${userId}/vitnebokser/${vitneboksId}/questions/${question.id}/activeTo`), null);
+            set(ref(db, `${userId}/vitnebokser/${vitneboksId}/questions/${question.id}/activeFrom`), null);
+        }
     };
     const handleDrop = (e: React.DragEvent, targetId: string, targetOrder: number) => {
         const { id: draggedId, order: draggedOrder } = JSON.parse(e.dataTransfer.getData("text/plain"));

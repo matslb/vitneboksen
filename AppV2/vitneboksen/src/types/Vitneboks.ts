@@ -15,6 +15,7 @@ export interface Vitneboks {
   videosToBeProcessed: number;
   completedVideos:number;
   completedVideoIds: string[];
+  maxVideoCount: number;
   finalVideoProcessingStatus: FinalVideoStatus;
   questions: Question[];
   isOpen: boolean;

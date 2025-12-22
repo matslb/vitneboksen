@@ -20,6 +20,13 @@ public class FirebaseService(FirebaseConfig firebaseConfig)
         firebaseClient.Set($"{uid}/vitnebokser/{sessionKey}/videosToBeProcessed", count);
     }
 
+    public void SetMaxVideoCount(string sessionKey)
+    {
+        var uid = GetUidFromSessionKey(sessionKey);
+        firebaseClient.Set($"{uid}/vitnebokser/{sessionKey}/maxVideoCount", Constants.MaxVideosPerSession);
+        firebaseClient.Set($"publicVitnebokser/{sessionKey}/maxVideoCount", Constants.MaxVideosPerSession);
+    }
+
     public void SetFinalVideoProcessingStatus(string sessionKey, FinalVideoProcessingStatus status)
     {
         var uid = GetUidFromSessionKey(sessionKey);

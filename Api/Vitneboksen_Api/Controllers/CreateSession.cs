@@ -30,6 +30,7 @@ public static class CreateSession
             await containerClient.CreateAsync();
             containerClient.SetMetadata(new Dictionary<string, string> { { "created", DateTime.Now.ToString() } });
             firebaseService.SetDeletionFromDate(sessionKey, DateTime.Now);
+
         }
 
         return Results.Created();

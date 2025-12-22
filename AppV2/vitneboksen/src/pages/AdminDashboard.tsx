@@ -21,7 +21,6 @@ export default function AdminDashboard() {
     const vitnebokserRef = ref(db, `${uid}/vitnebokser`);
     onValue(vitnebokserRef, (snapshot) => {
       const data = snapshot.val();
-      console.log(data);
       setVitnebokser(Object.values(data).map(v => mapVitneboks(v)))
     });
 
@@ -40,6 +39,7 @@ export default function AdminDashboard() {
       createdOn: new Date(Date.now()).toISOString(),
       videosToBeProcessed: 0,
       completedVideos: 0,
+      maxVideoCount: 0,
       finalVideoProcessingStatus: FinalVideoStatus.notStarted,
       failedVideoIds: [],
       questions: [],
