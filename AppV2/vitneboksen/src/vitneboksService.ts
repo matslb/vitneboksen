@@ -82,3 +82,10 @@ export async function downloadSingleVideo(vitneboksId: string,videoId: string, u
   window.open(urlWithQueryParam, '_blank');
 }
 
+export async function retryFailedVideo(vitneboksId: string, videoId: string, userToken: string){
+  const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
+  const urlWithQueryParam = `${API_URL}retry-video/${videoId}?sessionKey=${vitneboksId}&userToken=${userToken}`;
+  const response = await fetch(urlWithQueryParam, { method: "POST" });
+  return response.ok;
+}
+

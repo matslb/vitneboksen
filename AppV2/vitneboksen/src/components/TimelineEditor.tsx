@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import type { Vitneboks } from "../types/Vitneboks";
-import { deleteVideo, downloadSingleVideo } from "../vitneboksService";
+import { deleteVideo, downloadSingleVideo, retryFailedVideo } from "../vitneboksService";
 import GenerateVideoButton from "./GenerateVideoButton";
 import VideoStats from "./VideoStats";
 import SpinnerIcon from "./SpinnerIcon";
+import ErrorIcon from "./ErrorIcon";
 
 const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
-const EXPIRY_MS = 168 * 60 * 60 * 1000; // 7 days
 
 type TimelineEditorProps = {
     userToken: string;
@@ -20,46 +20,9 @@ export default function TimelineEditor({
     const [gifSources, setGifSources] = useState<Record<string, string>>({});
 
     useEffect(() => {
-        vitneboks.completedVideoIds.forEach(async (videoId) => {
-            const storageKey = `gif-${videoId}`;
-            const cachedEntry = localStorage.getItem(storageKey);
-
-            if (cachedEntry) {
-                try {
-                    const parsed = JSON.parse(cachedEntry);
-                    const isExpired = Date.now() - parsed.timestamp > EXPIRY_MS;
-
-                    if (!isExpired && parsed.data) {
-                        setGifSources((prev) => ({ ...prev, [videoId]: parsed.data }));
-                        return;
-                    } else {
-                        localStorage.removeItem(storageKey);
-                    }
-                } catch {
-                    localStorage.removeItem(storageKey); // Malformed entry
-                }
-            }
-
+        vitneboks.completedVideoIds.forEach((videoId) => {
             const gifUrl = `${API_URL}getgif/${videoId}?sessionKey=${vitneboks.id}&userToken=${userToken}`;
-            try {
-                const response = await fetch(gifUrl);
-                const blob = await response.blob();
-
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    const base64data = reader.result as string;
-                    const wrapped = JSON.stringify({
-                        data: base64data,
-                        timestamp: Date.now(),
-                    });
-                    localStorage.setItem(storageKey, wrapped);
-                    setGifSources((prev) => ({ ...prev, [videoId]: base64data }));
-                };
-                reader.readAsDataURL(blob);
-            } catch (err) {
-                setGifSources((prev) => ({ ...prev, [videoId]: "error" }));
-                console.error(`Failed to load gif for ${videoId}`, err);
-            }
+            setGifSources((prev) => ({ ...prev, [videoId]: gifUrl }));
         });
     }, [vitneboks.completedVideoIds, vitneboks.id, userToken]);
 
@@ -68,15 +31,25 @@ export default function TimelineEditor({
         deleteVideo(vitneboks.id, videoId, userToken);
     };
 
+    const handleRetry = async (videoId: string) => {
+        await retryFailedVideo(vitneboks.id, videoId, userToken);
+    };
+
+    // Merge completed and failed videos chronologically
+    const allVideoIds = [...vitneboks.completedVideoIds, ...vitneboks.failedVideoIds]
+        .sort((a, b) => Number(a) - Number(b));
+    const failedVideoSet = new Set(vitneboks.failedVideoIds);
+
     return (
         <>
             <h3 className="text-xl font-bold">Vitnesbyrd</h3>
             <div className="bg-white/10 rounded p-4 my-4 overflow-x-auto">
                 <VideoStats completed={vitneboks.completedVideos} inProgress={vitneboks.videosToBeProcessed} />
-                {vitneboks.completedVideoIds.length > 0 &&
+                {allVideoIds.length > 0 &&
                     <div className="flex gap-2 my-4 overflow-x-scroll pb-1">
-                        {vitneboks.completedVideoIds.map((videoId) => {
+                        {allVideoIds.map((videoId) => {
                             const date = new Date(Number(videoId));
+                            const isFailed = failedVideoSet.has(videoId);
                             const src = gifSources[videoId] ?? "";
 
                             return (
@@ -87,30 +60,47 @@ export default function TimelineEditor({
                                     <div className="absolute top-1 left-1 bg-black/60 py-1 rounded-br rounded-tl px-2 text-sm text-white">
                                         kl {date.getHours().toString().padStart(2, "0")}:{date.getMinutes().toString().padStart(2, "0")}
                                     </div>
-                                    {src == "" ?
-                                        <div className="rounded min-h-[135px] w-60 flex justify-center items-center">
-                                            <SpinnerIcon />
+                                    {isFailed ? (
+                                        <div className="rounded min-h-[135px] w-60 flex flex-col justify-center items-center gap-2 p-4">
+                                            <ErrorIcon />
+                                            <p className="text-white text-sm text-center">Denne videoen feilet</p>
                                         </div>
-                                        :
-                                        <img
-                                            src={src}
-                                            alt="Ingen gif. Noe har gått galt. Slett denne dersom Vitneboksvideoen ikke blir som forventet"
-                                            className="rounded min-h-[135px] w-60"
-                                        />
-                                    }
+                                    ) : (
+                                        src == "" ?
+                                            <div className="rounded min-h-[135px] w-60 flex justify-center items-center">
+                                                <SpinnerIcon />
+                                            </div>
+                                            :
+                                            <img
+                                                src={src}
+                                                alt="Ingen gif. Noe har gått galt. Slett denne dersom Vitneboksvideoen ikke blir som forventet"
+                                                className="rounded min-h-[135px] w-60"
+                                            />
+                                    )}
                                     <div className="flex justify-between items-center m-2">
-                                        <button
-                                            onClick={() => downloadSingleVideo(vitneboks.id, videoId, userToken)}
-                                            className="px-3 py-1 text-sm rounded bg-primary-button text-black hover:bg-secondary-bg hover:text-white"
-                                        >
-                                            Last ned
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(videoId)}
-                                            className="px-3 py-1 text-sm rounded bg-danger text-white hover:bg-red-700"
-                                        >
-                                            Slett
-                                        </button>
+                                        {isFailed ? (
+                                            <button
+                                                onClick={() => handleRetry(videoId)}
+                                                className="px-3 py-1 text-sm rounded bg-primary-button text-black hover:bg-secondary-bg hover:text-white"
+                                            >
+                                                Prøv igjen
+                                            </button>
+                                        ) : (
+                                            <>
+                                                <button
+                                                    onClick={() => downloadSingleVideo(vitneboks.id, videoId, userToken)}
+                                                    className="px-3 py-1 text-sm rounded bg-primary-button text-black hover:bg-secondary-bg hover:text-white"
+                                                >
+                                                    Last ned
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(videoId)}
+                                                    className="px-3 py-1 text-sm rounded bg-danger text-white hover:bg-red-700"
+                                                >
+                                                    Slett
+                                                </button>
+                                            </>
+                                        )}
                                     </div>
                                 </div>
                             );

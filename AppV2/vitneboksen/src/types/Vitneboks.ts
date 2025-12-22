@@ -11,6 +11,7 @@ export interface Vitneboks {
   title: string;
   createdOn: string;
   deletionFromDate?: string;
+  failedVideoIds: string[];
   videosToBeProcessed: number;
   completedVideos:number;
   completedVideoIds: string[];
