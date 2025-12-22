@@ -46,6 +46,8 @@ namespace FfmpegFunction
 
             var blobService = new BlobServiceClient(connectionString);
             var tempPath = Path.Combine(Path.GetTempPath(), $"vitne-{Guid.NewGuid()}");
+            _logger.LogInformation($"Storng temp files: {tempPath}");
+
             Directory.CreateDirectory(tempPath);
 
             try
