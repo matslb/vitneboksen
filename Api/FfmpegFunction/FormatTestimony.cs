@@ -35,7 +35,7 @@ namespace FfmpegFunction
             FunctionContext context,
             string blobName,
             CancellationToken cancellation) =>
-            ProcessAsync(blobContent, context, blobName, cancellation);
+            ProcessAsync(blobContent, context, $"{blobName}.webm", cancellation);
 
         [Function("FormatTestimonyMp4")]
         public Task RunMp4(
@@ -43,7 +43,7 @@ namespace FfmpegFunction
             FunctionContext context,
             string blobName,
             CancellationToken cancellation) =>
-            ProcessAsync(blobContent, context, blobName, cancellation);
+            ProcessAsync(blobContent, context, $"{blobName}.mp4", cancellation);
         
         private async Task ProcessAsync(byte[] blobContent, FunctionContext context, string blobName, CancellationToken cancellation)
         {
