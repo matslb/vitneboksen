@@ -28,14 +28,26 @@ namespace FfmpegFunction
                 BasePath = Environment.GetEnvironmentVariable("FireSharp__BasePath"),
             });
         }
+        
+        [Function("FormatTestimonyWebm")]
+        public Task RunWebm(
+            [BlobTrigger("unprocessed/{blobName}.webm", Connection = "AzureWebJobsStorage")] byte[] blobContent,
+            FunctionContext context,
+            string blobName,
+            CancellationToken cancellation) =>
+            ProcessAsync(blobContent, context, blobName, cancellation);
 
-        [Function("FormatTestimony")]
-        public async Task Run([BlobTrigger("unprocessed/{blobName}", Connection = "AzureWebJobsStorage")] byte[] blobContent, FunctionContext context, string blobName, CancellationToken cancellation)
+        [Function("FormatTestimonyMp4")]
+        public Task RunMp4(
+            [BlobTrigger("unprocessed/{blobName}.mp4", Connection = "AzureWebJobsStorage")] byte[] blobContent,
+            FunctionContext context,
+            string blobName,
+            CancellationToken cancellation) =>
+            ProcessAsync(blobContent, context, blobName, cancellation);
+        
+        private async Task ProcessAsync(byte[] blobContent, FunctionContext context, string blobName, CancellationToken cancellation)
         {
             var fileMetaData = UnEncodedFileMetaData.GetVideoFileMetaDataFromFileName(blobName);
-
-            if (!blobName.EndsWith(".webm"))
-                return;
 
             using var blobContentStream = new MemoryStream(blobContent);
 
@@ -56,7 +68,9 @@ namespace FfmpegFunction
 
             var tempPath = Path.Combine(Path.GetTempPath(), tempFolder);
             Directory.CreateDirectory(tempPath);
-            var videoFilePath = Path.Combine(tempPath, "file.mp4");
+            // Preserve original source extension for local temp copy
+            var sourceExtension = fileMetaData.FileType?.ToLowerInvariant() ?? "webm";
+            var videoFilePath = Path.Combine(tempPath, $"file.{sourceExtension}");
             using (var fileStream = new FileStream(videoFilePath, FileMode.Create))
             {
                 await blobContentStream.CopyToAsync(fileStream);
@@ -140,7 +154,7 @@ namespace FfmpegFunction
                 await videofileBlobClient.DeleteIfExistsAsync();
                 await subfileBlobclient.DeleteIfExistsAsync();
 
-                _firebaseService.SetToBeProcessedCount(fileMetaData.SessionKey, unprocessedContainer.GetBlobs().Count(blob => blob.Name.Contains(".webm") && blob.Name.Contains(fileMetaData.SessionKey)));
+                _firebaseService.SetToBeProcessedCount(fileMetaData.SessionKey, unprocessedContainer.GetBlobs());
                 _firebaseService.SetFinalVideoProcessingStatus(fileMetaData.SessionKey, FirebaseService.FinalVideoProcessingStatus.notStarted);
                 _firebaseService.SetCompletedVideosCount(fileMetaData.SessionKey, sessionContainer.GetBlobs());
                 _firebaseService.SetCompletedVideos(fileMetaData.SessionKey, sessionContainer.GetBlobs());

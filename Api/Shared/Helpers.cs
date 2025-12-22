@@ -2,6 +2,8 @@
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Text;
+using Azure;
+using Azure.Storage.Blobs.Models;
 
 namespace Shared
 {
@@ -21,41 +23,15 @@ namespace Shared
             return blobService.GetBlobContainerClient(container.Name);
         }
 
+        public static bool IsSessionFull(Pageable<BlobItem> blobs) => blobs.Count(b => b.Name.EndsWith(".webm") || b.Name.EndsWith(".mp4")) >= 70;
+        
         public static BlobContainerClient GetUnprocessedContainer(BlobServiceClient blobService) => blobService.GetBlobContainerClient(Constants.UnprocessedContainer);
-
-        public static BlobContainerClient? GetContainerBySharedKey(BlobServiceClient blobService, string sharedKey)
-        {
-
-            var containers = blobService.GetBlobContainers();
-            var container = containers.FirstOrDefault(c => c.Name.EndsWith(sharedKey));
-
-            if (container == null)
-            {
-                return null;
-            }
-
-            return blobService.GetBlobContainerClient(container.Name);
-        }
 
         public static async Task UploadJsonToStorage(BlobClient blobClient, object objectToSave)
         {
             var serializedObject = JsonConvert.SerializeObject(objectToSave);
             await blobClient.UploadAsync(BinaryData.FromString(serializedObject), overwrite: true);
         }
-
-        public static async Task<T?> GetBlobFromStorage<T>(BlobContainerClient containerClient, string fileName)
-        {
-            var blobClient = containerClient.GetBlobClient(fileName);
-            if (blobClient.Exists())
-            {
-                var blob = await blobClient.DownloadContentAsync();
-                var json = blob?.Value?.Content?.ToString();
-                if (json != null)
-                    return JsonConvert.DeserializeObject<T>(json);
-            }
-            return default;
-        }
-
 
         public static async Task<FFmpegResult> ExecuteFFmpegCommand(string arguments, int timeoutInSeconds = 60, CancellationToken cancellationToken = default)
         {

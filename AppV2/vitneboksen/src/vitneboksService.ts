@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export async function uploadVideoToProcessor(videoBlob: Blob, vitneboksId: string, question: string) {
+export async function uploadVideoToProcessor(videoBlob: Blob, vitneboksId: string, question: string, extension: string = "webm") {
   const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
 
   if (!API_URL) {
@@ -11,7 +11,7 @@ export async function uploadVideoToProcessor(videoBlob: Blob, vitneboksId: strin
   e.preventDefault();
   e.returnValue = "";
 };
-  formData.append("video", videoBlob, `${vitneboksId}.webm`);
+  formData.append("video", videoBlob, `${vitneboksId}.${extension}`);
   formData.append("sub", question);
 
   window.addEventListener("beforeunload", handleBeforeUnload);

@@ -39,30 +39,62 @@ export const GetRecordingConstrains = () => {
   };
 };
 
-export const videoExtension = "webm";
+// Detect Safari (including iOS and iPadOS)
+const isSafari = () => {
+  const userAgent = navigator.userAgent;
+  return /^((?!chrome|android).)*safari/i.test(userAgent) || 
+         /iPad|iPhone|iPod/.test(userAgent);
+};
 
 export const GetSupportedMimeType = () => {
-  let mimeType = "";
+  // Safari (macOS, iOS, iPadOS) doesn't support VP8/VP9, use MP4/H.264 instead
+  if (isSafari()) {
+    const mp4Types = [
+      "video/mp4;codecs=h264,aac",
+      "video/mp4;codecs=avc1.42E01E,mp4a.40.2",
+      "video/mp4",
+    ];
+
+    for (const type of mp4Types) {
+      if (MediaRecorder.isTypeSupported(type)) {
+        return type;
+      }
+    }
+  }
+
+  // For other browsers (Chrome, Firefox, Edge, Android Chrome), use WebM with VP8/VP9
   const preferredTypes = [
-    "video/webm",
     "video/webm;codecs=vp9,opus",
     "video/webm;codecs=vp8,opus",
+    "video/webm",
   ];
 
   for (const type of preferredTypes) {
     if (MediaRecorder.isTypeSupported(type)) {
-      mimeType = type;
-      break;
+      return type;
     }
   }
-  if (mimeType === "") {
-    alert(
-      "Din nettleser støtter ikke den nødvendige video-kodeken. Oppdater eller bruk en annen nettleser."
-    );
-    return null;
-  }
-  return mimeType;
+
+  // Fallback: if nothing is supported, show error
+  alert(
+    "Din nettleser støtter ikke den nødvendige video-kodeken. Oppdater eller bruk en annen nettleser."
+  );
+  return null;
 };
+
+// Get video extension based on the mime type
+export const getVideoExtension = () => {
+  const mimeType = GetSupportedMimeType();
+  if (!mimeType) return "webm"; // fallback
+  
+  if (mimeType.startsWith("video/mp4")) {
+    return "mp4";
+  }
+  return "webm";
+};
+
+// Keep for backward compatibility, but prefer getVideoExtension()
+export const videoExtension = getVideoExtension();
 
 export const mapVitneboks = (vitneboksRaw: any) => {
   if(vitneboksRaw == undefined || vitneboksRaw == null) return null;

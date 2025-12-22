@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { GetRecordingConstrains, videoExtension } from '../utils';
+import { GetRecordingConstrains, GetSupportedMimeType } from '../utils';
 import type Question from '../types/Question';
 import { uploadVideoToProcessor } from '../vitneboksService';
 import { getDatabase, ref, set } from 'firebase/database';
@@ -54,11 +54,24 @@ export default function VideoRecorder({ question, vitneboksId, onFinish }: Video
 
       recorder.onstop = () => {
         setTimeout(() => {
-          const blob = new Blob(chunksRef.current, { type: videoExtension });
-          fixWebmDuration(blob).then((fixedBlob) => {
-            uploadToServer(fixedBlob);
+          // Use the MediaRecorder's actual mimeType, or fall back to detected type
+          const mimeType = recorder.mimeType || GetSupportedMimeType() || 'video/webm';
+          const isWebM = mimeType.startsWith('video/webm');
+          const extension = isWebM ? 'webm' : 'mp4';
+          
+          const blob = new Blob(chunksRef.current, { type: mimeType });
+          
+          // Only fix WebM duration - MP4 files don't need this fix
+          if (isWebM) {
+            fixWebmDuration(blob).then((fixedBlob) => {
+              uploadToServer(fixedBlob, extension);
+              if (mounted) onFinish();
+            });
+          } else {
+            // For MP4 (Safari), upload directly without duration fix
+            uploadToServer(blob, extension);
             if (mounted) onFinish();
-          });
+          }
         }, 100);
       };
 
@@ -98,8 +111,8 @@ export default function VideoRecorder({ question, vitneboksId, onFinish }: Video
     };
   }, [question, onFinish]);
 
-  const uploadToServer = async (blob: Blob) => {
-    await uploadVideoToProcessor(blob, vitneboksId, question.text);
+  const uploadToServer = async (blob: Blob, extension: string) => {
+    await uploadVideoToProcessor(blob, vitneboksId, question.text, extension);
   };
 
   return (

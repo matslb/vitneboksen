@@ -9,9 +9,13 @@ public class FirebaseService(FirebaseConfig firebaseConfig)
 {
     private readonly FirebaseClient firebaseClient = new(firebaseConfig);
 
-    public void SetToBeProcessedCount(string sessionKey, int count)
+    public void SetToBeProcessedCount(string sessionKey, Pageable<BlobItem> blobItems)
     {
         var uid = GetUidFromSessionKey(sessionKey);
+        var count = blobItems.Count(blob =>
+            blob.Name.Contains(sessionKey) &&
+            (blob.Name.EndsWith(".webm", StringComparison.OrdinalIgnoreCase) ||
+             blob.Name.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase)));
         firebaseClient.Set($"{uid}/vitnebokser/{sessionKey}/videosToBeProcessed", count);
     }
 

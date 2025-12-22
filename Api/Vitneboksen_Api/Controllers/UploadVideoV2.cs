@@ -23,19 +23,19 @@ public static class UploadVideoV2
             return Results.BadRequest();
         }
 
-        if (containerClient.GetBlobs().Count(b => b.Name.Contains("webm")) >= 70)
+        if (Helpers.IsSessionFull(containerClient.GetBlobs()))
         {
             return Results.BadRequest("Video upload limit reached");
         }
 
-        var formdata = await req.ReadFormAsync();
         var videoFile = req.Form.Files.FirstOrDefault(f => f.Name == "video");
         string? subText = null;
 
         if (req.Form.TryGetValue("sub", out StringValues sub))
             subText = sub.ToString();
+        var uploadedExtension = Path.GetExtension(videoFile.FileName)?.TrimStart('.').ToLowerInvariant();
 
-        if (videoFile == null || (videoType == Constants.VideoTypes.Testimonial && subText == null))
+        if (videoFile == null || (videoType == Constants.VideoTypes.Testimonial && subText == null) || string.IsNullOrWhiteSpace(uploadedExtension) )
         {
             return Results.BadRequest("No file, stupid.");
         }
@@ -49,7 +49,8 @@ public static class UploadVideoV2
             id: Guid.NewGuid(),
             createdOn: DateTimeOffset.Now,
             videoType: videoType,
-            sessionKey: sessionKey
+            sessionKey: sessionKey,
+            fileType: uploadedExtension  
             );
 
         var videoFileName = videoMetadata.GetVideoFileName();
@@ -63,7 +64,7 @@ public static class UploadVideoV2
             await Helpers.UploadJsonToStorage(subTextBlobClient, subText);
         }
 
-        firebaseService.SetToBeProcessedCount(sessionKey, unprocessedContainer.GetBlobs().Count(blob => blob.Name.Contains(".webm") && blob.Name.Contains(sessionKey)));
+        firebaseService.SetToBeProcessedCount(sessionKey,unprocessedContainer.GetBlobs());
         firebaseService.SetFinalVideoProcessingStatus(sessionKey, FirebaseService.FinalVideoProcessingStatus.notStarted);
 
         return Results.Created();

@@ -29,7 +29,9 @@ public static class ForceUpdateSessionStatus
         firebaseService.SetCompletedVideos(sessionKey, containerClient.GetBlobs());
 
         var unprocessedContainer = Helpers.GetUnprocessedContainer(blobService);
-        firebaseService.SetToBeProcessedCount(sessionKey, unprocessedContainer.GetBlobs().Count(blob => blob.Name.Contains(".webm") && blob.Name.Contains(sessionKey)));
+        firebaseService.SetToBeProcessedCount(
+            sessionKey,
+            unprocessedContainer.GetBlobs());
 
         var finalProcessingContainer = blobService.GetBlobContainerClient(Constants.FinalVideoProcessingContainer);
         var existingFinalProcessingBlob = finalProcessingContainer.GetBlobs().FirstOrDefault(b => b.Name == sessionKey);
