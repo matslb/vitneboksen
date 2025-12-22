@@ -35,7 +35,7 @@ public static class UploadVideoV2
             subText = sub.ToString();
         var uploadedExtension = Path.GetExtension(videoFile.FileName)?.TrimStart('.').ToLowerInvariant();
 
-        if (videoFile == null || (videoType == Constants.VideoTypes.Testimonial && subText == null) || string.IsNullOrWhiteSpace(uploadedExtension) )
+        if (videoFile == null || (videoType == Constants.VideoTypes.Testimonial && subText == null) || string.IsNullOrWhiteSpace(uploadedExtension))
         {
             return Results.BadRequest("No file, stupid.");
         }
@@ -44,13 +44,14 @@ public static class UploadVideoV2
         {
             return Results.NotFound("Not found");
         }
-
+        var now = DateTimeOffset.Now;
         var videoMetadata = new UnEncodedFileMetaData(
             id: Guid.NewGuid(),
-            createdOn: DateTimeOffset.Now,
+            createdOn: now,
+            createdOnString: now.ToString(),
             videoType: videoType,
             sessionKey: sessionKey,
-            fileType: uploadedExtension  
+            fileType: uploadedExtension
             );
 
         var videoFileName = videoMetadata.GetVideoFileName();
@@ -64,7 +65,7 @@ public static class UploadVideoV2
             await Helpers.UploadJsonToStorage(subTextBlobClient, subText);
         }
 
-        firebaseService.SetToBeProcessedCount(sessionKey,unprocessedContainer.GetBlobs());
+        firebaseService.SetToBeProcessedCount(sessionKey, unprocessedContainer.GetBlobs());
         firebaseService.SetFinalVideoProcessingStatus(sessionKey, FirebaseService.FinalVideoProcessingStatus.notStarted);
         firebaseService.SetFailedVideoIds(sessionKey, Helpers.GetFailedVideosInSession(blobService, sessionKey));
 
