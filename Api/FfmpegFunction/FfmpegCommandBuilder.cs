@@ -48,9 +48,15 @@ public static class FfmpegCommandBuilder
 
     public static string GenerateGifPreview(string sourceVideoPath, string outputGifPath, int width = 320)
     {
+        // Generate a short GIF preview using 6 evenly distributed frames across the whole video
+        // and a playback speed of 0.5s per frame (2 FPS).
+        // Notes:
+        // - thumbnail=6 picks representative frames evenly throughout the clip.
+        // - fps=2 ensures each frame is displayed for ~0.5 seconds in the GIF.
+        // - frames:v 6 caps the output to exactly 6 frames.
         return $"-y -i \"{sourceVideoPath}\" " +
-               $"-vf \"select='not(mod(t,3))',scale={width}:-1:flags=lanczos\" " +
-               $"-r 3 -gifflags -offsetting \"{outputGifPath}\"";
+               $"-vf \"thumbnail=6,scale={width}:-1:flags=lanczos,fps=2\" " +
+               $"-frames:v 6 -gifflags -offsetting \"{outputGifPath}\"";
     }
 
     internal static string ConcatVideos(string fileListPath, string outputFilePath)
