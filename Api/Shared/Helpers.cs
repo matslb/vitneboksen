@@ -23,11 +23,13 @@ namespace Shared
             return blobService.GetBlobContainerClient(container.Name);
         }
 
-        public static bool IsSessionFull(Pageable<BlobItem> blobs) => GetSessionStorageUsage(blobs) >= Constants.MaxStoragePerSession;
+        public static bool IsSessionFull(BlobServiceClient blobServiceClient, string sessionKey) =>  GetSessionStorageUsage(blobServiceClient, sessionKey) >= Constants.MaxStoragePerSession;
         
-        public static int GetSessionStorageUsage(Pageable<BlobItem> blobs)
+        public static int GetSessionStorageUsage(BlobServiceClient blobService, string sessionKey)
         {
-            long totalBytes = blobs.Sum(b => b.Properties.ContentLength ?? 0);
+            var sessionContainer = GetContainerBySessionKey(blobService, sessionKey);
+            var blobs = sessionContainer.GetBlobs();
+            var totalBytes = blobs.Where(b => b.Name.Contains(sessionKey)).Sum(b => b.Properties.ContentLength ?? 0);
             return (int)Math.Round(totalBytes / 1024.0 / 1024.0);
         }
         

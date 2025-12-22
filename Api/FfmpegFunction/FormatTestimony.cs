@@ -88,7 +88,8 @@ namespace FfmpegFunction
             }
             finally
             {
-                await FinalizeCleanupAsync(tempPath, videofileBlobClient, subfileBlobclient, fileMetaData, unprocessedContainer, sessionContainer);
+                var storageUsage = Helpers.GetSessionStorageUsage(blobService, fileMetaData.SessionKey);
+                await FinalizeCleanupAsync(tempPath, videofileBlobClient, subfileBlobclient, fileMetaData, storageUsage, unprocessedContainer, sessionContainer);
             }
 
             return;
@@ -198,6 +199,7 @@ namespace FfmpegFunction
             BlobClient videofileBlobClient,
             BlobClient subfileBlobclient,
             UnEncodedFileMetaData fileMetaData,
+            int storageUsage,
             BlobContainerClient unprocessedContainer,
             BlobContainerClient sessionContainer)
         {
@@ -209,7 +211,8 @@ namespace FfmpegFunction
             _firebaseService.SetFinalVideoProcessingStatus(fileMetaData.SessionKey, FirebaseService.FinalVideoProcessingStatus.notStarted);
             _firebaseService.SetCompletedVideosCount(fileMetaData.SessionKey, sessionContainer.GetBlobs());
             _firebaseService.SetCompletedVideos(fileMetaData.SessionKey, sessionContainer.GetBlobs());
-            _firebaseService.SetSessionStorageUsage(fileMetaData.SessionKey, sessionContainer.GetBlobs());
+            
+            _firebaseService.SetSessionStorageUsage(fileMetaData.SessionKey, storageUsage);
         }
 
         private async Task GenerateAndUploadPreviewGif(string tempPath, EncodedFileMetaData fileMeta, BlobContainerClient sessionContainer)

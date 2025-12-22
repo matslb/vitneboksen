@@ -97,10 +97,9 @@ public class FirebaseService(FirebaseConfig firebaseConfig)
         firebaseClient.Set($"{uid}/vitnebokser/{sessionKey}/failedVideoIds", blobItems.Select(b => UnEncodedFileMetaData.GetVideoFileMetaDataFromFileName(b.Name).CreatedOnString));
     }
 
-    public void SetSessionStorageUsage(string sessionKey, Pageable<BlobItem> blobItems)
+    public void SetSessionStorageUsage(string sessionKey, int storageUsage)
     {
         var uid = GetUidFromSessionKey(sessionKey);
-        var storageUsage = Helpers.GetSessionStorageUsage(blobItems);
         firebaseClient.Set($"{uid}/vitnebokser/{sessionKey}/sessionStorageUsage", storageUsage);
     }
 

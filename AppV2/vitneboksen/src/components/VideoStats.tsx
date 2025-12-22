@@ -10,7 +10,7 @@ interface VideoStatsProps {
 
 export default function VideoStats({ completed, inProgress, max, sessionStorageUsage, flexDirection }: VideoStatsProps) {
     const usagePercentage = Math.min((sessionStorageUsage / max) * 100, 100);
-    const isFullOrOver = sessionStorageUsage >= max;
+    const isFullOrOver = usagePercentage >= 98;
     
     return (
         <div className={`flex flex-${flexDirection} gap-2 justify-between`}>

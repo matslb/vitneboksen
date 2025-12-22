@@ -27,7 +27,9 @@ public static class ForceUpdateSessionStatus
         }
         firebaseService.SetCompletedVideosCount(sessionKey, containerClient.GetBlobs());
         firebaseService.SetCompletedVideos(sessionKey, containerClient.GetBlobs());
-        firebaseService.SetSessionStorageUsage(sessionKey, containerClient.GetBlobs());
+        
+        var storageUsage = Helpers.GetSessionStorageUsage(blobService, sessionKey);
+        firebaseService.SetSessionStorageUsage(sessionKey, storageUsage);
 
         var unprocessedContainer = Helpers.GetUnprocessedContainer(blobService);
         firebaseService.SetToBeProcessedCount(

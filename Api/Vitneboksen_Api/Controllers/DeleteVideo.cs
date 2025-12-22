@@ -35,7 +35,8 @@ public static class DeleteVideo
 
         firebaseService.SetCompletedVideosCount(sessionKey, containerClient.GetBlobs());
         firebaseService.SetCompletedVideos(sessionKey, containerClient.GetBlobs());
-        firebaseService.SetSessionStorageUsage(sessionKey, containerClient.GetBlobs());
+        var sessionUsage = Helpers.GetSessionStorageUsage(blobService, sessionKey);
+        firebaseService.SetSessionStorageUsage(sessionKey,sessionUsage);
         firebaseService.SetFinalVideoProcessingStatus(sessionKey, FirebaseService.FinalVideoProcessingStatus.notStarted);
 
         return Results.Ok();

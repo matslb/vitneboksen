@@ -23,7 +23,7 @@ public static class UploadVideoV2
             return Results.BadRequest();
         }
 
-        if (Helpers.IsSessionFull(containerClient.GetBlobs()))
+        if (Helpers.IsSessionFull(blobService, sessionKey))
         {
             return Results.BadRequest("Video upload limit reached");
         }
