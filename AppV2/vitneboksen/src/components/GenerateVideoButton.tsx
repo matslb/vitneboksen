@@ -51,7 +51,7 @@ export default function GenerateVideoButton({ Vitneboks, showZip = false }: Gene
                         </div >
                     }
                     {(showZip && Vitneboks.completedVideos > 0) &&
-                        <button className='mt-2 hover:underline' onClick={() => downloadSessionFiles(Vitneboks.id, userToken)}>Last ned råfiler (.zip)</button>
+                        <button className='mt-2 hover:underline' onClick={() => downloadSessionFiles(Vitneboks.id, userToken)}>Last ned alle vitnesbyrd (.zip)</button>
                     }
                 </div >
             }

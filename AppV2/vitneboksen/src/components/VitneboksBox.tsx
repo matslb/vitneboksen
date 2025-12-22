@@ -63,7 +63,7 @@ export default function VitneboksBox({ Vitneboks }: VitneboxBoxProps) {
             </div>
             <div className='flex justify-between gap-2'>
                 <p className="text-m mb-1"><span className='bg-black/40 text-center text-white min-w-9 inline-block rounded'>{Object.values(Vitneboks.questions)?.length}</span> Spørsmål</p>
-                <VideoStats completed={Vitneboks.completedVideos} inProgress={Vitneboks.videosToBeProcessed} max={Vitneboks.maxStorage} sessionStorageUsage={Vitneboks.sessionStorageUsage} />
+                <VideoStats flexDirection="col" completed={Vitneboks.completedVideos} inProgress={Vitneboks.videosToBeProcessed} max={Vitneboks.maxStorage} sessionStorageUsage={Vitneboks.sessionStorageUsage} />
             </div>
             <div className="mt-4 text-right flex justify-between items-start gap-6">
                 <GenerateVideoButton showZip={false} Vitneboks={Vitneboks} />

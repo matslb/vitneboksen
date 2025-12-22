@@ -46,9 +46,19 @@ namespace FfmpegFunction
 
             var blobService = new BlobServiceClient(connectionString);
             var tempPath = Path.Combine(Path.GetTempPath(), $"vitne-{Guid.NewGuid()}");
-            _logger.LogInformation($"Storng temp files: {tempPath}");
-
             Directory.CreateDirectory(tempPath);
+
+            // Log temp path and available free space on the temp drive
+            try
+            {
+                var tempRoot = Path.GetPathRoot(tempPath);
+                var freeBytes = new DriveInfo(tempRoot!).AvailableFreeSpace;
+                _logger.LogInformation("Storing temp files at {tempPath} (root {tempRoot}). Free space: {freeMB} MB", tempPath, tempRoot, freeBytes / (1024 * 1024));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Unable to determine available free space for temp path {tempPath}", tempPath);
+            }
 
             try
             {
