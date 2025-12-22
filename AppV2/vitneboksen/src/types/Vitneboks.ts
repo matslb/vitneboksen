@@ -20,4 +20,5 @@ export interface Vitneboks {
   questions: Question[];
   isOpen: boolean;
   uid: string;
+  sessionStorageUsage: number;
 }

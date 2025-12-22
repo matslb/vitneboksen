@@ -3,6 +3,7 @@ using Azure.Storage.Blobs.Models;
 using FireSharp;
 using FireSharp.Config;
 using Shared.Models;
+using System.Linq;
 
 namespace Shared;
 
@@ -94,6 +95,14 @@ public class FirebaseService(FirebaseConfig firebaseConfig)
     {
         var uid = GetUidFromSessionKey(sessionKey);
         firebaseClient.Set($"{uid}/vitnebokser/{sessionKey}/failedVideoIds", blobItems.Select(b => UnEncodedFileMetaData.GetVideoFileMetaDataFromFileName(b.Name).CreatedOnString));
+    }
+
+    public void SetSessionStorageUsage(string sessionKey, Pageable<BlobItem> blobItems)
+    {
+        var uid = GetUidFromSessionKey(sessionKey);
+        long totalBytes = blobItems.Sum(b => b.Properties.ContentLength ?? 0);
+        var totalMegabytes = (int)Math.Round(totalBytes / 1024.0 / 1024.0);
+        firebaseClient.Set($"{uid}/vitnebokser/{sessionKey}/sessionStorageUsage", totalMegabytes);
     }
 
     public enum FinalVideoProcessingStatus

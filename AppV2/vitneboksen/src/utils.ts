@@ -105,7 +105,8 @@ export const mapVitneboks = (vitneboksRaw: any) => {
     ...vitneboksRaw,
     createdOn: vitneboksRaw.createdOn,
     questions,
-    completedVideoIds: vitneboksRaw?.completedVideoIds ? Object.values(vitneboksRaw?.completedVideoIds) : []
+    completedVideoIds: vitneboksRaw?.completedVideoIds ? Object.values(vitneboksRaw?.completedVideoIds) : [],
+    sessionStorageUsage: vitneboksRaw?.sessionStorageUsage ?? 0
   };
 }
 
