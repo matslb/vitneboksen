@@ -27,6 +27,7 @@ public static class ForceUpdateSessionStatus
         }
         firebaseService.SetCompletedVideosCount(sessionKey, containerClient.GetBlobs());
         firebaseService.SetCompletedVideos(sessionKey, containerClient.GetBlobs());
+        firebaseService.SetSessionStorageUsage(sessionKey, containerClient.GetBlobs());
 
         var unprocessedContainer = Helpers.GetUnprocessedContainer(blobService);
         firebaseService.SetToBeProcessedCount(
@@ -50,7 +51,7 @@ public static class ForceUpdateSessionStatus
 
         firebaseService.SetIsSessionRecording(sessionKey, false);
         firebaseService.SetFailedVideoIds(sessionKey, Helpers.GetFailedVideosInSession(blobService, sessionKey));
-        firebaseService.SetMaxVideoCount(sessionKey);
+        firebaseService.SetMaxSessionStorageUsage(sessionKey);
 
         return Results.NoContent();
     }

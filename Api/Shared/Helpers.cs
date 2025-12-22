@@ -23,8 +23,14 @@ namespace Shared
             return blobService.GetBlobContainerClient(container.Name);
         }
 
-        public static bool IsSessionFull(Pageable<BlobItem> blobs) => blobs.Count(b => b.Name.EndsWith(".webm") || b.Name.EndsWith(".mp4")) >= Constants.MaxStoragePerSession;
-
+        public static bool IsSessionFull(Pageable<BlobItem> blobs) => GetSessionStorageUsage(blobs) >= Constants.MaxStoragePerSession;
+        
+        public static int GetSessionStorageUsage(Pageable<BlobItem> blobs)
+        {
+            long totalBytes = blobs.Sum(b => b.Properties.ContentLength ?? 0);
+            return (int)Math.Round(totalBytes / 1024.0 / 1024.0);
+        }
+        
         public static BlobContainerClient GetUnprocessedContainer(BlobServiceClient blobService) => blobService.GetBlobContainerClient(Constants.UnprocessedContainer);
 
         public static BlobContainerClient GetFailedContainer(BlobServiceClient blobService) => blobService.GetBlobContainerClient(Constants.FailedContainer);

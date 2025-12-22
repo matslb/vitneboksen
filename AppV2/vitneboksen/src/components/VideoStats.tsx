@@ -15,8 +15,8 @@ export default function VideoStats({ completed, inProgress, max, sessionStorageU
                     &nbsp;(&nbsp;<SpinnerIcon />{inProgress} på vei )
                 </>
             }
-            <div className="mt-2 text-sm">
-                Lagring: {sessionStorageUsage.toFixed(2)} MB av {max} MB brukt
+            <div className="mt-2 text-sm text-right">
+             {sessionStorageUsage.toFixed(0)} / {max} MB
             </div>
         </div>
     );

@@ -21,7 +21,7 @@ public class FirebaseService(FirebaseConfig firebaseConfig)
         firebaseClient.Set($"{uid}/vitnebokser/{sessionKey}/videosToBeProcessed", count);
     }
 
-    public void SetMaxVideoCount(string sessionKey)
+    public void SetMaxSessionStorageUsage(string sessionKey)
     {
         var uid = GetUidFromSessionKey(sessionKey);
         firebaseClient.Set($"{uid}/vitnebokser/{sessionKey}/maxStorage", Constants.MaxStoragePerSession);
@@ -100,9 +100,8 @@ public class FirebaseService(FirebaseConfig firebaseConfig)
     public void SetSessionStorageUsage(string sessionKey, Pageable<BlobItem> blobItems)
     {
         var uid = GetUidFromSessionKey(sessionKey);
-        long totalBytes = blobItems.Sum(b => b.Properties.ContentLength ?? 0);
-        var totalMegabytes = (int)Math.Round(totalBytes / 1024.0 / 1024.0);
-        firebaseClient.Set($"{uid}/vitnebokser/{sessionKey}/sessionStorageUsage", totalMegabytes);
+        var storageUsage = Helpers.GetSessionStorageUsage(blobItems);
+        firebaseClient.Set($"{uid}/vitnebokser/{sessionKey}/sessionStorageUsage", storageUsage);
     }
 
     public enum FinalVideoProcessingStatus

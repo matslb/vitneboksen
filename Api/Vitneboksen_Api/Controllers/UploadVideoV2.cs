@@ -68,7 +68,7 @@ public static class UploadVideoV2
         firebaseService.SetToBeProcessedCount(sessionKey, unprocessedContainer.GetBlobs());
         firebaseService.SetFinalVideoProcessingStatus(sessionKey, FirebaseService.FinalVideoProcessingStatus.notStarted);
         firebaseService.SetFailedVideoIds(sessionKey, Helpers.GetFailedVideosInSession(blobService, sessionKey));
-        firebaseService.SetMaxVideoCount(sessionKey);
+        firebaseService.SetMaxSessionStorageUsage(sessionKey);
 
         return Results.Created();
     }
