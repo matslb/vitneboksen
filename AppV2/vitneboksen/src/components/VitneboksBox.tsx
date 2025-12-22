@@ -62,7 +62,7 @@ export default function VitneboksBox({ Vitneboks }: VitneboxBoxProps) {
                 {copied && <p className="text-green-500 text-sm mt-1">{copied}</p>}
             </div>
             <div className='flex justify-between gap-2'>
-                <VideoStats completed={Vitneboks.completedVideos} inProgress={Vitneboks.videosToBeProcessed} max={Vitneboks.maxVideoCount} sessionStorageUsage={Vitneboks.sessionStorageUsage} />
+                <VideoStats completed={Vitneboks.completedVideos} inProgress={Vitneboks.videosToBeProcessed} max={Vitneboks.maxStorage} sessionStorageUsage={Vitneboks.sessionStorageUsage} />
                 <p className="text-m mb-1"><span className='bg-black/40 text-center text-white min-w-9 inline-block rounded'>{Object.values(Vitneboks.questions)?.length}</span> Spørsmål</p>
             </div>
             <div className="mt-4 text-right flex justify-between items-start gap-6">
