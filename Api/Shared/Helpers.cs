@@ -27,6 +27,15 @@ namespace Shared
         
         public static BlobContainerClient GetUnprocessedContainer(BlobServiceClient blobService) => blobService.GetBlobContainerClient(Constants.UnprocessedContainer);
 
+        public static BlobContainerClient GetFailedContainer(BlobServiceClient blobService) => blobService.GetBlobContainerClient(Constants.FailedContainer);
+        
+        // Returns all blobs in the 'failed' container that belong to a specific session
+        public static List<BlobItem> GetFailedVideosInSession(BlobServiceClient blobService, string sessionKey)
+        {
+            var failedContainer = GetFailedContainer(blobService);
+            return failedContainer.GetBlobs().Where(b => b.Name.Contains($"&{sessionKey}")).ToList();
+        }
+
         public static async Task UploadJsonToStorage(BlobClient blobClient, object objectToSave)
         {
             var serializedObject = JsonConvert.SerializeObject(objectToSave);

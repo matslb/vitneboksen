@@ -46,7 +46,7 @@ public static class FfmpegCommandBuilder
 
     }
 
-    public static string GenerateGifPreview(string sourceVideoPath, string outputGifPath, int width = 320)
+    public static string GenerateGifPreview(string sourceVideoPath, string outputGifPath, int width = 240)
     {
         // Generate a short GIF preview using 6 evenly distributed frames across the whole video
         // and a playback speed of 0.5s per frame (2 FPS).

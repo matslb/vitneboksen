@@ -47,4 +47,6 @@ app.MapGet("/video/{fileName}/download", async Task<IResult> (HttpRequest reques
 app.MapDelete("/delete-session", async Task<IResult> (HttpRequest request) => await DeleteSession.Run(request, storageConnectionString, firebaseService));
 app.MapDelete("/delete-video/{fileName}", async Task<IResult> (HttpRequest request, string fileName) => await DeleteVideo.Run(request, fileName, storageConnectionString, firebaseService));
 
+app.MapPost("/retry/{id}", async Task<IResult> (string id, HttpRequest request) => await RetryVideoProcessing.Run(request, id, constring: storageConnectionString, firebaseService: firebaseService));
+
 app.Run();

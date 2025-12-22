@@ -2,6 +2,7 @@
 using Azure.Storage.Blobs.Models;
 using FireSharp;
 using FireSharp.Config;
+using Shared.Models;
 
 namespace Shared;
 
@@ -80,6 +81,12 @@ public class FirebaseService(FirebaseConfig firebaseConfig)
 
         var videoNames = blobItems.Where(blob => blob.Name.Contains(".mp4") && blob.Name != Constants.FinalVideoFileName).Select(b => b.Name.Split(".").First());
         firebaseClient.Set($"{uid}/vitnebokser/{sessionKey}/completedVideoIds", videoNames);
+    }
+
+    public void SetFailedVideoIds(string sessionKey, List<BlobItem> blobItems)
+    {
+        var uid = GetUidFromSessionKey(sessionKey);
+        firebaseClient.Set($"{uid}/vitnebokser/{sessionKey}/failedVideoIds", blobItems.Select(b => UnEncodedFileMetaData.GetVideoFileMetaDataFromFileName(b.Name).Id));
     }
 
     public enum FinalVideoProcessingStatus

@@ -8,6 +8,7 @@
         public const string TransitionFileName = "transition.mp4";
         public const string ResourceContainer = "intro";
         public const string UnprocessedContainer = "unprocessed";
+        public const string FailedContainer = "failed";
         public const string FinalVideoProcessingContainer = "final-video-processing-requests";
 
 
