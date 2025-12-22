@@ -1,5 +1,5 @@
-using Azure.Storage.Blobs;
 using Shared;
+using Shared.Models;
 namespace Vitneboksen_Api.Controllers;
 
 public class RetryVideoProcessing
@@ -27,32 +27,30 @@ public class RetryVideoProcessing
         }
 
         var failedBlobs = Helpers.GetFailedVideosInSession(blobService, sessionKey);
-        var videoBlobItem = failedBlobs.FirstOrDefault(b => b.Name.Contains(id) && (b.Name.EndsWith(".webm", StringComparison.OrdinalIgnoreCase) || b.Name.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase)));
-        var subBlobItem = failedBlobs.FirstOrDefault(b => b.Name.Contains(id) && b.Name.EndsWith(".txt", StringComparison.OrdinalIgnoreCase));
-
-        
-        if (videoBlobItem == null || subBlobItem == null)
+        var videoBlobItem = failedBlobs.FirstOrDefault(b => b.Name.Contains(id));
+        if (videoBlobItem == null)
         {
             return Results.NotFound();
         }
 
+        var videoMetadata = UnEncodedFileMetaData.GetVideoFileMetaDataFromFileName(videoBlobItem.Name);
+        var subFileName = videoMetadata.GetSubFileName();
         var unprocessedContainer = Shared.Helpers.GetUnprocessedContainer(blobService);
         var failedContainer = Helpers.GetFailedContainer(blobService);
-        
+
         // Copy video
         var sourceVideo = failedContainer.GetBlobClient(videoBlobItem.Name);
         var destVideo = unprocessedContainer.GetBlobClient(videoBlobItem.Name);
         await destVideo.StartCopyFromUriAsync(sourceVideo.Uri);
 
-        var sourceSub = failedContainer.GetBlobClient(subBlobItem.Name);
-        var destSub = unprocessedContainer.GetBlobClient(subBlobItem.Name);
+        var sourceSub = failedContainer.GetBlobClient(subFileName);
+        var destSub = unprocessedContainer.GetBlobClient(subFileName);
         await destSub.StartCopyFromUriAsync(sourceSub.Uri);
 
         await sourceVideo.DeleteIfExistsAsync();
         await sourceSub.DeleteIfExistsAsync();
-        
+
         failedBlobs.Remove(videoBlobItem);
-        failedBlobs.Remove(subBlobItem);
         firebaseService.SetFailedVideoIds(sessionKey, failedBlobs);
         firebaseService.SetToBeProcessedCount(sessionKey, unprocessedContainer.GetBlobs());
         firebaseService.SetFinalVideoProcessingStatus(sessionKey, FirebaseService.FinalVideoProcessingStatus.notStarted);

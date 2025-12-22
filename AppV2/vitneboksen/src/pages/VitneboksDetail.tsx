@@ -59,6 +59,7 @@ export default function VitneboksDetail() {
     const vbRef = ref(db, `${user.uid}/vitnebokser/${id}`);
     onValue(vbRef, (snapshot) => {
       const data: Vitneboks = snapshot.val();
+      data.failedVideoIds ??= [];
       if (!data) return;
       setVitneboks(mapVitneboks(data));
     });
@@ -110,7 +111,7 @@ export default function VitneboksDetail() {
             <QuestionList vitneBoksId={vitneboks.id} userId={user.uid} questions={vitneboks.questions} />
             <TimelineEditor userToken={userToken} vitneboks={vitneboks} />
             <div className='flex justify-between items-end gap-4'>
-              {(vitneboks.finalVideoProcessingStatus === FinalVideoStatus.started || vitneboks.videosToBeProcessed > 0 || isRecording) &&
+              {(vitneboks.finalVideoProcessingStatus === FinalVideoStatus.started || vitneboks.videosToBeProcessed > 0 || isRecording || true) &&
                 <div className='flex flex-col align-left gap-4'>
                   <span>
                     Tror du noe har gått galt?

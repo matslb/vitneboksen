@@ -1,9 +1,9 @@
-﻿using Azure.Storage.Blobs;
+﻿using Azure;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Text;
-using Azure;
-using Azure.Storage.Blobs.Models;
 
 namespace Shared
 {
@@ -24,16 +24,16 @@ namespace Shared
         }
 
         public static bool IsSessionFull(Pageable<BlobItem> blobs) => blobs.Count(b => b.Name.EndsWith(".webm") || b.Name.EndsWith(".mp4")) >= 70;
-        
+
         public static BlobContainerClient GetUnprocessedContainer(BlobServiceClient blobService) => blobService.GetBlobContainerClient(Constants.UnprocessedContainer);
 
         public static BlobContainerClient GetFailedContainer(BlobServiceClient blobService) => blobService.GetBlobContainerClient(Constants.FailedContainer);
-        
+
         // Returns all blobs in the 'failed' container that belong to a specific session
         public static List<BlobItem> GetFailedVideosInSession(BlobServiceClient blobService, string sessionKey)
         {
             var failedContainer = GetFailedContainer(blobService);
-            return failedContainer.GetBlobs().Where(b => b.Name.Contains($"&{sessionKey}")).ToList();
+            return failedContainer.GetBlobs().Where(b => b.Name.Contains($"&{sessionKey}") && (b.Name.EndsWith("webm") || b.Name.EndsWith("mp4"))).ToList();
         }
 
         public static async Task UploadJsonToStorage(BlobClient blobClient, object objectToSave)
