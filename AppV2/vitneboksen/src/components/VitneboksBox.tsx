@@ -9,7 +9,6 @@ interface VitneboxBoxProps {
     Vitneboks: Vitneboks
 };
 
-
 export default function VitneboksBox({ Vitneboks }: VitneboxBoxProps) {
 
     const [copied, setCopied] = useState<string | null>(null);
@@ -55,8 +54,8 @@ export default function VitneboksBox({ Vitneboks }: VitneboxBoxProps) {
                 <label className="text-sm">Vitnebokslink</label>
                 <input
                     readOnly
-                    value={`${window.location.origin}/vitne/${Vitneboks.id}`}
-                    onClick={() => handleCopy(`${window.location.origin}/vitne/${Vitneboks.id}`, 'Vitnebokslink kopiert!')}
+                    value={`${window.location.origin}/bidra/${Vitneboks.id}`}
+                    onClick={() => handleCopy(`${window.location.origin}/bidra/${Vitneboks.id}`, 'Vitnebokslink kopiert!')}
                     className="w-full p-2 rounded bg-white text-black mb-2 cursor-pointer"
                 />
                 {copied && <p className="text-green-500 text-sm mt-1">{copied}</p>}

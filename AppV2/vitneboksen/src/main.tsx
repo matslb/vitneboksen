@@ -6,11 +6,12 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AdminDashboard from './pages/AdminDashboard';
 import VitneboksDetail from './pages/VitneboksDetail';
 import Testimony from './pages/Testimony';
+import ActionShot from './pages/ActionShot';
 import Login from './pages/Login';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import LoadingFullScreen from './components/LoadingFullScreen';
 import './index.css';
-import { generateStrongToken } from './utils';
+import { generateStrongToken, isPhoneDevice } from './utils';
 import { getDatabase, ref, set } from 'firebase/database';
 
 const auth = getAuth();
@@ -56,6 +57,20 @@ const LoginRedirect = () => {
   return <Login />;
 }
 
+const BidraRoute = () => {
+  const [isPhone, setIsPhone] = React.useState<boolean | null>(null);
+
+  React.useEffect(() => {
+    setIsPhone(isPhoneDevice());
+  }, []);
+
+  if (isPhone === null) {
+    return <LoadingFullScreen />;
+  }
+
+  return isPhone ? <ActionShot /> : <Testimony />;
+};
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
@@ -77,7 +92,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             </ProtectedRoute>
           }
         />
-        <Route path="/vitne/:vitneboksId" element={<Testimony />} />
+        <Route path="/bidra/:vitneboksId" element={<BidraRoute />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

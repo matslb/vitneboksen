@@ -127,3 +127,17 @@ export const generateStrongToken = (): string =>  {
     .replace(/\//g, '_')
     .replace(/=+$/, '');
 }
+
+// Detect if device is a phone (not tablet)
+export const isPhoneDevice = (): boolean => {
+  const userAgent = navigator.userAgent.toLowerCase();
+  
+  // Check for tablets first (these should return false)
+  const isTablet = /ipad|android(?!.*mobile)|tablet|playbook|silk/i.test(userAgent);
+  if (isTablet) {
+    return false;
+  }
+  
+  // Check for mobile devices (phones)
+  return /iphone|ipod|android.*mobile|blackberry|windows phone|opera mini|mobile/i.test(userAgent);
+}

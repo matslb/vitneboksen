@@ -141,6 +141,7 @@ export default function TestimonyPage() {
           question={currentQuestion}
           onFinish={handleRecordingFinished}
           vitneboksId={vitneboksId!}
+          hideQuestionText={false}
         />
       )
       }
