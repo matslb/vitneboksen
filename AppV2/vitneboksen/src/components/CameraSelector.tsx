@@ -91,7 +91,7 @@ export default function CameraSelector({ onRecordStart }: CameraSelectorProps) {
         streamRef.current = stream;
 
         // Determine if we should mirror: mirror if it's NOT a back camera OR if there's only one camera
-        const selectedDevice = devices.find(d => d.deviceId === selectedDeviceId);
+        const selectedDevice = devices.find(d => d.deviceId === selectedDeviceId) || false;
         const shouldMirror = devices.length === 1 || (selectedDevice && !isBackCamera(selectedDevice.label));
         setIsMirrored(shouldMirror);
 
