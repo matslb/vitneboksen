@@ -18,7 +18,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
@@ -33,6 +34,37 @@ var firebaseService = new FirebaseService(new FirebaseConfig
 {
     BasePath = firesharpSecrets.GetValue<string>("BasePath"),
     AuthSecret = firesharpSecrets.GetValue<string>("AuthSecret"),
+});
+
+// Authentication middleware using userToken cookie. Public path: /upload-testimony/v2
+app.Use(async (context, next) =>
+{
+    var path = context.Request.Path.Value ?? string.Empty;
+    if (path.Equals("/upload-testimony/v2", StringComparison.OrdinalIgnoreCase)
+    || path.Equals("/wake-up", StringComparison.OrdinalIgnoreCase))
+    {
+        await next();
+        return;
+    }
+
+    var userTokenFromCookie = context.Request.Cookies["userToken"];
+    var sessionKey = context.Request.Query["sessionKey"].ToString();
+
+    if (string.IsNullOrWhiteSpace(userTokenFromCookie) || string.IsNullOrWhiteSpace(sessionKey))
+    {
+        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+        await context.Response.WriteAsync("Missing userToken cookie or sessionKey query parameter.");
+        return;
+    }
+
+    var authorized = firebaseService.AuthourizeUser(sessionKey, userTokenFromCookie);
+    if (!authorized)
+    {
+        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        return;
+    }
+
+    await next();
 });
 
 app.MapPost("/upload-testimony/v2", async Task<IResult> (HttpRequest request) => await UploadVideoV2.Run(request, videoType: Constants.VideoTypes.Testimonial, constring: storageConnectionString, firebaseService: firebaseService));

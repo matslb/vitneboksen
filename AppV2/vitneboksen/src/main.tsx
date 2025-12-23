@@ -25,9 +25,17 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
       setUser(firebaseUser);
       setLoading(false);
 
-      const token = generateStrongToken();
-      const db = getDatabase();
-      set(ref(db, `/userTokens/${firebaseUser!.uid}`), token);
+      if (firebaseUser) {
+        const token = generateStrongToken();
+        const db = getDatabase();
+        set(ref(db, `/userTokens/${firebaseUser.uid}`), token);
+        
+        // Set token as a cookie for the current domain
+        // Cookie expires in 30 days
+        const expiryDate = new Date();
+        expiryDate.setTime(expiryDate.getTime() + (30 * 24 * 60 * 60 * 1000));
+        document.cookie = `userToken=${token}; expires=${expiryDate.toUTCString()}; path=/; SameSite=Lax`;
+      }
 
     });
     return () => unsubscribe();

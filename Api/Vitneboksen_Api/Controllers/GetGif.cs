@@ -9,17 +9,9 @@ public static class GetGif
         var blobService = new BlobServiceClient(constring);
 
         var sessionKey = req.Query["sessionKey"].ToString();
-        var userToken = req.Headers["userToken"].ToString();
-
-        if (string.IsNullOrEmpty(sessionKey) || string.IsNullOrEmpty(userToken) || string.IsNullOrEmpty(fileName))
+        if (string.IsNullOrEmpty(sessionKey) || string.IsNullOrEmpty(fileName))
         {
-            return Results.BadRequest("Missing sessionKey, userToken, or fileName.");
-        }
-
-        var authorized = firebaseService.AuthourizeUser(sessionKey, userToken);
-        if (!authorized)
-        {
-            return Results.Unauthorized();
+            return Results.BadRequest("Missing sessionKey, or fileName.");
         }
 
         var containerClient = Helpers.GetContainerBySessionKey(blobService, sessionKey);

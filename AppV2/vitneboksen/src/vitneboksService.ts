@@ -23,127 +23,97 @@ export async function uploadVideoToProcessor(videoBlob: Blob, vitneboksId: strin
   window.removeEventListener("beforeunload", handleBeforeUnload);
 }
 
-export async function startFinalVideoProcessing(vitneboksId: string, userToken: string){
+export async function startFinalVideoProcessing(vitneboksId: string){
   const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
   const urlWithQueryParam = `${API_URL}start-final-video-processing?sessionKey=${vitneboksId}`;
     await fetch(urlWithQueryParam, { 
-      method: "GET",
-      headers: {
-        "userToken": userToken
-      }
+      method: "GET"
     });
 }
 
-export async function deleteVitneboks(vitneboksId: string, userToken: string){
+export async function deleteVitneboks(vitneboksId: string){
   const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
   const urlWithQueryParam = `${API_URL}delete-session?sessionKey=${vitneboksId}`;
   const response = await fetch(urlWithQueryParam, { 
-    method: "DELETE",
-    headers: {
-      "userToken": userToken
-    }
+    method: "DELETE"
   });
   return response.ok;
 }
 
-export async function forceUpdateVitneboksStatus(vitneboksId: string, userToken: string){
+export async function forceUpdateVitneboksStatus(vitneboksId: string){
   const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
   const urlWithQueryParam = `${API_URL}force-update?sessionKey=${vitneboksId}`;
   const response = await fetch(urlWithQueryParam, { 
-    method: "Get",
-    headers: {
-      "userToken": userToken
-    }
+    method: "Get"
   });
   return response.ok;
 }
 
-export async function createSession(vitneboksId: string, uid: string, userToken: string){
+export async function createSession(vitneboksId: string, uid: string){
   const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
   const urlWithQueryParam = `${API_URL}create-session?sessionKey=${vitneboksId}&uid=${uid}`;
   const response = await fetch(urlWithQueryParam, { 
-    method: "Get",
-    headers: {
-      "userToken": userToken
-    }
+    method: "Get"
   });
   return response.ok;
 }
 
-export async function downloadFinalVideo(vitneboksId: string, userToken: string){
+export async function downloadFinalVideo(vitneboksId: string){
   const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
   const urlWithQueryParam = `${API_URL}download-final-video?sessionKey=${vitneboksId}`;
   const response = await fetch(urlWithQueryParam, {
-    method: "GET",
-    headers: {
-      "userToken": userToken
-    }
+    method: "GET"
   });
   const blob = await response.blob();
   const blobUrl = URL.createObjectURL(blob);
   window.open(blobUrl, '_blank');
 }
 
-export async function downloadSessionFiles(vitneboksId: string, userToken: string){
+export async function downloadSessionFiles(vitneboksId: string){
   const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
   const urlWithQueryParam = `${API_URL}download-session-files?sessionKey=${vitneboksId}`;
   const response = await fetch(urlWithQueryParam, {
-    method: "GET",
-    headers: {
-      "userToken": userToken
-    }
+    method: "GET"
   });
   const blob = await response.blob();
   const blobUrl = URL.createObjectURL(blob);
   window.open(blobUrl, '_blank');
 }
 
-export async function GetGifFromVideoId(vitneboksId: string, videoId: string, userToken: string){
+export async function GetGifFromVideoId(vitneboksId: string, videoId: string){
   const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
   const urlWithQueryParam = `${API_URL}get-gif/${videoId}?sessionKey=${vitneboksId}`;
   const response = await fetch(urlWithQueryParam, { 
-    method: "Get",
-    headers: {
-      "userToken": userToken
-    }
+    method: "Get"
   });
   return response.ok;
 }
 
-export async function deleteVideo(vitneboksId: string, videoId: string, userToken: string){
+export async function deleteVideo(vitneboksId: string, videoId: string){
   const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
   const urlWithQueryParam = `${API_URL}delete-video/${videoId}?sessionKey=${vitneboksId}`;
   const response = await fetch(urlWithQueryParam, { 
-    method: "DELETE",
-    headers: {
-      "userToken": userToken
-    }
+    method: "DELETE"
   });
   return response.ok;
 }
 
-export async function downloadSingleVideo(vitneboksId: string,videoId: string, userToken: string){
+export async function downloadSingleVideo(vitneboksId: string,videoId: string){
   const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
   const urlWithQueryParam = `${API_URL}video/${videoId}/download?sessionKey=${vitneboksId}`;
   const response = await fetch(urlWithQueryParam, {
-    method: "GET",
-    headers: {
-      "userToken": userToken
-    }
+    method: "GET"
   });
   const blob = await response.blob();
   const blobUrl = URL.createObjectURL(blob);
   window.open(blobUrl, '_blank');
 }
 
-export async function retryFailedVideo(vitneboksId: string, videoId: string, userToken: string){
+export async function retryFailedVideo(vitneboksId: string, videoId: string){
   const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
   const urlWithQueryParam = `${API_URL}retry/${videoId}?sessionKey=${vitneboksId}`;
   const response = await fetch(urlWithQueryParam, { 
-    method: "GET",
-    headers: {
-      "userToken": userToken
-    }
+    method: "GET"
   });
   return response.ok;
 }

@@ -20,7 +20,6 @@ export default function VitneboksDetail() {
   const [vitneboks, setVitneboks] = useState<Vitneboks | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isRecording, setIsRecording] = useState(false);
-  const [userToken, setUserToken] = useState("");
   const auth = getAuth();
   const db = getDatabase();
 
@@ -39,13 +38,6 @@ export default function VitneboksDetail() {
     return () => unsubscribe();
   }, [auth]);
 
-  useEffect(() => {
-    const db = getDatabase();
-    onValue(ref(db, `/userTokens/${user?.uid}`), (snapshot) => {
-      const data: string = snapshot.val();
-      setUserToken(data);
-    });
-  }, [user])
 
   useEffect(() => {
     if (vitneboks === null) return;
@@ -75,7 +67,7 @@ export default function VitneboksDetail() {
     if (!user?.uid || !id) return;
 
     if (!confirm("Er du sikker på at du vil slette denne vitneboksen? Dette kan ikke angres.")) return;
-    await deleteVitneboks(id, userToken);
+    await deleteVitneboks(id);
 
     remove(ref(db, `${user.uid}/vitnebokser/${id}`));
     remove(ref(db, `publicVitnebokser/${id}`));
@@ -113,7 +105,7 @@ export default function VitneboksDetail() {
               <input type='text' name='title' maxLength={45} className='bg-white/10 rounded shadow-md py-6 px-4 w-[100%] text-left' value={vitneboks.title} onChange={(e) => set(ref(db, `${user.uid}/vitnebokser/${id}/title`), e.currentTarget.value)} />
             </p>
             <QuestionList vitneBoksId={vitneboks.id} userId={user.uid} questions={vitneboks.questions} />
-            <TimelineEditor userToken={userToken} vitneboks={vitneboks} />
+            <TimelineEditor vitneboks={vitneboks} />
             <div className='flex justify-between items-end gap-4'>
             {searchParams.has('sudo') &&
                 <div className='flex flex-col align-left gap-4'>
@@ -121,7 +113,7 @@ export default function VitneboksDetail() {
                     Tror du noe har gått galt?
                   </span>
                   <button
-                    onClick={() => forceUpdateVitneboksStatus(vitneboks.id, userToken)}
+                    onClick={() => forceUpdateVitneboksStatus(vitneboks.id)}
                     className="bg-primary-button w-45 text-black px-4 py-2 rounded hover:text-white hover:bg-secondary-bg"
                   >
                     Tving statussjekk

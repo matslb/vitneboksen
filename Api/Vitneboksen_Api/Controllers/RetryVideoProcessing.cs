@@ -9,15 +9,10 @@ public class RetryVideoProcessing
         var blobService = new Azure.Storage.Blobs.BlobServiceClient(constring);
 
         var sessionKey = request.Query["sessionKey"].ToString();
-        var userToken = request.Headers["userToken"].ToString();
-        if (string.IsNullOrWhiteSpace(sessionKey) || string.IsNullOrWhiteSpace(userToken))
+        if (string.IsNullOrWhiteSpace(sessionKey))
         {
             return Results.BadRequest();
         }
-
-        var authorized = firebaseService.AuthourizeUser(sessionKey, userToken);
-        if (!authorized)
-            return Results.Unauthorized();
 
         // Validate session existence
         var sessionContainer = Helpers.GetContainerBySessionKey(blobService, sessionKey);

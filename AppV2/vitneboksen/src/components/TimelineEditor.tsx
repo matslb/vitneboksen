@@ -1,76 +1,26 @@
-import { useEffect, useState } from "react";
 import type { Vitneboks } from "../types/Vitneboks";
 import { deleteVideo, downloadSingleVideo, retryFailedVideo } from "../vitneboksService";
 import GenerateVideoButton from "./GenerateVideoButton";
 import VideoStats from "./VideoStats";
-import SpinnerIcon from "./SpinnerIcon";
 import ErrorIcon from "./ErrorIcon";
 
 const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
-const EXPIRY_MS = 72 * 60 * 60 * 1000; // 3 days
 
 type TimelineEditorProps = {
-    userToken: string;
     vitneboks: Vitneboks;
 };
 
 export default function TimelineEditor({
     vitneboks,
-    userToken,
 }: TimelineEditorProps) {
-    const [gifSources, setGifSources] = useState<Record<string, string>>({});
-
-    useEffect(() => {
-        vitneboks.completedVideoIds.forEach(async (videoId) => {
-            const storageKey = `gif-${videoId}`;
-            const cachedEntry = localStorage.getItem(storageKey);
-
-            if (cachedEntry) {
-                try {
-                    const parsed = JSON.parse(cachedEntry);
-                    const isExpired = Date.now() - parsed.timestamp > EXPIRY_MS;
-
-                    if (!isExpired && parsed.data) {
-                        setGifSources((prev) => ({ ...prev, [videoId]: parsed.data }));
-                        return;
-                    } else {
-                        localStorage.removeItem(storageKey);
-                    }
-                } catch {
-                    localStorage.removeItem(storageKey); // Malformed entry
-                }
-            }
-
-            const gifUrl = `${API_URL}getgif/${videoId}?sessionKey=${vitneboks.id}&userToken=${userToken}`;
-            try {
-                const response = await fetch(gifUrl);
-                const blob = await response.blob();
-
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    const base64data = reader.result as string;
-                    const wrapped = JSON.stringify({
-                        data: base64data,
-                        timestamp: Date.now(),
-                    });
-                    localStorage.setItem(storageKey, wrapped);
-                    setGifSources((prev) => ({ ...prev, [videoId]: base64data }));
-                };
-                reader.readAsDataURL(blob);
-            } catch (err) {
-                setGifSources((prev) => ({ ...prev, [videoId]: "error" }));
-                console.error(`Failed to load gif for ${videoId}`, err);
-            }
-        });
-    }, [vitneboks.completedVideoIds, vitneboks.id, userToken]);
 
     const handleDelete = (videoId: string) => {
         if (!confirm("Slett dette vitnesbyrdet?")) return;
-        deleteVideo(vitneboks.id, videoId, userToken);
+        deleteVideo(vitneboks.id, videoId);
     };
 
     const handleRetry = async (videoId: string) => {
-        await retryFailedVideo(vitneboks.id, videoId, userToken);
+        await retryFailedVideo(vitneboks.id, videoId);
     };
 
     return (
@@ -82,8 +32,6 @@ export default function TimelineEditor({
                     <div className="flex gap-2 my-4 overflow-x-scroll pb-1">
                         {vitneboks.completedVideoIds.map((videoId) => {
                             const date = new Date(Number(videoId));
-                            const src = gifSources[videoId] ?? "";
-
                             return (
                                 <div
                                     key={videoId}
@@ -92,20 +40,14 @@ export default function TimelineEditor({
                                     <div className="absolute top-1 left-1 bg-black/60 py-1 rounded-br rounded-tl px-2 text-sm text-white">
                                         kl {date.getHours().toString().padStart(2, "0")}:{date.getMinutes().toString().padStart(2, "0")}
                                     </div>
-                                    {src == "" ?
-                                        <div className="rounded min-h-[135px] w-60 flex justify-center items-center">
-                                            <SpinnerIcon />
-                                        </div>
-                                        :
                                         <img
-                                            src={src}
+                                            src={`${API_URL}getgif/${videoId}?sessionKey=${vitneboks.id}`}
                                             alt="Ingen gif. Noe har gått galt. Slett denne dersom Vitneboksvideoen ikke blir som forventet"
                                             className="rounded min-h-[135px] w-60"
                                         />
-                                    }
                                     <div className="flex justify-between items-center m-2">
                                         <button
-                                            onClick={() => downloadSingleVideo(vitneboks.id, videoId, userToken)}
+                                            onClick={() => downloadSingleVideo(vitneboks.id, videoId)}
                                             className="px-3 py-1 text-sm rounded bg-primary-button text-black hover:bg-secondary-bg hover:text-white"
                                         >
                                             Last ned
