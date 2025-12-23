@@ -6,7 +6,7 @@ import Footer from '../components/Footer';
 import { generateVitneboksId, mapVitneboks } from '../utils';
 import Header from '../components/Header';
 import VitneboksBox from '../components/VitneboksBox';
-import { createSession } from '../vitneboksService';
+import { createSession, wakeUpServer } from '../vitneboksService';
 
 export default function AdminDashboard() {
   const [vitnebokser, setVitnebokser] = useState<Vitneboks[]>([]);
@@ -29,6 +29,7 @@ export default function AdminDashboard() {
       setUserToken(data);
     });
 
+    wakeUpServer(userToken);
   }, [uid]);
 
   const handleCreate = async () => {

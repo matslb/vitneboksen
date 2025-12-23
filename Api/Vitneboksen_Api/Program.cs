@@ -1,4 +1,5 @@
 using FireSharp.Config;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Shared;
 using Vitneboksen_Api;
 using Vitneboksen_Api.Controllers;
@@ -48,5 +49,6 @@ app.MapDelete("/delete-session", async Task<IResult> (HttpRequest request) => aw
 app.MapDelete("/delete-video/{fileName}", async Task<IResult> (HttpRequest request, string fileName) => await DeleteVideo.Run(request, fileName, storageConnectionString, firebaseService));
 
 app.MapGet("/retry/{id}", async Task<IResult> (string id, HttpRequest request) => await RetryVideoProcessing.Run(request, id, constring: storageConnectionString, firebaseService: firebaseService));
+app.MapGet("/wake-up", IResult () => Results.Ok());
 
 app.Run();
