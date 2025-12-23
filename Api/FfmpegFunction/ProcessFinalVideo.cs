@@ -162,7 +162,6 @@ namespace FfmpegFunction
             var transitionBlobClient = introContainerClient.GetBlobClient(Constants.TransitionFileName);
             await transitionBlobClient.DownloadToAsync(Path.Combine(tempPath, Constants.TransitionFileName));
 
-            var outroContainerClient = blobService.GetBlobContainerClient(Constants.ResourceContainer);
             var outroblobClient = introContainerClient.GetBlobClient(Constants.OutroFileName);
             await outroblobClient.DownloadToAsync(Path.Combine(tempPath, Constants.OutroFileName));
         }

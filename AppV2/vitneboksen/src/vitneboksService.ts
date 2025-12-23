@@ -89,9 +89,9 @@ export async function retryFailedVideo(vitneboksId: string, videoId: string, use
   return response.ok;
 }
 
-export async function wakeUpServer(userToken: string){
+export async function wakeUpServer(){
   const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
-  const urlWithQueryParam = `${API_URL}wake-up?&userToken=${userToken}`;
+  const urlWithQueryParam = `${API_URL}wake-up`;
   const response = await fetch(urlWithQueryParam, { method: "GET" });
   return response.ok;
 }

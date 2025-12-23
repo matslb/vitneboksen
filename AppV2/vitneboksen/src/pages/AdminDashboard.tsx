@@ -29,7 +29,7 @@ export default function AdminDashboard() {
       setUserToken(data);
     });
 
-    wakeUpServer(userToken);
+    wakeUpServer();
   }, [uid]);
 
   const handleCreate = async () => {

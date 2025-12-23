@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { getDatabase, ref, onValue, set, remove } from 'firebase/database';
 import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
-import { FinalVideoStatus, type Vitneboks } from '../types/Vitneboks';
+import { type Vitneboks } from '../types/Vitneboks';
 
 import LoadingFullScreen from '../components/LoadingFullScreen';
 import Footer from '../components/Footer';
@@ -16,6 +16,7 @@ import TimelineEditor from '../components/TimelineEditor';
 export default function VitneboksDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [vitneboks, setVitneboks] = useState<Vitneboks | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -114,7 +115,7 @@ export default function VitneboksDetail() {
             <QuestionList vitneBoksId={vitneboks.id} userId={user.uid} questions={vitneboks.questions} />
             <TimelineEditor userToken={userToken} vitneboks={vitneboks} />
             <div className='flex justify-between items-end gap-4'>
-            {(vitneboks.finalVideoProcessingStatus === FinalVideoStatus.started || vitneboks.videosToBeProcessed > 0 || isRecording || true) &&
+            {searchParams.has('sudo') &&
                 <div className='flex flex-col align-left gap-4'>
                   <span>
                     Tror du noe har gått galt?
