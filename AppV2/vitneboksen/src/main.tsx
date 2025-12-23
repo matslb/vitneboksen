@@ -11,7 +11,7 @@ import Login from './pages/Login';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import LoadingFullScreen from './components/LoadingFullScreen';
 import './index.css';
-import { generateStrongToken, isPhoneDevice } from './utils';
+import { generateStrongToken, isPhoneDevice, getCookieDomain } from './utils';
 import { getDatabase, ref, set } from 'firebase/database';
 
 const auth = getAuth();
@@ -34,7 +34,8 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
         // Cookie expires in 30 days
         const expiryDate = new Date();
         expiryDate.setTime(expiryDate.getTime() + (30 * 24 * 60 * 60 * 1000));
-        document.cookie = `userToken=${token}; expires=${expiryDate.toUTCString()}; path=/; SameSite=Lax`;
+        const cookieDomain = getCookieDomain();
+        document.cookie = `userToken=${token}; expires=${expiryDate.toUTCString()}; path=/; domain=${cookieDomain}; SameSite=Lax`;
       }
 
     });

@@ -195,3 +195,23 @@ export const getRemainingWaitTime = (vitneboksId: string, questionId: string): n
     return 0;
   }
 };
+
+// Extract root domain from hostname for cookie domain
+export const getCookieDomain = (): string => {
+  const hostname = window.location.hostname;
+  
+  // For localhost or IP addresses, use as is
+  if (hostname === 'localhost' || /^\d+\.\d+\.\d+\.\d+$/.test(hostname)) {
+    return hostname;
+  }
+  
+  // Extract root domain (last two parts, e.g., vitneboksen.no)
+  const parts = hostname.split('.');
+  if (parts.length >= 2) {
+    const rootDomain = parts.slice(-2).join('.');
+    return `.${rootDomain}`;
+  }
+  
+  // Fallback: use hostname with dot prefix
+  return `.${hostname}`;
+};
