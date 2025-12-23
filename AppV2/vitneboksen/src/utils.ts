@@ -141,3 +141,57 @@ export const isPhoneDevice = (): boolean => {
   // Check for mobile devices (phones)
   return /iphone|ipod|android.*mobile|blackberry|windows phone|opera mini|mobile/i.test(userAgent);
 }
+
+// Save recording completion timestamp and question to localStorage
+export const saveRecordingCompletion = (vitneboksId: string, question: Question, waitTimeSeconds: number = 30): void => {
+  const storageKey = `lastRecording_${vitneboksId}_${question.id}`;
+  const data = {
+    question,
+    timestamp: Date.now(),
+    waitTimeSeconds,
+  };
+  localStorage.setItem(storageKey, JSON.stringify(data));
+};
+
+// Check if enough time has passed to allow a new recording
+export const canRecordAgain = (vitneboksId: string, questionId: string): boolean => {
+  const storageKey = `lastRecording_${vitneboksId}_${questionId}`;
+  const stored = localStorage.getItem(storageKey);
+  
+  if (!stored) {
+    return true; // No previous recording, allow recording
+  }
+  
+  try {
+    const data = JSON.parse(stored);
+    const waitTimeMs = (data.waitTimeSeconds || 30) * 1000;
+    const timeSinceRecording = Date.now() - data.timestamp;
+    
+    return timeSinceRecording >= waitTimeMs;
+  } catch (error) {
+    console.error('Error parsing stored recording data:', error);
+    return true; // On error, allow recording
+  }
+};
+
+// Get the remaining wait time in seconds
+export const getRemainingWaitTime = (vitneboksId: string, questionId: string): number => {
+  const storageKey = `lastRecording_${vitneboksId}_${questionId}`;
+  const stored = localStorage.getItem(storageKey);
+  
+  if (!stored) {
+    return 0;
+  }
+  
+  try {
+    const data = JSON.parse(stored);
+    const waitTimeMs = (data.waitTimeSeconds || 30) * 1000;
+    const timeSinceRecording = Date.now() - data.timestamp;
+    const remaining = Math.ceil((waitTimeMs - timeSinceRecording) / 1000);
+    
+    return Math.max(0, remaining);
+  } catch (error) {
+    console.error('Error parsing stored recording data:', error);
+    return 0;
+  }
+};

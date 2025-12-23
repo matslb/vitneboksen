@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { GetRecordingConstrains, GetSupportedMimeType } from '../utils';
+import { GetRecordingConstrains, GetSupportedMimeType, saveRecordingCompletion } from '../utils';
 import type Question from '../types/Question';
 import { uploadVideoToProcessor } from '../vitneboksService';
 import { getDatabase, ref, set } from 'firebase/database';
@@ -114,6 +114,8 @@ export default function VideoRecorder({ question, vitneboksId, onFinish, hideQue
 
   const uploadToServer = async (blob: Blob, extension: string) => {
     await uploadVideoToProcessor(blob, vitneboksId, question.text, extension);
+    // Save recording completion timestamp and question to localStorage
+    saveRecordingCompletion(vitneboksId, question, 30);
   };
 
   return (

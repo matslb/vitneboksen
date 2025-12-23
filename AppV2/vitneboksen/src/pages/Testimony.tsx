@@ -10,7 +10,7 @@ import WaitingScreen from '../components/WaitingScreen';
 import ThankYouScreen from '../components/TankYouScreen';
 import type Question from '../types/Question';
 import { FinalVideoStatus, type Vitneboks } from '../types/Vitneboks';
-import { mapVitneboks } from '../utils';
+import { mapVitneboks, canRecordAgain } from '../utils';
 
 export default function TestimonyPage() {
   const { vitneboksId } = useParams();
@@ -66,6 +66,17 @@ export default function TestimonyPage() {
     }, 1000);
     return () => clearInterval(intervalId);
   }, [vitneboks, started, waiting, filteredQuestions, currentQuestionIndex]);
+
+  // Check if user can record again on mount and when current question changes
+  useEffect(() => {
+    if (vitneboksId && filteredQuestions[currentQuestionIndex]?.id) {
+      const questionId = filteredQuestions[currentQuestionIndex].id;
+      const canRecord = canRecordAgain(vitneboksId, questionId);
+      if (!canRecord) {
+        setThankYouWaiting(true);
+      }
+    }
+  }, [vitneboksId, filteredQuestions, currentQuestionIndex]);
 
 
   if (loading) return <LoadingFullScreen />;

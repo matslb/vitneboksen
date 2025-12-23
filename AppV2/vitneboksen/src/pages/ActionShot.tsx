@@ -6,10 +6,9 @@ import NotFoundMessage from '../components/NotFoundMessage';
 import LoadingFullScreen from '../components/LoadingFullScreen';
 import ActionShotWelcomeScreen from '../components/ActionShotWelcomeScreen';
 import ActionShotVideoRecorder from '../components/ActionShotVideoRecorder';
-import WaitingScreen from '../components/WaitingScreen';
 import ActionShotThankYouScreen from '../components/ActionShotThankYouScreen';
 import { FinalVideoStatus, type Vitneboks } from '../types/Vitneboks';
-import { mapVitneboks } from '../utils';
+import { mapVitneboks, canRecordAgain } from '../utils';
 
 export default function ActionShotPage() {
   const { vitneboksId } = useParams();
@@ -42,6 +41,16 @@ export default function ActionShotPage() {
       };
     }
   }, [vitneboksId, started]);
+
+  // Check if user can record again on mount and when vitneboksId changes
+  useEffect(() => {
+    if (vitneboksId) {
+      const canRecord = canRecordAgain(vitneboksId, 'actionshot');
+      if (!canRecord) {
+        setThankYouWaiting(true);
+      }
+    }
+  }, [vitneboksId]);
 
   if (loading) return <LoadingFullScreen />;
   if (!vitneboks) return <NotFoundMessage />;
