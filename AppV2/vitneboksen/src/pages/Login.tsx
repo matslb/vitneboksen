@@ -23,10 +23,15 @@ export default function Login() {
         <header className="p-8 text-center">
           <h1 className="text-4xl font-bold">Velkommen til VITNEBOKSEN</h1>
         </header>
+        <div className="max-w-2xl px-8 mb-8 text-center">
+          <p className="text-lg mb-4">
+          Gjør festen til et realityprogram. Ta imot hilsner, still spørsmål eller grill gjestene dine. Med Vitneboksen får du en ferdig redigert video av hele kvelden.</p>
+  
+        </div>
         <button
           type="button"
           onClick={handleLogin}
-          className="bg-primary-button text-black text-2xl px-8 py-4 rounded shadow-md hover:text-white hover:bg-secondary-bg"
+          className="bg-primary-button text-black text-xl px-8 py-4 rounded shadow-md hover:text-white hover:bg-secondary-bg"
         >
           Logg inn med Google
         </button>

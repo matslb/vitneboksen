@@ -59,13 +59,16 @@ export default function VitneboksDetail() {
     const vbRef = ref(db, `${user.uid}/vitnebokser/${id}`);
     onValue(vbRef, (snapshot) => {
       const data: Vitneboks = snapshot.val();
+      if (!data) {
+        navigate('/admin');
+        return;
+      };
       data.failedVideoIds ??= [];
-      if (!data) return;
       setVitneboks(mapVitneboks(data));
     });
-  }, [user, id, db]);
+  }, [user, id, db, navigate]);
 
-  if (!vitneboks || !user) return <LoadingFullScreen />;
+  if (!user || !vitneboks) return <LoadingFullScreen />;
 
   const handleDeleteVitneboks = async () => {
     if (!user?.uid || !id) return;
