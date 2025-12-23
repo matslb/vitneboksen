@@ -11,7 +11,7 @@ public static class CreateSession
 
         var uid = req.Query["uid"].ToString();
         var sessionKey = req.Query["sessionKey"].ToString();
-        var userToken = req.Query["userToken"].ToString();
+        var userToken = req.Headers["userToken"].ToString();
 
         if (uid == null || sessionKey == null || userToken == null)
         {

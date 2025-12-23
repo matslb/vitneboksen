@@ -25,9 +25,8 @@ export default function ActionShotThankYouScreen({ seconds, setWaiting }: Action
 
   return (
     <div className="flex flex-col items-center justify-center flex-1 p-6">
-      <h2 className="text-7xl font-bold mb-16">Takk til deg!</h2>
-      <p className="text-5xl my-4">Nå kan du vinke inn neste, og bare kul'n</p>
-      <p className="text-3xl my-4">Vitneboksen åpner igjen om {countdown} sekunder…</p>
+      <h2 className="text-4xl font-bold mb-16">Takk til deg!</h2>
+      <p className="text-2xl my-4">Vitneboksen åpner igjen om {countdown} sekunder…</p>
     </div>
   );
 }

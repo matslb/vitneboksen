@@ -9,7 +9,7 @@ public static class GetGif
         var blobService = new BlobServiceClient(constring);
 
         var sessionKey = req.Query["sessionKey"].ToString();
-        var userToken = req.Query["userToken"].ToString();
+        var userToken = req.Headers["userToken"].ToString();
 
         if (string.IsNullOrEmpty(sessionKey) || string.IsNullOrEmpty(userToken) || string.IsNullOrEmpty(fileName))
         {

@@ -9,7 +9,7 @@ public class RetryVideoProcessing
         var blobService = new Azure.Storage.Blobs.BlobServiceClient(constring);
 
         var sessionKey = request.Query["sessionKey"].ToString();
-        var userToken = request.Query["userToken"].ToString();
+        var userToken = request.Headers["userToken"].ToString();
         if (string.IsNullOrWhiteSpace(sessionKey) || string.IsNullOrWhiteSpace(userToken))
         {
             return Results.BadRequest();

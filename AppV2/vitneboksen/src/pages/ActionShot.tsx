@@ -5,7 +5,8 @@ import { getDatabase, ref, onValue, off } from 'firebase/database';
 import NotFoundMessage from '../components/NotFoundMessage';
 import LoadingFullScreen from '../components/LoadingFullScreen';
 import ActionShotWelcomeScreen from '../components/ActionShotWelcomeScreen';
-import ActionShotVideoRecorder from '../components/ActionShotVideoRecorder';
+import CameraSelector from '../components/CameraSelector';
+import VideoRecorder from '../components/VideoRecorder';
 import ActionShotThankYouScreen from '../components/ActionShotThankYouScreen';
 import { FinalVideoStatus, type Vitneboks } from '../types/Vitneboks';
 import { mapVitneboks, canRecordAgain } from '../utils';
@@ -15,9 +16,20 @@ export default function ActionShotPage() {
   const [vitneboks, setVitneboks] = useState<Vitneboks | null>(null);
   const [loading, setLoading] = useState(true);
   const [started, setStarted] = useState(false);
+  const [recording, setRecording] = useState(false);
   const [thankYouWaiting, setThankYouWaiting] = useState(false);
   const [userName, setUserName] = useState('');
+  const [savedUserName, setSavedUserName] = useState<string>('');
+  const [selectedDeviceId, setSelectedDeviceId] = useState<string | undefined>(undefined);
   const divRef = useRef<HTMLDivElement>(null);
+
+  // Load saved user name from localStorage on mount
+  useEffect(() => {
+    const savedName = localStorage.getItem('actionshot_userName');
+    if (savedName) {
+      setSavedUserName(savedName);
+    }
+  }, []);
 
   useEffect(() => {
     const db = getDatabase();
@@ -57,11 +69,20 @@ export default function ActionShotPage() {
 
   const handleStart = (name: string) => {
     setUserName(name);
+    // Save to localStorage
+    localStorage.setItem('actionshot_userName', name);
+    setSavedUserName(name);
     setStarted(true);
+  };
+
+  const handleRecordStart = (deviceId: string) => {
+    setSelectedDeviceId(deviceId);
+    setRecording(true);
   };
 
   const handleRecordingFinished = () => {
     setStarted(false);
+    setRecording(false);
     setThankYouWaiting(true);
   };
 
@@ -79,16 +100,30 @@ export default function ActionShotPage() {
       ) : (
         <>
           {!started && !thankYouWaiting && (
-            <ActionShotWelcomeScreen onStart={handleStart} title={vitneboks.title} />
+            <ActionShotWelcomeScreen onStart={handleStart} title={vitneboks.title} initialName={savedUserName} />
           )}
         </>
       )}
 
-      {started && !thankYouWaiting && (
-        <ActionShotVideoRecorder
-          userName={userName}
+      {started && !recording && !thankYouWaiting && (
+        <CameraSelector onRecordStart={handleRecordStart} />
+      )}
+
+      {started && recording && selectedDeviceId && !thankYouWaiting && (
+        <VideoRecorder
+          question={{
+            id: 'actionshot',
+            text: `Sendt inn av ${userName}`,
+            recordingDuration: 10,
+            allwaysActive: true,
+            activeFrom: null,
+            activeTo: null,
+            order: 0,
+          }}
           vitneboksId={vitneboksId!}
           onFinish={handleRecordingFinished}
+          hideQuestionText={true}
+          deviceId={selectedDeviceId}
         />
       )}
 

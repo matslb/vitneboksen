@@ -1,13 +1,21 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import CameraAndMicAccessChecker from './CameraAccessChecker';
 
 interface ActionShotWelcomeScreenProps {
   title: string;
   onStart: (userName: string) => void;
+  initialName?: string;
 }
 
-export default function ActionShotWelcomeScreen({ title, onStart }: ActionShotWelcomeScreenProps) {
-  const [userName, setUserName] = useState('');
+export default function ActionShotWelcomeScreen({ title, onStart, initialName = '' }: ActionShotWelcomeScreenProps) {
+  const [userName, setUserName] = useState(initialName);
+
+  // Update userName when initialName changes (e.g., when saved name is loaded)
+  useEffect(() => {
+    if (initialName) {
+      setUserName(initialName);
+    }
+  }, [initialName]);
 
   const handleStart = () => {
     if (userName.trim()) {

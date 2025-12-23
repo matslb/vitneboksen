@@ -10,9 +10,10 @@ interface VideoRecorderProps {
   vitneboksId: string;
   onFinish: () => void;
   hideQuestionText?: boolean;
+  deviceId?: string;
 }
 
-export default function VideoRecorder({ question, vitneboksId, onFinish, hideQuestionText }: VideoRecorderProps) {
+export default function VideoRecorder({ question, vitneboksId, onFinish, hideQuestionText, deviceId }: VideoRecorderProps) {
   const [countdown, setCountdown] = useState(question.recordingDuration);
   const videoRef = useRef<HTMLVideoElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -30,7 +31,18 @@ export default function VideoRecorder({ question, vitneboksId, onFinish, hideQue
 
     const startRecording = async () => {
       setIsRecordingStateInFirebase(true);
-      const stream = await navigator.mediaDevices.getUserMedia(GetRecordingConstrains());
+      const baseConstraints = GetRecordingConstrains();
+      // If deviceId is provided, add it to the video constraints
+      const constraints: MediaStreamConstraints = {
+        ...baseConstraints,
+        video: deviceId && baseConstraints.video
+          ? {
+              ...(baseConstraints.video as MediaTrackConstraints),
+              deviceId: { exact: deviceId },
+            }
+          : baseConstraints.video,
+      };
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
       streamRef.current = stream;
 
       if (videoRef.current) {
@@ -110,7 +122,7 @@ export default function VideoRecorder({ question, vitneboksId, onFinish, hideQue
       if (mediaRecorderRef.current?.state === 'recording') mediaRecorderRef.current.stop();
       streamRef.current?.getTracks().forEach(t => t.stop());
     };
-  }, [question, onFinish]);
+  }, [question, onFinish, deviceId]);
 
   const uploadToServer = async (blob: Blob, extension: string) => {
     await uploadVideoToProcessor(blob, vitneboksId, question.text, extension);
@@ -121,7 +133,7 @@ export default function VideoRecorder({ question, vitneboksId, onFinish, hideQue
   return (
     <>
       <div className="flex flex-col items-center justify-center fixed bg-black top-0 left-0 right-0 bottom-0 flex-1 ">
-        <video ref={videoRef} className="fixed top-0 bottom-0 min-h-full max-w-[100vw] -scale-x-100" />
+        <video ref={videoRef} className="fixed inset-0 w-full h-full object-cover -scale-x-100" />
         {!hideQuestionText && (
           <h2
             style={{
@@ -130,7 +142,7 @@ export default function VideoRecorder({ question, vitneboksId, onFinish, hideQue
             className="fixed bottom-32 2xl:text-5xl font-semibold p-6 w-90% max-w-6xl text-3xl rounded text-shadow-s">{question.text}</h2>
         )}
       </div>
-      <div className='fixed top-8 bottom-8 left-8 right-8 m-auto left-0 right-0 flex w-90% max-w-7xl flex justify-between 1 p-8'>
+      <div className='fixed md:inset-8 inset-1 lb m-auto left-0 right-0 flex w-90% max-w-7xl flex justify-between 1 p-8'>
         <div className='absolute top-0 left-0 rounded-tl border-l-3 border-t-3 h-60 w-60 border-black opacity-55'> </div>
         <div className='absolute top-0 right-0 rounded-tr border-r-3 border-t-3 h-60 w-60 border-black opacity-55'> </div>
         <div className='absolute bottom-0 left-0 rounded-bl border-l-3 border-b-3 h-60 w-60 border-black opacity-55'> </div>

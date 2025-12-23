@@ -9,7 +9,7 @@ public static class DeleteVideo
         var blobService = new Azure.Storage.Blobs.BlobServiceClient(constring);
 
         var sessionKey = req.Query["sessionKey"].ToString();
-        var userToken = req.Query["userToken"].ToString();
+        var userToken = req.Headers["userToken"].ToString();
 
         if (sessionKey == null || userToken == null)
         {
