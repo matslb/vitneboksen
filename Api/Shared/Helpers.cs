@@ -3,6 +3,7 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using System.Reflection.Metadata;
 using System.Text;
 
 namespace Shared
@@ -29,7 +30,7 @@ namespace Shared
         {
             var sessionContainer = GetContainerBySessionKey(blobService, sessionKey);
             var blobs = sessionContainer.GetBlobs();
-            var totalBytes = blobs.Where(b => b.Name.Contains(sessionKey)).Sum(b => b.Properties.ContentLength ?? 0);
+            var totalBytes = blobs.Where(b => b.Name != Constants.FinalVideoFileName && b.Name.EndsWith("mp4")).Sum(b => b.Properties.ContentLength ?? 0);
             return (int)Math.Round(totalBytes / 1024.0 / 1024.0);
         }
         
