@@ -13,8 +13,14 @@ interface VideoRecorderProps {
   deviceId?: string;
 }
 
+const isBackCamera = (label: string): boolean => {
+  const lowerLabel = label.toLowerCase();
+  return lowerLabel.includes('back') || lowerLabel.includes('facing back');
+};
+
 export default function VideoRecorder({ question, vitneboksId, onFinish, hideQuestionText, deviceId }: VideoRecorderProps) {
   const [countdown, setCountdown] = useState(question.recordingDuration);
+  const [isMirrored, setIsMirrored] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -44,6 +50,20 @@ export default function VideoRecorder({ question, vitneboksId, onFinish, hideQue
       };
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       streamRef.current = stream;
+
+      // Determine if we should mirror: mirror if it's NOT a back camera OR if there's only one camera
+      const videoTrack = stream.getVideoTracks()[0];
+      const trackLabel = videoTrack.label;
+      
+      // Get all video devices to check if there's only one camera
+      const allDevices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = allDevices.filter(device => device.kind === 'videoinput');
+      const hasOnlyOneCamera = videoDevices.length === 1;
+      
+      // Check if this is a back camera
+      const isBack = trackLabel ? isBackCamera(trackLabel) : false;
+      const shouldMirror = hasOnlyOneCamera || !isBack;
+      setIsMirrored(shouldMirror);
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
@@ -133,7 +153,7 @@ export default function VideoRecorder({ question, vitneboksId, onFinish, hideQue
   return (
     <>
       <div className="flex flex-col items-center justify-center fixed bg-black top-0 left-0 right-0 bottom-0 flex-1 ">
-        <video ref={videoRef} className="fixed inset-0 w-full h-full object-cover -scale-x-100" />
+        <video ref={videoRef} className={`fixed inset-0 w-full h-full object-cover ${isMirrored ? '-scale-x-100' : ''}`} />
         {!hideQuestionText && (
           <h2
             style={{

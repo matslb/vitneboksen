@@ -9,10 +9,16 @@ interface VideoDevice {
   label: string;
 }
 
+const isBackCamera = (label: string): boolean => {
+  const lowerLabel = label.toLowerCase();
+  return lowerLabel.includes('back') || lowerLabel.includes('facing back');
+};
+
 export default function CameraSelector({ onRecordStart }: CameraSelectorProps) {
   const [devices, setDevices] = useState<VideoDevice[]>([]);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | undefined>(undefined);
   const [devicesLoaded, setDevicesLoaded] = useState(false);
+  const [isMirrored, setIsMirrored] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
@@ -51,10 +57,7 @@ export default function CameraSelector({ onRecordStart }: CameraSelectorProps) {
   }, []);
 
   const findBackCamera = (videoDevices: VideoDevice[]): VideoDevice | undefined => {
-    return videoDevices.find(device => {
-      const label = device.label.toLowerCase();
-      return label.includes('back') || label.includes('facing back');
-    });
+    return videoDevices.find(device => isBackCamera(device.label));
   };
 
   const switchCamera = () => {
@@ -87,6 +90,11 @@ export default function CameraSelector({ onRecordStart }: CameraSelectorProps) {
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
         streamRef.current = stream;
 
+        // Determine if we should mirror: mirror if it's NOT a back camera OR if there's only one camera
+        const selectedDevice = devices.find(d => d.deviceId === selectedDeviceId);
+        const shouldMirror = devices.length === 1 || (selectedDevice && !isBackCamera(selectedDevice.label));
+        setIsMirrored(shouldMirror);
+
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           videoRef.current.muted = true;
@@ -104,7 +112,7 @@ export default function CameraSelector({ onRecordStart }: CameraSelectorProps) {
         streamRef.current.getTracks().forEach(track => track.stop());
       }
     };
-  }, [selectedDeviceId, devicesLoaded]);
+  }, [selectedDeviceId, devicesLoaded, devices]);
 
   const handleRecordStart = () => {
     if (selectedDeviceId) {
@@ -132,7 +140,7 @@ export default function CameraSelector({ onRecordStart }: CameraSelectorProps) {
     <div className="fixed top-0 left-0 right-0 bottom-0 bg-black flex flex-col">
       <video 
         ref={videoRef} 
-        className="fixed top-0 bottom-0 min-h-full max-w-[100vw] -scale-x-100 object-cover w-full h-full"
+        className={`fixed top-0 bottom-0 min-h-full max-w-[100vw] object-cover w-full h-full ${isMirrored ? '-scale-x-100' : ''}`}
         autoPlay
         playsInline
       />
