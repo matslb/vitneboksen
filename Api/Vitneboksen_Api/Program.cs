@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 var allowedOrigins = new[]
 {
     "http://localhost:5173",
+    "https://localhost:5173",
     "https://vitneboksen.no",
     "https://vitneboksen.web.app"
 };
@@ -53,7 +54,7 @@ app.Use(async (context, next) =>
     if (string.IsNullOrWhiteSpace(userTokenFromCookie) || string.IsNullOrWhiteSpace(sessionKey))
     {
         context.Response.StatusCode = StatusCodes.Status400BadRequest;
-        await context.Response.WriteAsync("Missing userToken cookie or sessionKey query parameter.");
+        await context.Response.WriteAsync("Missing userToken");
         return;
     }
 

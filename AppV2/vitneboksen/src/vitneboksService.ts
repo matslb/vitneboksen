@@ -85,8 +85,8 @@ export async function forceUpdateVitneboksStatus(vitneboksId: string){
   const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
   const urlWithQueryParam = `${API_URL}force-update?sessionKey=${vitneboksId}`;
   const response = await fetch(urlWithQueryParam, { 
-    method: "Get",
     credentials: "include",
+    method: "GET"
   });
   return response.ok;
 }
@@ -96,7 +96,7 @@ export async function createSession(vitneboksId: string, uid: string){
   const urlWithQueryParam = `${API_URL}create-session?sessionKey=${vitneboksId}&uid=${uid}`;
   const response = await fetch(urlWithQueryParam, { 
     credentials: "include",
-    method: "Get"
+    method: "GET"
   });
   return response.ok;
 }
