@@ -26,8 +26,15 @@ export default function VitneboksDetail() {
   useEffect(() => {
     if (vitneboks == null) return;
     onValue(ref(db, `/activeSessions/${vitneboks.id}`), (snapshot) => {
-      const data: boolean = snapshot.val();
-      setIsRecording(data);
+      const data: { isRecording?: boolean; activeQuestion?: number } | boolean | null = snapshot.val();
+      if (typeof data === 'boolean') {
+        // Handle legacy format (backward compatibility)
+        setIsRecording(data);
+      } else if (data && typeof data === 'object') {
+        setIsRecording(data.isRecording ?? false);
+      } else {
+        setIsRecording(false);
+      }
     });
   }, [db, vitneboks]);
 

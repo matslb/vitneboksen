@@ -51,6 +51,7 @@ export default function QuestionList({ vitneBoksId, userId, questions }: Questio
                 userId={userId}
                 vitneboksId={vitneBoksId}
                 question={q}
+                allQuestions={questions}
               />
             </li>
           ))}

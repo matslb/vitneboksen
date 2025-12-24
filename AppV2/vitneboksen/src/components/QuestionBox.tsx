@@ -1,17 +1,57 @@
-import { getDatabase, ref, remove, set, update } from "firebase/database";
+import { getDatabase, ref, remove, set, update, onValue } from "firebase/database";
 import type Question from "../types/Question";
 import { dateStringToLocal } from "../utils";
 import ActiveFromToPicker from "./ActiveFromToDatePicker";
 import QuestionDuration from "./QuestionDuration";
+import { useEffect, useState } from "react";
 
 type QuestionBoxProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
     question: Question,
+    allQuestions: Question[],
     userId: string,
     vitneboksId: string
 }
 
-export default function QuestionBox({ vitneboksId, userId, question }: QuestionBoxProps) {
+export default function QuestionBox({ vitneboksId, userId, question, allQuestions }: QuestionBoxProps) {
     const db = getDatabase();
+    const [activeQuestion, setActiveQuestion] = useState<number | undefined>(undefined);
+
+    useEffect(() => {
+        const activeSessionRef = ref(db, `/activeSessions/${vitneboksId}`);
+        const unsubscribe = onValue(activeSessionRef, (snapshot) => {
+            const data: { isRecording?: boolean; activeQuestion?: number } | boolean | null = snapshot.val();
+            if (typeof data === 'object' && data !== null) {
+                setActiveQuestion(data.activeQuestion);
+            } else {
+                setActiveQuestion(undefined);
+            }
+        });
+
+        return unsubscribe;
+    }, [db, vitneboksId]);
+
+    const isActiveQuestion = activeQuestion !== undefined && activeQuestion === question.order;
+
+    const handleDelete = () => {
+        // Remove the question
+        remove(ref(db, `${userId}/vitnebokser/${vitneboksId}/questions/${question.id}`));
+        
+        // Get remaining questions sorted by order
+        const remainingQuestions = allQuestions
+            .filter(q => q.id !== question.id)
+            .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+        
+        // Update order values to be sequential starting from 0
+        const updates: Record<string, number> = {};
+        remainingQuestions.forEach((q, index) => {
+            updates[`${q.id}/order`] = index;
+        });
+        
+        // Apply updates if there are any remaining questions
+        if (remainingQuestions.length > 0) {
+            update(ref(db, `${userId}/vitnebokser/${vitneboksId}/questions`), updates);
+        }
+    };
 
     const handleDragStart = (e: React.DragEvent, id: string, order: number) => {
         e.dataTransfer.setData("text/plain", JSON.stringify({ id, order }));
@@ -35,7 +75,7 @@ export default function QuestionBox({ vitneboksId, userId, question }: QuestionB
     };
     return (
         <div
-            className="bg-white/10 py-6 px-4 rounded shadow-md max-w-5xl relative"
+            className={`bg-white/10 py-6 px-4 rounded shadow-md max-w-5xl relative ${isActiveQuestion ? 'border-4 border-yellow-400' : ''}`}
             key={question.id}
             draggable
             onDragStart={(e) => handleDragStart(e, question.id, question.order)}
@@ -83,7 +123,7 @@ export default function QuestionBox({ vitneboksId, userId, question }: QuestionB
             </div>
             <div className="flex justify-end">
                 <button
-                    onClick={() => remove(ref(db, `${userId}/vitnebokser/${vitneboksId}/questions/${question.id}`))}
+                    onClick={handleDelete}
                     className="bg-danger text-white px-4 py-2 rounded"
                 >
                     Slett

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { GetRecordingConstrains, GetSupportedMimeType, saveRecordingCompletion } from '../utils';
 import type Question from '../types/Question';
 import { uploadVideoToProcessor } from '../vitneboksService';
-import { getDatabase, ref, set } from 'firebase/database';
+import { getDatabase, ref, set, update } from 'firebase/database';
 import fixWebmDuration from 'webm-duration-fix';
 
 interface VideoRecorderProps {
@@ -28,15 +28,26 @@ export default function VideoRecorder({ question, vitneboksId, onFinish, hideQue
   const streamRef = useRef<MediaStream | null>(null);
   const db = getDatabase();
 
-  const setIsRecordingStateInFirebase = (isRecording: boolean) => {
-    set(ref(db, `/activeSessions/${vitneboksId}`), isRecording);
+  const setActiveSessionInFirebase = (isRecording: boolean, activeQuestion?: number) => {
+    const sessionRef = ref(db, `/activeSessions/${vitneboksId}`);
+    // If hideQuestionText is true (ActionShot), only update isRecording to preserve activeQuestion
+    if (hideQuestionText) {
+      update(sessionRef, { isRecording });
+    } else {
+      // For regular questions, update both isRecording and activeQuestion
+      const sessionData: { isRecording: boolean; activeQuestion?: number } = { isRecording };
+      if (activeQuestion !== undefined) {
+        sessionData.activeQuestion = activeQuestion;
+      }
+      set(sessionRef, sessionData);
+    }
   };
 
   useEffect(() => {
     let mounted = true;
 
     const startRecording = async () => {
-      setIsRecordingStateInFirebase(true);
+      setActiveSessionInFirebase(true, question.order);
       const baseConstraints = GetRecordingConstrains();
       // If deviceId is provided, add it to the video constraints
       const constraints: MediaStreamConstraints = {
@@ -98,11 +109,19 @@ export default function VideoRecorder({ question, vitneboksId, onFinish, hideQue
           if (isWebM) {
             fixWebmDuration(blob).then((fixedBlob) => {
               uploadToServer(fixedBlob, extension);
+              // Persist the last answered question index (only if not hideQuestionText)
+              if (mounted) {
+                setActiveSessionInFirebase(false, question.order);
+              }
               if (mounted) onFinish();
             });
           } else {
             // For MP4 (Safari), upload directly without duration fix
             uploadToServer(blob, extension);
+            // Persist the last answered question index (only if not hideQuestionText)
+            if (mounted) {
+              setActiveSessionInFirebase(false, question.order);
+            }
             if (mounted) onFinish();
           }
         }, 100);
@@ -137,12 +156,12 @@ export default function VideoRecorder({ question, vitneboksId, onFinish, hideQue
 
     return () => {
       mounted = false;
-      setIsRecordingStateInFirebase(false);
+      setActiveSessionInFirebase(false, question.order);
       if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
       if (mediaRecorderRef.current?.state === 'recording') mediaRecorderRef.current.stop();
       streamRef.current?.getTracks().forEach(t => t.stop());
     };
-  }, [question, onFinish, deviceId]);
+  }, [question, onFinish, deviceId, hideQuestionText]);
 
   const uploadToServer = async (blob: Blob, extension: string) => {
     await uploadVideoToProcessor(blob, vitneboksId, question.text, extension);
