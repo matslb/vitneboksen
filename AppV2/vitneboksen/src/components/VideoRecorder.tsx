@@ -45,17 +45,13 @@ export default function VideoRecorder({
     activeQuestion?: number
   ) => {
     const sessionRef = ref(db, `/activeSessions/${vitneboksId}`);
-    // If hideQuestionText is true (ActionShot), only update isRecording to preserve activeQuestion
     if (hideQuestionText) {
-      update(sessionRef, { isRecording });
+      update(sessionRef, { isRecording: isRecording});
     } else {
-      // For regular questions, update both isRecording and activeQuestion
       const sessionData: { isRecording: boolean; activeQuestion?: number } = {
         isRecording,
+        activeQuestion: activeQuestion,
       };
-      if (activeQuestion !== undefined) {
-        sessionData.activeQuestion = activeQuestion;
-      }
       set(sessionRef, sessionData);
     }
   };

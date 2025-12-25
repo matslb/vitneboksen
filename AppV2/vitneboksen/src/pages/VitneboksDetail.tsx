@@ -28,10 +28,7 @@ export default function VitneboksDetail() {
     if (vitneboks == null) return;
     onValue(ref(db, `/activeSessions/${vitneboks.id}`), (snapshot) => {
       const data: { isRecording?: boolean; activeQuestion?: number } | boolean | null = snapshot.val();
-      if (typeof data === 'boolean') {
-        // Handle legacy format (backward compatibility)
-        setIsRecording(data);
-      } else if (data && typeof data === 'object') {
+      if (typeof data === 'object' && data !== null) {
         setIsRecording(data.isRecording ?? false);
       } else {
         setIsRecording(false);
