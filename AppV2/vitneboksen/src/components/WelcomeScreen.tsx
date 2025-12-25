@@ -1,4 +1,4 @@
-import CameraAndMicAccessChecker from "./CameraAccessChecker";
+import { useCameraAccessCheck, CameraAccessChecker } from "./CameraAccessChecker";
 
 interface WelcomeScreenProps {
   title: string,
@@ -7,6 +7,10 @@ interface WelcomeScreenProps {
 }
 
 export default function WelcomeScreen({ title, recordingTime, onStart }: WelcomeScreenProps) {
+  const { hasAccess, checking, isInAppBrowser, requestAccess } = useCameraAccessCheck();
+  
+  const showAccessChecker = isInAppBrowser || hasAccess === false;
+
   return (
     <div className="flex flex-col items-center justify-center flex-1 p-2">
       <div className="mb-3 lg:mb-12">
@@ -26,16 +30,21 @@ export default function WelcomeScreen({ title, recordingTime, onStart }: Welcome
           Slapp av, det ække no farlig.
         </p>
       </div>
-      {!CameraAndMicAccessChecker() ?
+      {showAccessChecker ? (
+        <CameraAccessChecker
+          hasAccess={hasAccess}
+          checking={checking}
+          isInAppBrowser={isInAppBrowser}
+          onRequestAccess={requestAccess}
+        />
+      ) : (
         <button
           onClick={onStart}
           className="bg-primary-button text-black text-xl px-6 py-3 rounded hover:text-white hover:bg-secondary-bg"
         >
           Kjør opptak
         </button>
-        :
-        <CameraAndMicAccessChecker />
-      }
+      )}
     </div>
   );
 }

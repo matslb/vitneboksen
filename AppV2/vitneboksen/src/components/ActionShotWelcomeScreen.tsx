@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import CameraAndMicAccessChecker from './CameraAccessChecker';
+import { useCameraAccessCheck, CameraAccessChecker } from './CameraAccessChecker';
 
 interface ActionShotWelcomeScreenProps {
   title: string;
@@ -9,6 +9,7 @@ interface ActionShotWelcomeScreenProps {
 
 export default function ActionShotWelcomeScreen({ title, onStart, initialName = '' }: ActionShotWelcomeScreenProps) {
   const [userName, setUserName] = useState(initialName);
+  const { hasAccess, checking, isInAppBrowser, requestAccess } = useCameraAccessCheck();
 
   // Update userName when initialName changes (e.g., when saved name is loaded)
   useEffect(() => {
@@ -22,6 +23,8 @@ export default function ActionShotWelcomeScreen({ title, onStart, initialName = 
       onStart(userName.trim());
     }
   };
+
+  const showAccessChecker = isInAppBrowser || hasAccess === false;
 
   return (
     <div className="fixed inset-0 bg-black/70 flex flex-col items-center justify-center flex-1 p-2">
@@ -45,7 +48,14 @@ export default function ActionShotWelcomeScreen({ title, onStart, initialName = 
           />
         </div>
     
-        {!CameraAndMicAccessChecker() ? (
+        {showAccessChecker ? (
+          <CameraAccessChecker
+            hasAccess={hasAccess}
+            checking={checking}
+            isInAppBrowser={isInAppBrowser}
+            onRequestAccess={requestAccess}
+          />
+        ) : (
           <button
             onClick={handleStart}
             disabled={!userName.trim()}
@@ -53,8 +63,6 @@ export default function ActionShotWelcomeScreen({ title, onStart, initialName = 
           >
             Spill inn videosnutt
           </button>
-        ) : (
-          <CameraAndMicAccessChecker />
         )}
         <p className="text-l text-center m-4">
           Du får 10 sekunder på deg.
