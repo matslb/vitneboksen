@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { getDatabase, ref, onValue, set, remove } from 'firebase/database';
 import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
-import { type Vitneboks } from '../types/Vitneboks';
+import { FinalVideoStatus, type Vitneboks } from '../types/Vitneboks';
 
 import LoadingFullScreen from '../components/LoadingFullScreen';
 import Footer from '../components/Footer';
@@ -136,6 +136,7 @@ export default function VitneboksDetail() {
               </p>
               <button
                 onClick={handleDeleteVitneboks}
+                disabled={vitneboks.finalVideoProcessingStatus == FinalVideoStatus.started || vitneboks.videosToBeProcessed > 0}
                 className="bg-danger text-white px-4 py-2 rounded"
               >
                 Slett vitneboks
