@@ -179,6 +179,12 @@ export default function VideoRecorder({
   }, [question, onFinish, deviceId, hideQuestionText]);
 
   const uploadToServer = async (blob: Blob, extension: string) => {
+    
+    if(!hideQuestionText) {
+      uploadVideoToProcessor(blob, vitneboksId, question.text, extension);
+      onFinish();
+      return;
+    }
     setIsUploading(true);
     await uploadVideoToProcessor(blob, vitneboksId, question.text, extension);
     saveRecordingCompletion(vitneboksId, question, 30);
@@ -186,7 +192,7 @@ export default function VideoRecorder({
     onFinish();
   };
 
-  if (isUploading && hideQuestionText) {
+  if (isUploading) {
     return (
       <div className="bg-primary-bg flex flex-col items-center justify-center fixed bg-black top-0 left-0 right-0 bottom-0 flex-1 ">
         <h2 className="text-6xl font-bold">Du var skikkelig flink!</h2>
