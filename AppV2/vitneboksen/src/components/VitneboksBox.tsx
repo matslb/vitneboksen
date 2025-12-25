@@ -16,9 +16,13 @@ export default function VitneboksBox({ Vitneboks }: VitneboxBoxProps) {
     const db = getDatabase();
     useEffect(() => {
         onValue(ref(db, `/activeSessions/${Vitneboks.id}`), (snapshot) => {
-            const data: boolean = snapshot.val();
-            setIsRecording(data);
-        });
+            const data: { isRecording?: boolean; activeQuestion?: number } | boolean | null = snapshot.val();
+            if (typeof data === 'object' && data !== null) {
+              setIsRecording(data.isRecording ?? false);
+            } else {
+              setIsRecording(false);
+            }
+          });
     }, [db]);
     return (
         <div className="relative p-6">
