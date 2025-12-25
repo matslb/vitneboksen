@@ -10,8 +10,8 @@ export default function WelcomeScreen({ title, recordingTime, onStart }: Welcome
   return (
     <div className="flex flex-col items-center justify-center flex-1 p-2">
       <div className="mb-3 lg:mb-12">
-        <h1 className="text-3xl lg:text-5xl font-bold mb-4 text-center">VITNEBOKSEN</h1>
-        <h1 className="text-2xl mb-4 text-center">ønsker deg velkommen til...</h1>
+        <h1 className="text-3xl lg:text-4xl font-bold mb-4 text-center">VITNEBOKSEN</h1>
+        <h1 className="text-xl mb-4 text-center">ønsker deg velkommen til...</h1>
       </div>
       <div className="mb-3 mt-3 lg:my-16">
         <h1 className="text-4xl lg:text-6xl font-bold mb-4 text-center">{title}</h1>
