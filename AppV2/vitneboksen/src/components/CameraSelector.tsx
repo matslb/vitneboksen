@@ -1,180 +1,122 @@
 import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 interface CameraSelectorProps {
   onRecordStart: (deviceId: string) => void;
 }
 
-interface VideoDevice {
+// For the rear/back camera
+const backCameraConstraints = {
+  video: {
+    facingMode: { exact: 'environment' } as const,
+    width: { ideal: 1920 },
+    height: { ideal: 1080 },
+    frameRate: { ideal: 30 },
+  }
+};
+
+// For the front/selfie camera
+const frontCameraConstraints = {
+  video: {
+    facingMode: 'user' as const,
+    width: { ideal: 1920 },
+    height: { ideal: 1080 },
+    frameRate: { ideal: 30 },
+  }
+};
+
+type FacingMode = 'user' | 'environment';
+
+interface CameraDevice {
   deviceId: string;
   label: string;
   groupId?: string;
 }
 
-const isBackCamera = (label: string): boolean => {
-  const lowerLabel = label.toLowerCase();
-  return lowerLabel.includes('back') || lowerLabel.includes('facing back');
-};
-
-// Check if a camera is an auxiliary camera (wide-angle, telephoto, etc.)
-const isAuxiliaryCamera = (label: string): boolean => {
-  const lowerLabel = label.toLowerCase();
-  const auxiliaryKeywords = [
-    'wide',
-    'ultra wide',
-    'ultrawide',
-    'telephoto',
-    'tele',
-    'macro',
-    'zoom',
-    'periscope',
-    'tof',
-    'depth',
-    'ir',
-    'infrared',
-  ];
-  return auxiliaryKeywords.some(keyword => lowerLabel.includes(keyword));
-};
-
-// Get the deviceId of the default front or back camera using facingMode
-const getDefaultCameraDeviceId = async (facingMode: 'user' | 'environment'): Promise<string | null> => {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode },
-    });
-    const videoTrack = stream.getVideoTracks()[0];
-    const settings = videoTrack.getSettings();
-    const deviceId = settings.deviceId;
-    
-    // Stop the stream immediately as we only needed it to identify the device
-    stream.getTracks().forEach(track => track.stop());
-    
-    return deviceId || null;
-  } catch (error) {
-    console.warn(`Error getting default ${facingMode} camera:`, error);
-    return null;
-  }
-};
-
-// Filter devices to only include main front and back cameras
-const filterMainCameras = async (
-  allDevices: MediaDeviceInfo[]
-): Promise<VideoDevice[]> => {
-  // Get default front and back camera deviceIds using facingMode
-  const [defaultFrontDeviceId, defaultBackDeviceId] = await Promise.all([
-    getDefaultCameraDeviceId('user'),
-    getDefaultCameraDeviceId('environment'),
-  ]);
-
-  // Filter to video input devices and map to VideoDevice format
-  const videoDevices = allDevices
-    .filter(device => device.kind === 'videoinput')
-    .map(device => ({
-      deviceId: device.deviceId,
-      label: device.label || `Kamera ${device.deviceId.slice(0, 8)}`,
-      groupId: device.groupId,
-    }));
-
-  // Filter to only main cameras
-  const mainCameras = videoDevices.filter(device => {
-    // Exclude auxiliary cameras by label
-    if (isAuxiliaryCamera(device.label)) {
-      return false;
-    }
-
-    // Include if it matches the default front or back camera from facingMode
-    if (defaultFrontDeviceId && device.deviceId === defaultFrontDeviceId) {
-      return true;
-    }
-    if (defaultBackDeviceId && device.deviceId === defaultBackDeviceId) {
-      return true;
-    }
-
-    // Fallback: if facingMode didn't work, use label-based detection
-    // but still exclude auxiliary cameras
-    if (!defaultFrontDeviceId && !defaultBackDeviceId) {
-      // Check if it's a front or back camera by label
-      const lowerLabel = device.label.toLowerCase();
-      const isFront = lowerLabel.includes('front') || lowerLabel.includes('facing front') || lowerLabel.includes('user');
-      const isBack = isBackCamera(device.label);
-      return isFront || isBack;
-    }
-
-    return false;
-  });
-
-  // Group by groupId and pick the first device from each group
-  // This ensures we only get one camera per physical device group
-  const deviceMap = new Map<string, VideoDevice>();
-  const seenGroupIds = new Set<string>();
-
-  for (const device of mainCameras) {
-    if (device.groupId) {
-      // If we've already seen this group, skip (prefer the first one)
-      if (seenGroupIds.has(device.groupId)) {
-        continue;
-      }
-      seenGroupIds.add(device.groupId);
-    }
-    deviceMap.set(device.deviceId, device);
-  }
-
-  return Array.from(deviceMap.values());
-};
-
 export default function CameraSelector({ onRecordStart }: CameraSelectorProps) {
-  const [devices, setDevices] = useState<VideoDevice[]>([]);
-  const [selectedDeviceId, setSelectedDeviceId] = useState<string | undefined>(undefined);
+  const [searchParams] = useSearchParams();
+  const isDebugMode = searchParams.has('debug');
+  
+  const [currentFacingMode, setCurrentFacingMode] = useState<FacingMode>('environment');
+  const [hasFrontCamera, setHasFrontCamera] = useState(false);
+  const [hasBackCamera, setHasBackCamera] = useState(false);
   const [devicesLoaded, setDevicesLoaded] = useState(false);
-  const [isMirrored, setIsMirrored] = useState(true);
+  const [isMirrored, setIsMirrored] = useState(false);
+  const [allDevices, setAllDevices] = useState<CameraDevice[]>([]);
+  const [currentDeviceId, setCurrentDeviceId] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
+  // Check which cameras are available
   useEffect(() => {
-    const loadDevices = async () => {
+    const checkCameras = async () => {
       try {
-        // Request permission first to get device labels
+        // Request permission first
         await navigator.mediaDevices.getUserMedia({ video: true });
-        
-        const deviceList = await navigator.mediaDevices.enumerateDevices();
-        
-        // Filter to only main front and back cameras
-        const mainCameras = await filterMainCameras(deviceList);
-        
-        setDevices(mainCameras);
-        setDevicesLoaded(true);
-        
-        // Find and set default back camera
-        const backCamera = findBackCamera(mainCameras);
-        if (backCamera) {
-          setSelectedDeviceId(backCamera.deviceId);
-        } else if (mainCameras.length > 0) {
-          // Fallback to first camera if no back camera found
-          setSelectedDeviceId(mainCameras[0].deviceId);
+
+        // If debug mode, enumerate all devices
+        if (isDebugMode) {
+          const deviceList = await navigator.mediaDevices.enumerateDevices();
+          const videoDevices = deviceList
+            .filter(device => device.kind === 'videoinput')
+            .map(device => ({
+              deviceId: device.deviceId,
+              label: device.label || `Kamera ${device.deviceId.slice(0, 8)}`,
+              groupId: device.groupId,
+            }));
+          setAllDevices(videoDevices);
         }
+
+        let frontAvailable = false;
+        let backAvailable = false;
+
+        // Check if front camera is available
+        try {
+          const frontStream = await navigator.mediaDevices.getUserMedia(frontCameraConstraints);
+          frontStream.getTracks().forEach(track => track.stop());
+          frontAvailable = true;
+          setHasFrontCamera(true);
+        } catch {
+          setHasFrontCamera(false);
+        }
+
+        // Check if back camera is available
+        try {
+          const backStream = await navigator.mediaDevices.getUserMedia(backCameraConstraints);
+          backStream.getTracks().forEach(track => track.stop());
+          backAvailable = true;
+          setHasBackCamera(true);
+        } catch {
+          setHasBackCamera(false);
+        }
+
+        // Set default to back camera if available, otherwise front
+        if (backAvailable) {
+          setCurrentFacingMode('environment');
+        } else if (frontAvailable) {
+          setCurrentFacingMode('user');
+        }
+
+        setDevicesLoaded(true);
       } catch (error) {
-        console.error('Error loading devices:', error);
+        console.error('Error checking cameras:', error);
         setDevicesLoaded(true);
       }
     };
 
-    loadDevices();
-  }, []);
-
-  const findBackCamera = (videoDevices: VideoDevice[]): VideoDevice | undefined => {
-    return videoDevices.find(device => isBackCamera(device.label));
-  };
+    checkCameras();
+  }, [isDebugMode]);
 
   const switchCamera = () => {
-    // Only switch if we have more than one main camera (should be max 2: front and back)
-    if (devices.length <= 1) return;
-    
-    const currentIndex = devices.findIndex(d => d.deviceId === selectedDeviceId);
-    const nextIndex = (currentIndex + 1) % devices.length;
-    setSelectedDeviceId(devices[nextIndex].deviceId);
+    // Only switch if both cameras are available
+    if (hasFrontCamera && hasBackCamera) {
+      setCurrentFacingMode(prev => prev === 'user' ? 'environment' : 'user');
+    }
   };
 
+  // Start preview when facing mode changes
   useEffect(() => {
-    if (!selectedDeviceId || !devicesLoaded) return;
+    if (!devicesLoaded) return;
 
     const startPreview = async () => {
       try {
@@ -183,22 +125,22 @@ export default function CameraSelector({ onRecordStart }: CameraSelectorProps) {
           streamRef.current.getTracks().forEach(track => track.stop());
         }
 
-        const constraints: MediaStreamConstraints = {
-          video: {
-            deviceId: { exact: selectedDeviceId },
-            width: { ideal: 1920 },
-            height: { ideal: 1080 },
-            frameRate: { ideal: 30 },
-          },
-        };
+        const constraints = currentFacingMode === 'user' 
+          ? frontCameraConstraints 
+          : backCameraConstraints;
 
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
         streamRef.current = stream;
 
-        // Determine if we should mirror: mirror if it's NOT a back camera OR if there's only one camera
-        const selectedDevice = devices.find(d => d.deviceId === selectedDeviceId) || false;
-        const shouldMirror = devices.length === 1 || (selectedDevice && !isBackCamera(selectedDevice.label));
-        setIsMirrored(shouldMirror);
+        // Get deviceId from the stream for debug mode
+        if (isDebugMode) {
+          const videoTrack = stream.getVideoTracks()[0];
+          const settings = videoTrack.getSettings();
+          setCurrentDeviceId(settings.deviceId || null);
+        }
+
+        // Mirror front camera, don't mirror back camera
+        setIsMirrored(currentFacingMode === 'user');
 
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
@@ -217,11 +159,18 @@ export default function CameraSelector({ onRecordStart }: CameraSelectorProps) {
         streamRef.current.getTracks().forEach(track => track.stop());
       }
     };
-  }, [selectedDeviceId, devicesLoaded, devices]);
+  }, [currentFacingMode, devicesLoaded, isDebugMode]);
 
   const handleRecordStart = () => {
-    if (selectedDeviceId) {
-      onRecordStart(selectedDeviceId);
+    if (streamRef.current) {
+      // Get deviceId from the current stream
+      const videoTrack = streamRef.current.getVideoTracks()[0];
+      const settings = videoTrack.getSettings();
+      const deviceId = settings.deviceId;
+      
+      if (deviceId) {
+        onRecordStart(deviceId);
+      }
     }
   };
 
@@ -233,7 +182,7 @@ export default function CameraSelector({ onRecordStart }: CameraSelectorProps) {
     );
   }
 
-  if (devices.length === 0) {
+  if (!hasFrontCamera && !hasBackCamera) {
     return (
       <div className="flex flex-col items-center justify-center fixed top-0 left-0 right-0 bottom-0 bg-primary-bg">
         <p className="text-xl text-center px-4">Ingen kameraer funnet. Vennligst sjekk at kameraet er tilkoblet.</p>
@@ -250,8 +199,55 @@ export default function CameraSelector({ onRecordStart }: CameraSelectorProps) {
         playsInline
       />
       
+      {/* Debug panel */}
+      {isDebugMode && (
+        <div className="fixed top-4 left-4 z-50 bg-black bg-opacity-90 rounded-lg p-4 max-w-md max-h-[80vh] overflow-y-auto">
+          <h3 className="text-white text-lg font-bold mb-3">Camera Devices (Debug Mode)</h3>
+          <div className="space-y-2">
+            {allDevices.length === 0 ? (
+              <p className="text-white text-sm">No devices found</p>
+            ) : (
+              allDevices.map((device) => {
+                const isSelected = device.deviceId === currentDeviceId;
+                return (
+                  <div
+                    key={device.deviceId}
+                    className={`p-3 rounded border-2 ${
+                      isSelected
+                        ? 'bg-blue-600 border-blue-400'
+                        : 'bg-gray-800 border-gray-600'
+                    }`}
+                  >
+                    <div className="text-white text-sm font-semibold mb-1">
+                      {device.label}
+                      {isSelected && (
+                        <span className="ml-2 text-blue-200">✓ Selected</span>
+                      )}
+                    </div>
+                    <div className="text-gray-400 text-xs font-mono break-all">
+                      {device.deviceId}
+                    </div>
+                    {device.groupId && (
+                      <div className="text-gray-500 text-xs font-mono mt-1">
+                        Group: {device.groupId.slice(0, 16)}...
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
+          <div className="mt-4 pt-4 border-t border-gray-600">
+            <div className="text-white text-sm">
+              <div>Current Facing Mode: <span className="font-mono">{currentFacingMode}</span></div>
+              <div className="mt-1">Mirrored: <span className="font-mono">{isMirrored ? 'Yes' : 'No'}</span></div>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Switch camera button - bottom right */}
-      {devices.length > 1 && (
+      {hasFrontCamera && hasBackCamera && (
         <button
           onClick={switchCamera}
           className="fixed bottom-24 right-4 z-50 bg-black bg-opacity-75 rounded-full p-3 hover:bg-opacity-100 transition-all"
@@ -277,7 +273,7 @@ export default function CameraSelector({ onRecordStart }: CameraSelectorProps) {
       {/* Record button - center bottom */}
       <button
         onClick={handleRecordStart}
-        disabled={!selectedDeviceId}
+        disabled={!streamRef.current}
         className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 rounded-full p-4 hover:opacity-80 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
         aria-label="Start recording"
       >
