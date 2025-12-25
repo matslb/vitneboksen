@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { detectInAppBrowser, CameraAccessChecker} from './CameraAccessChecker';
 
 interface ActionShotWelcomeScreenProps {
   title: string;
@@ -44,10 +43,6 @@ export default function ActionShotWelcomeScreen({ title, onStart, initialName = 
             className="text-xl px-4 py-2 bg-white text-black w-full rounded border-2 border-primary-button focus:outline-none focus:border-secondary-bg text-center"
           />
         </div>
-    
-        {!detectInAppBrowser  ? (
-          <CameraAccessChecker />
-        ) : (
           <button
             onClick={handleStart}
             disabled={!userName.trim()}
@@ -55,7 +50,6 @@ export default function ActionShotWelcomeScreen({ title, onStart, initialName = 
           >
             Spill inn videosnutt
           </button>
-        )}
         <p className="text-l text-center m-4">
           Du får 10 sekunder på deg.
         </p>

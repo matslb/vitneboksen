@@ -2,32 +2,34 @@ import { useEffect, useState } from "react";
 
 /**
  * Detects if the user is using an in-app browser (e.g., Facebook, Instagram, etc.)
- * @returns true if an in-app browser is detected, false otherwise
+ * @returns Error message string if an in-app browser is detected, null otherwise
  */
-export function detectInAppBrowser(): boolean {
+export function detectInAppBrowser(): string | null {
   const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera || "";
   const userAgentLower = userAgent.toLowerCase();
 
-  // Common in-app browser indicators
-  const inAppBrowserPatterns = [
-    "fban", // Facebook
-    "fbav", // Facebook
-    "instagram", // Instagram
-    "twitter", // Twitter
-    "linkedinapp", // LinkedIn
-    "micromessenger", // WeChat
-    "line", // Line
-    "whatsapp", // WhatsApp
-    "tiktok", // TikTok
-    "snapchat", // Snapchat
-    "wv", // WebView (Android)
-    "webview", // WebView
+  // Map of browser patterns to their display names
+  const browserPatterns: Array<{ pattern: string; name: string }> = [
+    { pattern: "fban", name: "Facebook" },
+    { pattern: "fbav", name: "Facebook" },
+    { pattern: "instagram", name: "Instagram" },
+    { pattern: "twitter", name: "Twitter" },
+    { pattern: "linkedinapp", name: "LinkedIn" },
+    { pattern: "micromessenger", name: "WeChat" },
+    { pattern: "line", name: "Line" },
+    { pattern: "whatsapp", name: "WhatsApp" },
+    { pattern: "tiktok", name: "TikTok" },
+    { pattern: "snapchat", name: "Snapchat" },
+    { pattern: "wv", name: "WebView" },
+    { pattern: "webview", name: "WebView" },
   ];
 
   // Check if user agent matches any in-app browser pattern
-  const isInAppBrowser = inAppBrowserPatterns.some((pattern) =>
-    userAgentLower.includes(pattern)
-  );
+  for (const { pattern, name } of browserPatterns) {
+    if (userAgentLower.includes(pattern)) {
+      return `Jasså, åpner du linker inne i ${name}. Bruk heller en skikkelig browser`;
+    }
+  }
 
   // Additional check: iOS WebView detection
   const isIOSWebView =
@@ -39,7 +41,11 @@ export function detectInAppBrowser(): boolean {
   const hasLimitedFeatures =
     !(window as any).chrome && !(window as any).safari && !(window as any).firefox;
 
-  return isInAppBrowser || (isIOSWebView && hasLimitedFeatures);
+  if (isIOSWebView && hasLimitedFeatures) {
+    return "Nå har du åpna denne linken inne i en app uten noen funksjoner :(. Bruk heller en skikkelig browser";
+  }
+
+  return null;
 }
 
 /**

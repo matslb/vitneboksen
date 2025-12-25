@@ -10,6 +10,7 @@ import VideoRecorder from "../components/VideoRecorder";
 import ActionShotThankYouScreen from "../components/ActionShotThankYouScreen";
 import { FinalVideoStatus, type Vitneboks } from "../types/Vitneboks";
 import { mapVitneboks, canRecordAgain } from "../utils";
+import { detectInAppBrowser } from "../components/CameraAccessChecker";
 
 export default function ActionShotPage() {
   const { vitneboksId } = useParams();
@@ -104,6 +105,16 @@ export default function ActionShotPage() {
       </div>
     </div>);
   }
+
+  const inAppBrowserError = detectInAppBrowser();
+  if (inAppBrowserError) {
+    return (
+      <div className="flex flex-col items-center justify-center flex-1 p-6 text-3xl">
+        {inAppBrowserError}
+      </div>
+    );
+  }
+
   return (
     <div
       ref={divRef}
