@@ -159,8 +159,8 @@ export default function VideoRecorder({ question, vitneboksId, onFinish, hideQue
   };
 
   if (isUploading) {
-    return <div className="flex flex-col items-center justify-center fixed bg-black top-0 left-0 right-0 bottom-0 flex-1 ">
-      <div className="text-4xl">Laster opp video...</div>
+    return <div className="bg-primary-bg flex flex-col items-center justify-center fixed bg-black top-0 left-0 right-0 bottom-0 flex-1 ">
+      <div className="text-4xl mb-4">Laster opp video...</div>
       <SpinnerIcon/>
     </div>
   }
