@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useCameraAccessCheck, CameraAccessChecker } from './CameraAccessChecker';
+import { detectInAppBrowser, CameraAccessChecker} from './CameraAccessChecker';
 
 interface ActionShotWelcomeScreenProps {
   title: string;
@@ -9,7 +9,6 @@ interface ActionShotWelcomeScreenProps {
 
 export default function ActionShotWelcomeScreen({ title, onStart, initialName = '' }: ActionShotWelcomeScreenProps) {
   const [userName, setUserName] = useState(initialName);
-  const { hasAccess, checking, isInAppBrowser, requestAccess } = useCameraAccessCheck();
 
   // Update userName when initialName changes (e.g., when saved name is loaded)
   useEffect(() => {
@@ -23,8 +22,6 @@ export default function ActionShotWelcomeScreen({ title, onStart, initialName = 
       onStart(userName.trim());
     }
   };
-
-  const showAccessChecker = isInAppBrowser || hasAccess === false;
 
   return (
     <div className="fixed inset-0 bg-black/70 flex flex-col items-center justify-center flex-1 p-2">
@@ -48,13 +45,8 @@ export default function ActionShotWelcomeScreen({ title, onStart, initialName = 
           />
         </div>
     
-        {showAccessChecker ? (
-          <CameraAccessChecker
-            hasAccess={hasAccess}
-            checking={checking}
-            isInAppBrowser={isInAppBrowser}
-            onRequestAccess={requestAccess}
-          />
+        {!detectInAppBrowser  ? (
+          <CameraAccessChecker />
         ) : (
           <button
             onClick={handleStart}
