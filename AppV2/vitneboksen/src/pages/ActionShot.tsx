@@ -11,6 +11,7 @@ import ActionShotThankYouScreen from "../components/ActionShotThankYouScreen";
 import { FinalVideoStatus, type Vitneboks } from "../types/Vitneboks";
 import { mapVitneboks, canRecordAgain } from "../utils";
 import { detectInAppBrowser } from "../components/CameraAccessChecker";
+import ErrorIcon from "../components/ErrorIcon";
 
 export default function ActionShotPage() {
   const { vitneboksId } = useParams();
@@ -109,8 +110,11 @@ export default function ActionShotPage() {
   const inAppBrowserError = detectInAppBrowser();
   if (inAppBrowserError) {
     return (
-      <div className="flex flex-col items-center justify-center flex-1 p-6 text-3xl">
-        {inAppBrowserError}
+      <div className="flex flex-col items-center justify-center min-h-screen bg-primary-bg text-primary-text p-6">
+        <ErrorIcon />
+        <div className="mt-4 text-3xl text-center">
+          {inAppBrowserError}
+        </div>
       </div>
     );
   }
