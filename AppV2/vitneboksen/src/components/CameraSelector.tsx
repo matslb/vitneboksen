@@ -305,7 +305,7 @@ export default function CameraSelector({ onRecordStart }: CameraSelectorProps) {
                           {(() => {
                             try {
                               // Try to stringify with a replacer to handle non-serializable values
-                              return JSON.stringify(err.error, (key, value) => {
+                              return JSON.stringify(err.error, ( _ , value) => {
                                 if (value instanceof Error) {
                                   return {
                                     name: value.name,
