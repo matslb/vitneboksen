@@ -82,7 +82,7 @@ export default function QuestionBox({ vitneboksId, userId, question, allQuestion
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => handleDrop(e, question.id, question.order)}
         >
-            <span className="cursor-move text-xl absolute w-8 text-center  bg-black/50 rounded-br rounded-tl top-0 left-0" title="Dra for å endre rekkefølge">{question.order + 1}</span>
+            <span className="cursor-move text-xl absolute py-1 px-3 text-center block bg-black/50 rounded-br rounded-tl top-0 left-0" title="Dra for å endre rekkefølge">{isActiveQuestion ? '🔴 ' : ''}{question.order + 1}</span>
             <span className="absolute top-2 right-4 cursor-move text-2xl" title="Dra for å endre rekkefølge">≡</span>
             <div
                 style={{

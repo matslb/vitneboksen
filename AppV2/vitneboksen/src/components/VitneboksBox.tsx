@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { getDatabase, onValue, ref } from "firebase/database";
 import VideoStats from "./VideoStats";
 import GenerateVideoButton from "./GenerateVideoButton";
+import VitneboksLink from "./VitneboksLink";
 
 interface VitneboxBoxProps {
     Vitneboks: Vitneboks
@@ -11,14 +12,7 @@ interface VitneboxBoxProps {
 
 export default function VitneboksBox({ Vitneboks }: VitneboxBoxProps) {
 
-    const [copied, setCopied] = useState<string | null>(null);
     const [isRecording, setIsRecording] = useState<boolean>(false);
-    const handleCopy = (text: string, label: string) => {
-        navigator.clipboard.writeText(text).then(() => {
-            setCopied(label);
-            setTimeout(() => setCopied(null), 2000);
-        }).catch(console.error);
-    };
     const db = getDatabase();
     useEffect(() => {
         onValue(ref(db, `/activeSessions/${Vitneboks.id}`), (snapshot) => {
@@ -50,16 +44,7 @@ export default function VitneboksBox({ Vitneboks }: VitneboxBoxProps) {
                     </div>
                 </div>
             }
-            <div className="py-4">
-                <label className="text-sm">Vitnebokslink</label>
-                <input
-                    readOnly
-                    value={`${window.location.origin}/bidra/${Vitneboks.id}`}
-                    onClick={() => handleCopy(`${window.location.origin}/bidra/${Vitneboks.id}`, 'Vitnebokslink kopiert!')}
-                    className="w-full p-2 rounded bg-white text-black mb-2 cursor-pointer"
-                />
-                {copied && <p className="text-green-500 text-sm mt-1">{copied}</p>}
-            </div>
+            <VitneboksLink vitneboksId={Vitneboks.id} />
             <div className='flex justify-between gap-2'>
                 <p className="text-m mb-1"><span className='bg-black/40 text-center text-white min-w-9 inline-block rounded'>{Object.values(Vitneboks.questions)?.length}</span> Spørsmål</p>
                 <VideoStats flexDirection="col" completed={Vitneboks.completedVideos} inProgress={Vitneboks.videosToBeProcessed} max={Vitneboks.maxStorage} sessionStorageUsage={Vitneboks.sessionStorageUsage} />

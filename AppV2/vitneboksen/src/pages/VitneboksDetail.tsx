@@ -12,6 +12,7 @@ import ToggleSwitch from '../components/ToggleSwitch';
 import QuestionList from '../components/QuestionList';
 import { mapVitneboks, vitneboksTimeRemaining } from '../utils';
 import TimelineEditor from '../components/TimelineEditor';
+import VitneboksLink from '../components/VitneboksLink';
 
 export default function VitneboksDetail() {
   const { id } = useParams();
@@ -111,8 +112,9 @@ export default function VitneboksDetail() {
             <p className="text-3xl font-bold my-4  ">
               <input type='text' name='title' maxLength={45} className='bg-white/10 rounded shadow-md py-6 px-4 w-[100%] text-left' value={vitneboks.title} onChange={(e) => set(ref(db, `${user.uid}/vitnebokser/${id}/title`), e.currentTarget.value)} />
             </p>
-            <QuestionList vitneBoksId={vitneboks.id} userId={user.uid} questions={vitneboks.questions} />
+            <VitneboksLink vitneboksId={vitneboks.id} />
             <TimelineEditor vitneboks={vitneboks} />
+            <QuestionList vitneBoksId={vitneboks.id} userId={user.uid} questions={vitneboks.questions} />
             <div className='flex justify-between items-end gap-4'>
             {searchParams.has('sudo') &&
                 <div className='flex flex-col align-left gap-4'>

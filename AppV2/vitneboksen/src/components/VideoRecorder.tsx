@@ -111,7 +111,6 @@ export default function VideoRecorder({ question, vitneboksId, onFinish, hideQue
           } else {
             uploadToServer(blob, extension);           
           }
-          onFinish();
         }, 100);
       };
 
@@ -156,6 +155,7 @@ export default function VideoRecorder({ question, vitneboksId, onFinish, hideQue
     await uploadVideoToProcessor(blob, vitneboksId, question.text, extension);
     saveRecordingCompletion(vitneboksId, question, 30);
     setIsUploading(false);
+    onFinish();
   };
 
   if (isUploading) {
