@@ -8,7 +8,9 @@ interface CameraSelectorProps {
 // For the rear/back camera
 const backCameraConstraints = {
   video: {
-    facingMode: { exact: 'environment' } as const,
+    // NOTE: `exact` will throw OverconstrainedError on some devices/browsers.
+    // Use `ideal` and handle fallback in code.
+    facingMode: { ideal: 'environment' } as const,
     width: { ideal: 1920 },
     height: { ideal: 1080 },
     frameRate: { ideal: 30 },
@@ -18,7 +20,7 @@ const backCameraConstraints = {
 // For the front/selfie camera
 const frontCameraConstraints = {
   video: {
-    facingMode: 'user' as const,
+    facingMode: { ideal: 'user' } as const,
     width: { ideal: 1920 },
     height: { ideal: 1080 },
     frameRate: { ideal: 30 },
@@ -33,6 +35,18 @@ interface CameraDevice {
   groupId?: string;
 }
 
+interface DebugError {
+  timestamp: number;
+  name: string;
+  message: string;
+  context: string;
+  error?: any;
+}
+
+function stopStream(stream: MediaStream | null | undefined) {
+  stream?.getTracks().forEach(track => track.stop());
+}
+
 export default function CameraSelector({ onRecordStart }: CameraSelectorProps) {
   const [searchParams] = useSearchParams();
   const isDebugMode = searchParams.has('debug');
@@ -44,15 +58,31 @@ export default function CameraSelector({ onRecordStart }: CameraSelectorProps) {
   const [isMirrored, setIsMirrored] = useState(false);
   const [allDevices, setAllDevices] = useState<CameraDevice[]>([]);
   const [currentDeviceId, setCurrentDeviceId] = useState<string | null>(null);
+  const [errors, setErrors] = useState<DebugError[]>([]);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+
+  // Helper function to add error to debug state
+  const addDebugError = (error: any, context: string) => {
+    if (isDebugMode) {
+      const debugError: DebugError = {
+        timestamp: Date.now(),
+        name: error?.name || 'UnknownError',
+        message: error?.message || String(error),
+        context,
+        error,
+      };
+      setErrors(prev => [...prev, debugError]);
+    }
+  };
 
   // Check which cameras are available
   useEffect(() => {
     const checkCameras = async () => {
       try {
-        // Request permission first
-        await navigator.mediaDevices.getUserMedia({ video: true });
+        // Request permission first. IMPORTANT: stop this probe stream, otherwise some devices/browsers
+        // keep the camera hardware locked and subsequent getUserMedia calls fail (NotReadableError).
+        const permissionStream = await navigator.mediaDevices.getUserMedia({ video: true });
 
         // If debug mode, enumerate all devices
         if (isDebugMode) {
@@ -67,26 +97,31 @@ export default function CameraSelector({ onRecordStart }: CameraSelectorProps) {
           setAllDevices(videoDevices);
         }
 
+        // Release the probe stream before doing further getUserMedia calls.
+        stopStream(permissionStream);
+
         let frontAvailable = false;
         let backAvailable = false;
 
         // Check if front camera is available
         try {
           const frontStream = await navigator.mediaDevices.getUserMedia(frontCameraConstraints);
-          frontStream.getTracks().forEach(track => track.stop());
+          stopStream(frontStream);
           frontAvailable = true;
           setHasFrontCamera(true);
-        } catch {
+        } catch (error) {
+          addDebugError(error, 'Checking front camera');
           setHasFrontCamera(false);
         }
 
         // Check if back camera is available
         try {
           const backStream = await navigator.mediaDevices.getUserMedia(backCameraConstraints);
-          backStream.getTracks().forEach(track => track.stop());
+          stopStream(backStream);
           backAvailable = true;
           setHasBackCamera(true);
-        } catch {
+        } catch (error) {
+          addDebugError(error, 'Checking back camera');
           setHasBackCamera(false);
         }
 
@@ -99,7 +134,9 @@ export default function CameraSelector({ onRecordStart }: CameraSelectorProps) {
 
         setDevicesLoaded(true);
       } catch (error) {
-        console.error('Error checking cameras:', error);
+        const err = error as any;
+        console.error('Error checking cameras:', err?.name, err?.message, err);
+        addDebugError(error, 'Initial camera check');
         setDevicesLoaded(true);
       }
     };
@@ -121,9 +158,7 @@ export default function CameraSelector({ onRecordStart }: CameraSelectorProps) {
     const startPreview = async () => {
       try {
         // Stop previous stream if exists
-        if (streamRef.current) {
-          streamRef.current.getTracks().forEach(track => track.stop());
-        }
+        stopStream(streamRef.current);
 
         const constraints = currentFacingMode === 'user' 
           ? frontCameraConstraints 
@@ -145,19 +180,22 @@ export default function CameraSelector({ onRecordStart }: CameraSelectorProps) {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           videoRef.current.muted = true;
-          videoRef.current.play().catch(err => console.warn('Video play error:', err));
+          videoRef.current.play().catch(err => {
+            console.warn('Video play error:', err);
+            addDebugError(err, 'Video playback');
+          });
         }
       } catch (error) {
-        console.error('Error starting preview:', error);
+        const err = error as any;
+        console.error('Error starting preview:', err?.name, err?.message, err);
+        addDebugError(error, 'Starting preview');
       }
     };
 
     startPreview();
 
     return () => {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
-      }
+      stopStream(streamRef.current);
     };
   }, [currentFacingMode, devicesLoaded, isDebugMode]);
 
@@ -243,6 +281,59 @@ export default function CameraSelector({ onRecordStart }: CameraSelectorProps) {
               <div className="mt-1">Mirrored: <span className="font-mono">{isMirrored ? 'Yes' : 'No'}</span></div>
             </div>
           </div>
+          
+          {/* Errors section */}
+          {errors.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-red-600">
+              <h4 className="text-red-400 text-sm font-bold mb-2">Errors ({errors.length})</h4>
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {errors.map((err, index) => (
+                  <div
+                    key={index}
+                    className="bg-red-900 bg-opacity-50 border border-red-600 rounded p-2"
+                  >
+                    <div className="text-red-200 text-xs font-semibold mb-1">
+                      [{new Date(err.timestamp).toLocaleTimeString()}] {err.context}
+                    </div>
+                    <div className="text-red-300 text-xs font-mono mb-1">
+                      {err.name}: {err.message}
+                    </div>
+                    {err.error && (
+                      <details className="text-red-400 text-xs mt-1">
+                        <summary className="cursor-pointer">Details</summary>
+                        <pre className="mt-1 text-xs overflow-auto max-h-32 bg-black bg-opacity-50 p-2 rounded">
+                          {(() => {
+                            try {
+                              // Try to stringify with a replacer to handle non-serializable values
+                              return JSON.stringify(err.error, (key, value) => {
+                                if (value instanceof Error) {
+                                  return {
+                                    name: value.name,
+                                    message: value.message,
+                                    stack: value.stack,
+                                  };
+                                }
+                                return value;
+                              }, 2);
+                            } catch {
+                              // Fallback to string representation
+                              return String(err.error);
+                            }
+                          })()}
+                        </pre>
+                      </details>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <button
+                onClick={() => setErrors([])}
+                className="mt-2 text-xs text-red-400 hover:text-red-300 underline"
+              >
+                Clear errors
+              </button>
+            </div>
+          )}
         </div>
       )}
       
@@ -305,4 +396,3 @@ export default function CameraSelector({ onRecordStart }: CameraSelectorProps) {
     </div>
   );
 }
-
