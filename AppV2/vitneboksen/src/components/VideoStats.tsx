@@ -18,7 +18,7 @@ export default function VideoStats({ completed, inProgress, max, sessionStorageU
                 <span className='bg-black/40 text-white text-center min-w-9 px-2 inline-block rounded'>{completed}</span> Vitnesbyrd
                 {inProgress > 0 &&
                     <>
-                        &nbsp;(&nbsp;<SpinnerIcon />{inProgress} på vei )
+                        &nbsp;(&nbsp;<SpinnerIcon />{inProgress} )
                     </>
                 }
             </div>
