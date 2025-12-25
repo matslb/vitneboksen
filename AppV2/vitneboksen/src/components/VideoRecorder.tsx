@@ -224,17 +224,17 @@ export default function VideoRecorder({
           </h2>
         )}
       </div>
-      <div className="fixed md:inset-8 inset-1 lb m-auto left-0 right-0 flex w-90% max-w-7xl flex justify-between 1 p-8">
-        <div className="absolute top-0 left-0 rounded-tl border-l-3 border-t-3 h-60 w-60 border-black opacity-55">
+      <div className="fixed md:inset-8 inset-1 lb m-auto left-0 right-0 flex w-90% max-w-7xl flex justify-between md:p-8 p-2">
+        <div className="absolute top-0 left-0 rounded-tl md:border-l-3 md:border-t-3 h-60 w-60 border-black opacity-55">
           {" "}
         </div>
-        <div className="absolute top-0 right-0 rounded-tr border-r-3 border-t-3 h-60 w-60 border-black opacity-55">
+        <div className="absolute top-0 right-0 rounded-tr md:border-r-3 md:border-t-3 h-60 w-60 border-black opacity-55">
           {" "}
         </div>
-        <div className="absolute bottom-0 left-0 rounded-bl border-l-3 border-b-3 h-60 w-60 border-black opacity-55">
+        <div className="absolute bottom-0 left-0 rounded-bl md:border-l-3 md:border-b-3 h-60 w-60 border-black opacity-55">
           {" "}
         </div>
-        <div className="absolute bottom-0 right-0 rounded-br border-r-3 border-b-3 h-60 w-60 border-black opacity-55">
+        <div className="absolute bottom-0 right-0 rounded-br md:border-r-3 md:border-b-3 h-60 w-60 border-black opacity-55">
           {" "}
         </div>
 
