@@ -8,10 +8,32 @@ export function detectInAppBrowser(): string | null {
   const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera || "";
   const userAgentLower = userAgent.toLowerCase();
 
-  // Map of browser patterns to their display names
+  // Check for Messenger first (more specific patterns - check before generic Facebook)
+  if (
+    userAgentLower.includes("messengerforios") ||
+    userAgentLower.includes("messengerliteforios") ||
+    userAgentLower.includes("fb_iab/messenger") ||
+    (userAgentLower.includes("messenger") && userAgentLower.includes("fban"))
+  ) {
+    return "Jasså, åpner du linker inne i Messenger. Bruk heller en skikkelig nettleser";
+  }
+
+  // Check for Facebook (more specific patterns)
+  if (
+    userAgentLower.includes("fban/fbios") ||
+    userAgentLower.includes("fban/fb4a") ||
+    userAgentLower.includes("fbav")
+  ) {
+    return "Jasså, åpner du linker inne i Facebook. Bruk heller en skikkelig nettleser";
+  }
+
+  // Fallback: generic Facebook pattern (fban) - check after Messenger to avoid false positives
+  if (userAgentLower.includes("fban") && !userAgentLower.includes("messenger")) {
+    return "Jasså, åpner du linker inne i Facebook. Bruk heller en skikkelig nettleser";
+  }
+
+  // Map of other browser patterns to their display names
   const browserPatterns: Array<{ pattern: string; name: string }> = [
-    { pattern: "fban", name: "Facebook" },
-    { pattern: "fbav", name: "Facebook" },
     { pattern: "instagram", name: "Instagram" },
     { pattern: "twitter", name: "Twitter" },
     { pattern: "linkedinapp", name: "LinkedIn" },
@@ -24,10 +46,10 @@ export function detectInAppBrowser(): string | null {
     { pattern: "webview", name: "WebView" },
   ];
 
-  // Check if user agent matches any in-app browser pattern
+  // Check if user agent matches any other in-app browser pattern
   for (const { pattern, name } of browserPatterns) {
     if (userAgentLower.includes(pattern)) {
-      return `Jasså, åpner du linker inne i ${name}. Bruk heller en skikkelig browser`;
+      return `Jasså, åpner du linker inne i ${name}. Bruk heller en skikkelig nettleser`;
     }
   }
 
