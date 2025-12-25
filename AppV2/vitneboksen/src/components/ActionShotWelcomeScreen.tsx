@@ -24,7 +24,7 @@ export default function ActionShotWelcomeScreen({ title, onStart, initialName = 
   };
 
   return (
-    <div className="flex flex-col items-center justify-center flex-1 p-2">
+    <div className="fixed inset-0 bg-black/70 flex flex-col items-center justify-center flex-1 p-2">
       <div className="mb-3 mt-3 lg:my-16">
         <h1 className="text-4xl lg:text-6xl font-bold mb-4 text-center">{title}</h1>
       </div>

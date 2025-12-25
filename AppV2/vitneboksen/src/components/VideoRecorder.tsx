@@ -4,6 +4,7 @@ import type Question from '../types/Question';
 import { uploadVideoToProcessor } from '../vitneboksService';
 import { getDatabase, ref, set, update } from 'firebase/database';
 import fixWebmDuration from 'webm-duration-fix';
+import SpinnerIcon from './SpinnerIcon';
 
 interface VideoRecorderProps {
   question: Question;
@@ -21,6 +22,7 @@ const isBackCamera = (label: string): boolean => {
 export default function VideoRecorder({ question, vitneboksId, onFinish, hideQuestionText, deviceId }: VideoRecorderProps) {
   const [countdown, setCountdown] = useState(question.recordingDuration);
   const [isMirrored, setIsMirrored] = useState(true);
+  const [isUploading, setIsUploading] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -44,8 +46,6 @@ export default function VideoRecorder({ question, vitneboksId, onFinish, hideQue
   };
 
   useEffect(() => {
-    let mounted = true;
-
     const startRecording = async () => {
       setActiveSessionInFirebase(true, question.order);
       const baseConstraints = GetRecordingConstrains();
@@ -98,32 +98,20 @@ export default function VideoRecorder({ question, vitneboksId, onFinish, hideQue
 
       recorder.onstop = () => {
         setTimeout(() => {
-          // Use the MediaRecorder's actual mimeType, or fall back to detected type
           const mimeType = recorder.mimeType || GetSupportedMimeType() || 'video/webm';
           const isWebM = mimeType.startsWith('video/webm');
           const extension = isWebM ? 'webm' : 'mp4';
           
           const blob = new Blob(chunksRef.current, { type: mimeType });
           
-          // Only fix WebM duration - MP4 files don't need this fix
           if (isWebM) {
             fixWebmDuration(blob).then((fixedBlob) => {
               uploadToServer(fixedBlob, extension);
-              // Persist the last answered question index (only if not hideQuestionText)
-              if (mounted) {
-                setActiveSessionInFirebase(false, question.order);
-              }
-              if (mounted) onFinish();
             });
           } else {
-            // For MP4 (Safari), upload directly without duration fix
-            uploadToServer(blob, extension);
-            // Persist the last answered question index (only if not hideQuestionText)
-            if (mounted) {
-              setActiveSessionInFirebase(false, question.order);
-            }
-            if (mounted) onFinish();
+            uploadToServer(blob, extension);           
           }
+          onFinish();
         }, 100);
       };
 
@@ -147,6 +135,7 @@ export default function VideoRecorder({ question, vitneboksId, onFinish, hideQue
     };
 
     const stopRecording = () => {
+      setActiveSessionInFirebase(false, question.order);
       if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
       if (mediaRecorderRef.current?.state === 'recording') mediaRecorderRef.current.stop();
       streamRef.current?.getTracks().forEach(t => t.stop());
@@ -155,7 +144,6 @@ export default function VideoRecorder({ question, vitneboksId, onFinish, hideQue
     startRecording();
 
     return () => {
-      mounted = false;
       setActiveSessionInFirebase(false, question.order);
       if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
       if (mediaRecorderRef.current?.state === 'recording') mediaRecorderRef.current.stop();
@@ -164,10 +152,18 @@ export default function VideoRecorder({ question, vitneboksId, onFinish, hideQue
   }, [question, onFinish, deviceId, hideQuestionText]);
 
   const uploadToServer = async (blob: Blob, extension: string) => {
+    setIsUploading(true);
     await uploadVideoToProcessor(blob, vitneboksId, question.text, extension);
-    // Save recording completion timestamp and question to localStorage
     saveRecordingCompletion(vitneboksId, question, 30);
+    setIsUploading(false);
   };
+
+  if (isUploading) {
+    return <div className="flex flex-col items-center justify-center fixed bg-black top-0 left-0 right-0 bottom-0 flex-1 ">
+      <div className="text-4xl">Laster opp video...</div>
+      <SpinnerIcon/>
+    </div>
+  }
 
   return (
     <>
