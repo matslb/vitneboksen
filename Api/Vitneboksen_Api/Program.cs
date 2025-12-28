@@ -49,8 +49,8 @@ app.Use(async (context, next) =>
 
     if (string.IsNullOrWhiteSpace(userTokenFromCookie) || string.IsNullOrWhiteSpace(sessionKey))
     {
-        context.Response.StatusCode = StatusCodes.Status400BadRequest;
-        await context.Response.WriteAsync("Missing userToken");
+        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        await context.Response.WriteAsync("\r\n         / \\\r\n        |\\_/|\r\n        |---|\r\n        |   |\r\n        |   |\r\n      _ |=-=| _\r\n  _  / \\|   |/ \\\r\n / \\|   |   |   ||\\\r\n|   |   |   |   | \\>\r\n|   |   |   |   |   \\\r\n| -   -   -   - |)   )\r\n|                   /\r\n \\                 /\r\n  \\               /\r\n   \\             /\r\n    \\           /\r\n");
         return;
     }
 

@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { type Vitneboks } from "../types/Vitneboks"
 import { Link } from "react-router-dom";
-import { getDatabase, onValue, ref } from "firebase/database";
+import { getDatabase, onValue } from "firebase/database";
 import VideoStats from "./VideoStats";
 import GenerateVideoButton from "./GenerateVideoButton";
 import VitneboksLink from "./VitneboksLink";
 import RecIndicator from "./RecIndicator";
+import { getPublicVitneboks, GetPublicVitneboksRef } from "../types/PublicVitneboks";
 
 interface VitneboxBoxProps {
     Vitneboks: Vitneboks
@@ -16,15 +17,13 @@ export default function VitneboksBox({ Vitneboks }: VitneboxBoxProps) {
     const [isRecording, setIsRecording] = useState<boolean>(false);
     const db = getDatabase();
     useEffect(() => {
-        onValue(ref(db, `/activeSessions/${Vitneboks.id}`), (snapshot) => {
-            const data: { isRecording?: boolean; activeQuestion?: number } | boolean | null = snapshot.val();
-            if (typeof data === 'object' && data !== null) {
-                setIsRecording(data.isRecording ?? false);
-            } else {
-                setIsRecording(false);
-            }
+        const publicVitneboksRef = GetPublicVitneboksRef(db, Vitneboks.id);
+        onValue(publicVitneboksRef, async (snapshot) => {
+            const vitneboks = await getPublicVitneboks(snapshot.val());
+            setIsRecording(vitneboks?.isRecording ?? false);
         });
-    }, [db]);
+    }, [db, Vitneboks.id]);
+
     return (
         <div className="relative p-6">
             <h2 className="text-xl font-semibold min-h-14 max-w-80 break-all">{Vitneboks.title}</h2>

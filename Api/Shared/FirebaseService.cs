@@ -36,7 +36,7 @@ public class FirebaseService(FirebaseConfig firebaseConfig)
 
     public void SetIsSessionRecording(string sessionKey, bool isRecording)
     {
-        firebaseClient.Set($"activeSessions/{sessionKey}", isRecording);
+        firebaseClient.Set($"publicVitnebokser/{sessionKey}/isRecording", isRecording);
     }
 
     public string GetSessionName(string sessionKey)

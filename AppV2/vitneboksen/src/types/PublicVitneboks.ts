@@ -1,6 +1,7 @@
 import { Database, ref, update } from "firebase/database";
 import type Question from "./Question";
 import type { FinalVideoStatus } from "./Vitneboks";
+import { getAuth, signInAnonymously } from "firebase/auth";
 
 export interface PublicVitneboks {
   id: string;
@@ -34,12 +35,37 @@ export const GetPublicVitneboksRef = (db: Database, id: string) => {
   return ref(db, `publicVitnebokser/${id}`);
 }
 
-export const SetPublicVitneboksIsRecording = (db: Database, id: string, isRecording: boolean) => {
+export const SetPublicVitneboksIsRecording = async (db: Database, id: string, isRecording: boolean) => {
   const vitneboksRef = GetPublicVitneboksRef(db, id);
+    const auth = getAuth();
+
+  if (!auth.currentUser) {
+    try {
+      await signInAnonymously(auth);
+    } catch (error) {
+      console.error("Anonymous sign-in failed:", error);
+      return; // Exit if we can't authenticate
+    }
+  }
   update(vitneboksRef, { isRecording });
 };
 
-export const SetPublicVitneboksActiveQuestionIndex = (db: Database, id: string, activeQuestionIndex: number| undefined) => {
+export const SetPublicVitneboksActiveQuestionIndex = async (
+  db: Database, 
+  id: string, 
+  activeQuestionIndex: number | undefined
+) => {
+  const auth = getAuth();
+
+  if (!auth.currentUser) {
+    try {
+      await signInAnonymously(auth);
+    } catch (error) {
+      console.error("Anonymous sign-in failed:", error);
+      return; // Exit if we can't authenticate
+    }
+  }
+
   const vitneboksRef = GetPublicVitneboksRef(db, id);
-  update(vitneboksRef, { activeQuestionIndex });
+  return update(vitneboksRef, { activeQuestionIndex });
 };
