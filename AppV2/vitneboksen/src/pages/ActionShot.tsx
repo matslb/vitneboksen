@@ -12,7 +12,7 @@ import { FinalVideoStatus } from "../types/Vitneboks";
 import { canRecordAgain } from "../utils";
 import { detectInAppBrowser } from "../components/CameraAccessChecker";
 import ErrorIcon from "../components/ErrorIcon";
-import { getPublicVitneboks, GetPublicVitneboksRef, type PublicVitneboks } from "../types/publicVitneboks";
+import { getPublicVitneboks, GetPublicVitneboksRef, type PublicVitneboks } from "../types/PublicVitneboks";
 
 export default function ActionShotPage() {
   const { vitneboksId } = useParams();

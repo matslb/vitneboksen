@@ -9,7 +9,7 @@ import { uploadVideoToProcessor } from "../vitneboksService";
 import { getDatabase } from "firebase/database";
 import fixWebmDuration from "webm-duration-fix";
 import SpinnerIcon from "./SpinnerIcon";
-import { SetPublicVitneboksIsRecording } from "../types/publicVitneboks";
+import { SetPublicVitneboksIsRecording } from "../types/PublicVitneboks";
 
 interface VideoRecorderProps {
   question: Question;

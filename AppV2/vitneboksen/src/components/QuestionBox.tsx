@@ -5,7 +5,7 @@ import ActiveFromToPicker from "./ActiveFromToDatePicker";
 import QuestionDuration from "./QuestionDuration";
 import { useEffect, useState } from "react";
 import RecIndicator from "./RecIndicator";
-import { getPublicVitneboks, GetPublicVitneboksRef } from "../types/publicVitneboks";
+import { getPublicVitneboks, GetPublicVitneboksRef } from "../types/PublicVitneboks";
 
 type QuestionBoxProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
     question: Question,

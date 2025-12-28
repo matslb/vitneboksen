@@ -16,7 +16,7 @@ import QuestionList from "../components/QuestionList";
 import { mapVitneboks, vitneboksTimeRemaining } from "../utils";
 import TimelineEditor from "../components/TimelineEditor";
 import VitneboksLink from "../components/VitneboksLink";
-import { GetPublicVitneboksRef } from "../types/publicVitneboks";
+import { GetPublicVitneboksRef } from "../types/PublicVitneboks";
 
 export default function VitneboksDetail() {
   const { id } = useParams();

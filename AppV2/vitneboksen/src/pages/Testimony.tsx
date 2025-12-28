@@ -10,8 +10,8 @@ import WaitingScreen from '../components/WaitingScreen';
 import ThankYouScreen from '../components/TankYouScreen';
 import type Question from '../types/Question';
 import { FinalVideoStatus } from '../types/Vitneboks';
+import { getPublicVitneboks, GetPublicVitneboksRef, SetPublicVitneboksActiveQuestionIndex, type PublicVitneboks } from '../types/PublicVitneboks';
 import { canRecordAgain } from '../utils';
-import { getPublicVitneboks, GetPublicVitneboksRef, SetPublicVitneboksActiveQuestionIndex, type PublicVitneboks } from '../types/publicVitneboks';
 
 export default function TestimonyPage() {
   const { vitneboksId } = useParams();

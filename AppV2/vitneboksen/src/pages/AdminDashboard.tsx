@@ -7,7 +7,7 @@ import { generateVitneboksId, mapVitneboks } from '../utils';
 import Header from '../components/Header';
 import VitneboksBox from '../components/VitneboksBox';
 import { createSession, wakeUpServer } from '../vitneboksService';
-import { GetPublicVitneboksRef, type PublicVitneboks } from '../types/publicVitneboks';
+import { GetPublicVitneboksRef, type PublicVitneboks } from '../types/PublicVitneboks';
 
 export default function AdminDashboard() {
   const [vitnebokser, setVitnebokser] = useState<Vitneboks[]>([]);

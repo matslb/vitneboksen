@@ -1,6 +1,6 @@
 import { getDatabase, onValue } from "firebase/database";
 import { useEffect, useState } from "react";
-import { getPublicVitneboks, GetPublicVitneboksRef } from "../types/publicVitneboks";
+import { getPublicVitneboks, GetPublicVitneboksRef } from "../types/PublicVitneboks";
 
 interface RecIndicatorProps {
     vitneboksId: string;
