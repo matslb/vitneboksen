@@ -1,43 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-/**
- * Helper function to download a file from a blob response
- * Extracts filename from Content-Disposition header or uses a fallback
- */
-async function downloadFileFromResponse(response: Response, fallbackFileName: string = "download") {
-  const blob = await response.blob();
-  
-  // Try to extract filename from Content-Disposition header
-  let fileName = fallbackFileName;
-  const contentDisposition = response.headers.get("Content-Disposition");
-  if (contentDisposition) {
-    const fileNameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-    if (fileNameMatch && fileNameMatch[1]) {
-      fileName = fileNameMatch[1].replace(/['"]/g, "");
-      // Decode URI if needed
-      try {
-        fileName = decodeURIComponent(fileName);
-      } catch {
-        // If decoding fails, use as is
-      }
-    }
-  }
-  
-  // Create a temporary URL for the blob
-  const blobUrl = URL.createObjectURL(blob);
-  
-  // Create a temporary anchor element and trigger download
-  const link = document.createElement("a");
-  link.href = blobUrl;
-  link.download = fileName;
-  document.body.appendChild(link);
-  link.click();
-  
-  // Clean up
-  document.body.removeChild(link);
-  URL.revokeObjectURL(blobUrl);
-}
-
 export async function uploadVideoToProcessor(videoBlob: Blob, vitneboksId: string, question: string, extension: string = "webm") {
   const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
 
@@ -102,33 +64,16 @@ export async function createSession(vitneboksId: string, uid: string){
 }
 
 export async function downloadFinalVideo(vitneboksId: string){
-  const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
-  const urlWithQueryParam = `${API_URL}download-final-video?sessionKey=${vitneboksId}`;
-  const response = await fetch(urlWithQueryParam, {
-    credentials: "include",
-    method: "GET"
-  });
+ const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
+  const url = `${API_URL}download-final-video?sessionKey=${vitneboksId}`;
   
-  if (!response.ok) {
-    throw new Error(`Failed to download video: ${response.statusText}`);
-  }
-  
-  await downloadFileFromResponse(response, `${vitneboksId}-final-video.mp4`);
+  window.open(url, '_blank');
 }
 
 export async function downloadSessionFiles(vitneboksId: string){
   const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
-  const urlWithQueryParam = `${API_URL}download-session-files?sessionKey=${vitneboksId}`;
-  const response = await fetch(urlWithQueryParam, {
-    credentials: "include",
-    method: "GET"
-  });
-  
-  if (!response.ok) {
-    throw new Error(`Failed to download session files: ${response.statusText}`);
-  }
-  
-  await downloadFileFromResponse(response, `${vitneboksId}-session-files.zip`);
+  const url = `${API_URL}download-session-files?sessionKey=${vitneboksId}`;
+  window.open(url, '_blank');
 }
 
 export async function deleteVideo(vitneboksId: string, videoId: string){
@@ -143,17 +88,8 @@ export async function deleteVideo(vitneboksId: string, videoId: string){
 
 export async function downloadSingleVideo(vitneboksId: string, videoId: string){
   const API_URL = import.meta.env.VITE_VIDEO_PROCESSOR_URL;
-  const urlWithQueryParam = `${API_URL}video/${videoId}/download?sessionKey=${vitneboksId}`;
-  const response = await fetch(urlWithQueryParam, {
-    credentials: "include",
-    method: "GET"
-  });
-  
-  if (!response.ok) {
-    throw new Error(`Failed to download video: ${response.statusText}`);
-  }
-  
-  await downloadFileFromResponse(response, `${vitneboksId}-${videoId}.mp4`);
+  const url = `${API_URL}video/${videoId}/download?sessionKey=${vitneboksId}`;
+  window.open(url, '_blank');
 }
 
 export async function retryFailedVideo(vitneboksId: string, videoId: string){

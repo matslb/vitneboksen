@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { FinalVideoStatus, type Vitneboks } from '../types/Vitneboks';
 import { downloadFinalVideo, downloadSessionFiles, startFinalVideoProcessing } from '../vitneboksService';
 import SpinnerIcon from './SpinnerIcon';
@@ -8,6 +9,15 @@ type GenerateVideoButtonProps = {
 };
 
 export default function GenerateVideoButton({ Vitneboks, showZip = false }: GenerateVideoButtonProps) {
+
+    const [isWaitingForDownload, setIsWaitingForDownload] = useState(false);
+
+    const handleDownloadFinalVideo = () => {
+        setIsWaitingForDownload(true);
+        downloadFinalVideo(Vitneboks.id).finally(() => {
+            setIsWaitingForDownload(false);
+        });
+    }
     return (
         <div>
             {Vitneboks.completedVideos > 0 &&
@@ -30,11 +40,18 @@ export default function GenerateVideoButton({ Vitneboks, showZip = false }: Gene
                                         Vitneboksvideo mekkes nå
                                     </button>
                                 }
-                                {Vitneboks.completedVideos > 0 && Vitneboks.finalVideoProcessingStatus == FinalVideoStatus.completed &&
+                                {!isWaitingForDownload && Vitneboks.completedVideos > 0 && Vitneboks.finalVideoProcessingStatus == FinalVideoStatus.completed &&
                                     <button
-                                        onClick={() => downloadFinalVideo(Vitneboks.id)}
-                                        className="bg-primary-button text-black px-4 py-2 rounded hover:text-white hover:bg-secondary-bg">
+                                        onClick={handleDownloadFinalVideo}
+                                        className={`bg-primary-button text-black px-4 py-2 rounded hover:text-white hover:bg-secondary-bg ${isWaitingForDownload ? 'opacity-50 cursor-not-allowed' : ''}`}>
                                         Last ned Vitneboksvideo
+                                    </button>
+                                }
+                                {isWaitingForDownload &&
+                                    <button
+                                        className="flex bg-primary-button-disabled disabled text-black px-4 py-2 rounded hover:text-white hover:bg-secondary-bg">
+                                        <SpinnerIcon />
+                                        Forbereder nedlasting
                                     </button>
                                 }
                             </>
