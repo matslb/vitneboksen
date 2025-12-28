@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getDatabase, ref, onValue, off } from 'firebase/database';
+import { getDatabase, onValue, off } from 'firebase/database';
 import NotFoundMessage from '../components/NotFoundMessage';
 import LoadingFullScreen from '../components/LoadingFullScreen';
 import WelcomeScreen from '../components/WelcomeScreen';
@@ -9,28 +9,28 @@ import VideoRecorder from '../components/VideoRecorder';
 import WaitingScreen from '../components/WaitingScreen';
 import ThankYouScreen from '../components/TankYouScreen';
 import type Question from '../types/Question';
-import { FinalVideoStatus, type Vitneboks } from '../types/Vitneboks';
-import { mapVitneboks, canRecordAgain } from '../utils';
+import { FinalVideoStatus } from '../types/Vitneboks';
+import { canRecordAgain } from '../utils';
+import { getPublicVitneboks, GetPublicVitneboksRef, SetPublicVitneboksActiveQuestionIndex, type PublicVitneboks } from '../types/publicVitneboks';
 
 export default function TestimonyPage() {
   const { vitneboksId } = useParams();
-  const [vitneboks, setVitneboks] = useState<Vitneboks | null>(null);
+  const [vitneboks, setVitneboks] = useState<PublicVitneboks | null>(null);
   const [filteredQuestions, setFilteredQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const [started, setStarted] = useState(false);
   const [waiting, setWaiting] = useState(false);
   const [thankYouWaiting, setThankYouWaiting] = useState(false);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const divRef = useRef<HTMLDivElement>(null);
+  const db = getDatabase();
 
   useEffect(() => {
-    const db = getDatabase();
-    const vitneboksRef = ref(db, `publicVitnebokser/${vitneboksId}`);
+    const vitneboksRef = GetPublicVitneboksRef(db, vitneboksId!);
 
     if (!started) {
-      const unsubscribe = onValue(vitneboksRef, (snapshot) => {
-        const vitneboks = mapVitneboks(snapshot.val());
+      const unsubscribe = onValue(vitneboksRef, async (snapshot) => {
+        const vitneboks = await getPublicVitneboks(snapshot.val());
         if (vitneboks) {
           setFilteredQuestions(filterQuestions(vitneboks.questions));
           setVitneboks(vitneboks);
@@ -46,7 +46,7 @@ export default function TestimonyPage() {
         off(vitneboksRef);
       };
     }
-  }, [vitneboksId, started]);
+  }, [vitneboksId, started, db]);
 
   const filterQuestions = (questions: Question[]) => {
     const now = Date.now();
@@ -60,23 +60,23 @@ export default function TestimonyPage() {
       if (vitneboks === null || started || waiting) return;
       setFilteredQuestions(filterQuestions(vitneboks!.questions));
       setVitneboks(vitneboks);
-      if (filteredQuestions.findIndex(q => q.id === filteredQuestions[currentQuestionIndex]?.id) === -1) {
-        setCurrentQuestionIndex(0);
+      if (filteredQuestions.findIndex(q => q.id === filteredQuestions[vitneboks.activeQuestionIndex]?.id) === -1) {
+        SetPublicVitneboksActiveQuestionIndex(db, vitneboks.id!, 0);
       }
     }, 1000);
     return () => clearInterval(intervalId);
-  }, [vitneboks, started, waiting, filteredQuestions, currentQuestionIndex]);
+  }, [vitneboks, started, waiting, filteredQuestions, db]);
 
   // Check if user can record again on mount and when current question changes
   useEffect(() => {
-    if (vitneboksId && filteredQuestions[currentQuestionIndex]?.id) {
-      const questionId = filteredQuestions[currentQuestionIndex].id;
-      const canRecord = canRecordAgain(vitneboksId, questionId);
+    if (vitneboks && filteredQuestions[vitneboks!.activeQuestionIndex]?.id) {
+      const questionId = filteredQuestions[vitneboks!.activeQuestionIndex].id;
+      const canRecord = canRecordAgain(vitneboks.id, questionId);
       if (!canRecord) {
         setThankYouWaiting(true);
       }
     }
-  }, [vitneboksId, filteredQuestions, currentQuestionIndex]);
+  }, [filteredQuestions, vitneboks]);
 
 
   if (loading) return <LoadingFullScreen />;
@@ -94,13 +94,13 @@ export default function TestimonyPage() {
 
   const setNextQuestion = () => {
     if (currentQuestion == undefined)
-      setCurrentQuestionIndex(filteredQuestions[0].order);
+      SetPublicVitneboksActiveQuestionIndex(db, vitneboks!.id!, filteredQuestions[0].order);
 
     const nextQuestion = filteredQuestions.find(q => q.order > currentQuestion!.order);
     if (nextQuestion != undefined)
-      setCurrentQuestionIndex(nextQuestion.order);
+      SetPublicVitneboksActiveQuestionIndex(db, vitneboks!.id!, nextQuestion.order);
     else
-      setCurrentQuestionIndex(filteredQuestions[0].order);
+      SetPublicVitneboksActiveQuestionIndex(db, vitneboks!.id!, filteredQuestions[0].order);
   };
 
   function enterFullscreen(element: HTMLElement) {
@@ -121,7 +121,7 @@ export default function TestimonyPage() {
     }
   };
 
-  const currentQuestion = filteredQuestions[currentQuestionIndex];
+  const currentQuestion = filteredQuestions[vitneboks!.activeQuestionIndex];
 
   return (
     <div ref={divRef} className="flex flex-col min-h-screen bg-primary-bg text-primary-text">
@@ -131,7 +131,7 @@ export default function TestimonyPage() {
           onClick={handleEnterFullscreen}
         >Fullskjerm</button>
       }
-      {!vitneboks.isOpen || filteredQuestions.length === 0 || vitneboks.finalVideoProcessingStatus == FinalVideoStatus.started || (vitneboks.sessionStorageUsage) >= vitneboks.maxStorage ?
+      {!vitneboks.isOpen || filteredQuestions.length === 0 || vitneboks.finalVideoProcessingStatus == FinalVideoStatus.started || (vitneboks.sessionStorageUsage ?? 0) >= vitneboks.maxStorage ?
         <div className="flex flex-col items-center justify-center flex-1 p-6 text-3xl">
           Kom tilbake senere. Her er det dessverre stengt 😓
         </div>

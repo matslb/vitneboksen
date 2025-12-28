@@ -5,6 +5,7 @@ import { getDatabase, onValue, ref } from "firebase/database";
 import VideoStats from "./VideoStats";
 import GenerateVideoButton from "./GenerateVideoButton";
 import VitneboksLink from "./VitneboksLink";
+import RecIndicator from "./RecIndicator";
 
 interface VitneboxBoxProps {
     Vitneboks: Vitneboks
@@ -18,11 +19,11 @@ export default function VitneboksBox({ Vitneboks }: VitneboxBoxProps) {
         onValue(ref(db, `/activeSessions/${Vitneboks.id}`), (snapshot) => {
             const data: { isRecording?: boolean; activeQuestion?: number } | boolean | null = snapshot.val();
             if (typeof data === 'object' && data !== null) {
-              setIsRecording(data.isRecording ?? false);
+                setIsRecording(data.isRecording ?? false);
             } else {
-              setIsRecording(false);
+                setIsRecording(false);
             }
-          });
+        });
     }, [db]);
     return (
         <div className="relative p-6">
@@ -33,21 +34,9 @@ export default function VitneboksBox({ Vitneboks }: VitneboxBoxProps) {
                 >{Vitneboks.isOpen ? "Åpen" : "Stengt"}
                 </div>
             }
-            {isRecording &&
-                <div
-                    className="bg-black/40 flex text-white p-2 rounded-bl rounded-tr absolute top-0 right-0"
-                >
-                    <div>REC</div>
-                    <div className='p-1 m-1 w-2 h-2'
-                        style={{
-                            borderRadius: "50%",
-                            backgroundColor: "red",
-                            animation: "blinker 1s infinite",
-                        }}
-                    >
-                    </div>
-                </div>
-            }
+            <div className="absolute top-0 right-0">
+                <RecIndicator vitneboksId={Vitneboks.id} />
+            </div>
             <VitneboksLink vitneboksId={Vitneboks.id} />
             <div className='flex justify-between gap-2'>
                 <p className="text-m mb-1"><span className='bg-black/40 text-center text-white min-w-9 inline-block rounded'>{Object.values(Vitneboks.questions)?.length}</span> Spørsmål</p>

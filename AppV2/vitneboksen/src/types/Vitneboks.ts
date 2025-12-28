@@ -1,3 +1,4 @@
+import { Database, ref } from "firebase/database";
 import type Question from "./Question";
 
 export const enum FinalVideoStatus  {
@@ -21,4 +22,8 @@ export interface Vitneboks {
   isOpen: boolean;
   uid: string;
   sessionStorageUsage: number;
+}
+
+export const GetVitneboksRef = (db: Database, uid: string, id: string) => {
+  return ref(db, `${uid}/vitnebokser/${id}`);
 }

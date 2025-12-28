@@ -6,4 +6,5 @@ export default interface Question {
   activeFrom: string | null;
   activeTo: string | null;
   order: number;
+  maxSubmissions?: number;
 }

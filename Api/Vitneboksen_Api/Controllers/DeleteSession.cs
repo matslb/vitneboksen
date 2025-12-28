@@ -22,6 +22,7 @@ public static class DeleteSession
         }
 
         await containerClient.DeleteAsync();
+        firebaseService.DeleteUidSessionLookup(sessionKey);
         return Results.Ok("Deleted");
     }
 }

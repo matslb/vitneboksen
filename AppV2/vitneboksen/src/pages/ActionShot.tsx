@@ -1,21 +1,22 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getDatabase, ref, onValue, off } from "firebase/database";
+import { getDatabase, onValue, off } from "firebase/database";
 import NotFoundMessage from "../components/NotFoundMessage";
 import LoadingFullScreen from "../components/LoadingFullScreen";
 import ActionShotWelcomeScreen from "../components/ActionShotWelcomeScreen";
 import CameraSelector from "../components/CameraSelector";
 import VideoRecorder from "../components/VideoRecorder";
 import ActionShotThankYouScreen from "../components/ActionShotThankYouScreen";
-import { FinalVideoStatus, type Vitneboks } from "../types/Vitneboks";
-import { mapVitneboks, canRecordAgain } from "../utils";
+import { FinalVideoStatus } from "../types/Vitneboks";
+import { canRecordAgain } from "../utils";
 import { detectInAppBrowser } from "../components/CameraAccessChecker";
 import ErrorIcon from "../components/ErrorIcon";
+import { getPublicVitneboks, GetPublicVitneboksRef, type PublicVitneboks } from "../types/publicVitneboks";
 
 export default function ActionShotPage() {
   const { vitneboksId } = useParams();
-  const [vitneboks, setVitneboks] = useState<Vitneboks | null>(null);
+  const [vitneboks, setVitneboks] = useState<PublicVitneboks | null>(null);
   const [loading, setLoading] = useState(true);
   const [started, setStarted] = useState(false);
   const [recording, setRecording] = useState(false);
@@ -37,11 +38,11 @@ export default function ActionShotPage() {
 
   useEffect(() => {
     const db = getDatabase();
-    const vitneboksRef = ref(db, `publicVitnebokser/${vitneboksId}`);
+    const vitneboksRef = GetPublicVitneboksRef(db, vitneboksId!);
 
     if (!started) {
-      const unsubscribe = onValue(vitneboksRef, (snapshot) => {
-        const vitneboks = mapVitneboks(snapshot.val());
+      const unsubscribe = onValue(vitneboksRef, async (snapshot) => {
+        const vitneboks = await getPublicVitneboks(snapshot.val());
         if (vitneboks) {
           setVitneboks(vitneboks);
         }
@@ -93,18 +94,18 @@ export default function ActionShotPage() {
   const isClosed =
     !vitneboks.isOpen ||
     vitneboks.finalVideoProcessingStatus == FinalVideoStatus.started ||
-    vitneboks.sessionStorageUsage >= vitneboks.maxStorage;
+    (vitneboks.sessionStorageUsage ?? 0) >= vitneboks.maxStorage;
 
   if (isClosed) {
-    return(
-    <div
-      ref={divRef}
-      className="flex flex-col min-h-screen bg-primary-bg text-primary-text"
-    >
-      <div className="flex flex-col items-center justify-center flex-1 p-6 text-3xl">
-        Kom tilbake senere. Her er det dessverre stengt 😓
-      </div>
-    </div>);
+    return (
+      <div
+        ref={divRef}
+        className="flex flex-col min-h-screen bg-primary-bg text-primary-text"
+      >
+        <div className="flex flex-col items-center justify-center flex-1 p-6 text-3xl">
+          Kom tilbake senere. Her er det dessverre stengt 😓
+        </div>
+      </div>);
   }
 
   const inAppBrowserError = detectInAppBrowser();

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { getDatabase, ref, onValue, set, remove } from "firebase/database";
+import { getDatabase, ref, onValue, set, remove, update } from "firebase/database";
 import { getAuth, onAuthStateChanged, type User } from "firebase/auth";
-import { FinalVideoStatus, type Vitneboks } from "../types/Vitneboks";
+import { FinalVideoStatus, GetVitneboksRef, type Vitneboks } from "../types/Vitneboks";
 
 import LoadingFullScreen from "../components/LoadingFullScreen";
 import Footer from "../components/Footer";
@@ -16,6 +16,7 @@ import QuestionList from "../components/QuestionList";
 import { mapVitneboks, vitneboksTimeRemaining } from "../utils";
 import TimelineEditor from "../components/TimelineEditor";
 import VitneboksLink from "../components/VitneboksLink";
+import { GetPublicVitneboksRef } from "../types/publicVitneboks";
 
 export default function VitneboksDetail() {
   const { id } = useParams();
@@ -23,24 +24,8 @@ export default function VitneboksDetail() {
   const [searchParams] = useSearchParams();
   const [vitneboks, setVitneboks] = useState<Vitneboks | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [isRecording, setIsRecording] = useState(false);
   const auth = getAuth();
   const db = getDatabase();
-
-  useEffect(() => {
-    if (vitneboks == null) return;
-    onValue(ref(db, `/activeSessions/${vitneboks.id}`), (snapshot) => {
-      const data:
-        | { isRecording?: boolean; activeQuestion?: number }
-        | boolean
-        | null = snapshot.val();
-      if (typeof data === "object" && data !== null) {
-        setIsRecording(data.isRecording ?? false);
-      } else {
-        setIsRecording(false);
-      }
-    });
-  }, [db, vitneboks]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -52,14 +37,24 @@ export default function VitneboksDetail() {
   useEffect(() => {
     if (vitneboks === null) return;
 
-    const publicVitneboksRef = ref(db, `publicVitnebokser/${vitneboks.id}`);
-    set(publicVitneboksRef, vitneboks);
-  }, [vitneboks]);
+    const publicVitneboksRef = GetPublicVitneboksRef(db, vitneboks.id);
+    const publicVitneboks = {
+      id: vitneboks.id,
+      title: vitneboks.title,
+      maxStorage: vitneboks.maxStorage,
+      finalVideoProcessingStatus: vitneboks.finalVideoProcessingStatus,
+      questions: vitneboks.questions,
+      isOpen: vitneboks.isOpen,
+      sessionStorageUsage: vitneboks.sessionStorageUsage
+    };
+    update(publicVitneboksRef, publicVitneboks);
+
+  }, [vitneboks, db]);
 
   useEffect(() => {
     if (!user?.uid || !id) return;
 
-    const vbRef = ref(db, `${user.uid}/vitnebokser/${id}`);
+    const vbRef = GetVitneboksRef(db, user.uid, id);
     onValue(vbRef, (snapshot) => {
       const data: Vitneboks = snapshot.val();
       if (!data) {
@@ -84,9 +79,8 @@ export default function VitneboksDetail() {
       return;
     await deleteVitneboks(id);
 
-    remove(ref(db, `${user.uid}/vitnebokser/${id}`));
-    remove(ref(db, `publicVitnebokser/${id}`));
-    remove(ref(db, `activeSessions/${id}`));
+    remove(GetVitneboksRef(db, user.uid, id));
+    remove(GetPublicVitneboksRef(db, id));
 
     navigate("/admin");
   };
@@ -97,19 +91,6 @@ export default function VitneboksDetail() {
         <Header backButtonPath={"/admin/"} />
         <div className="flex flex-col items-center text-primary-text p-2">
           <div className="relative mb-8 bg-secondary-bg w-full max-w-5xl p-4 md:p-8 shadow-md rounded">
-            {isRecording && (
-              <div className="bg-black/40 flex text-white px-2 py-1 rounded-bl rounded-tr absolute top-0 right-0">
-                <div>REC</div>
-                <div
-                  className="p-1 m-1 w-2 h-2"
-                  style={{
-                    borderRadius: "50%",
-                    backgroundColor: "red",
-                    animation: "blinker 1s infinite",
-                  }}
-                ></div>
-              </div>
-            )}
             <div className="flex justify-end ">
               <ToggleSwitch
                 label={vitneboks.isOpen ? "Åpen" : "Stengt"}
@@ -164,7 +145,7 @@ export default function VitneboksDetail() {
               </p>
               {vitneboks.finalVideoProcessingStatus ==
                 FinalVideoStatus.started ||
-              vitneboks.videosToBeProcessed > 0 ? (
+                vitneboks.videosToBeProcessed > 0 ? (
                 <button
                   onClick={handleDeleteVitneboks}
                   disabled={true}

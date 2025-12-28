@@ -1,17 +1,12 @@
 using FireSharp.Config;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Shared;
 using Vitneboksen_Api;
 using Vitneboksen_Api.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
-var allowedOrigins = new[]
-{
-    "http://localhost:5173",
-    "https://localhost:5173",
-    "https://vitneboksen.no",
-    "https://vitneboksen.web.app"
-};
+var allowedOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>() ?? [];
 
 builder.Services.AddCors(options =>
 {
@@ -42,7 +37,8 @@ app.Use(async (context, next) =>
 {
     var path = context.Request.Path.Value ?? string.Empty;
     if (path.Equals("/upload-testimony/v2", StringComparison.OrdinalIgnoreCase)
-    || path.Equals("/wake-up", StringComparison.OrdinalIgnoreCase))
+    || path.Equals("/wake-up", StringComparison.OrdinalIgnoreCase)
+    || path.Equals("/create-session", StringComparison.OrdinalIgnoreCase))
     {
         await next();
         return;
@@ -58,7 +54,7 @@ app.Use(async (context, next) =>
         return;
     }
 
-    var authorized = firebaseService.AuthourizeUser(sessionKey, userTokenFromCookie);
+    var authorized = firebaseService.AuthourizeUserBySessionKey(sessionKey, userTokenFromCookie);
     if (!authorized)
     {
         context.Response.StatusCode = StatusCodes.Status401Unauthorized;

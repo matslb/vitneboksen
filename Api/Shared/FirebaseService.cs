@@ -3,7 +3,6 @@ using Azure.Storage.Blobs.Models;
 using FireSharp;
 using FireSharp.Config;
 using Shared.Models;
-using System.Linq;
 
 namespace Shared;
 
@@ -49,8 +48,18 @@ public class FirebaseService(FirebaseConfig firebaseConfig)
 
     public string GetUidFromSessionKey(string sessionKey)
     {
-        var firebaseResponse = firebaseClient.Get($"publicVitnebokser/{sessionKey}/uid");
+        var firebaseResponse = firebaseClient.Get($"uidLookup/{sessionKey}/uid");
         return firebaseResponse.ResultAs<string>();
+    }
+
+    public void SetUidSessionLookup(string sessionKey, string uid)
+    {
+        firebaseClient.Set($"uidLookup/{sessionKey}/uid", uid);
+    }
+
+    public void DeleteUidSessionLookup(string sessionKey)
+    {
+        firebaseClient.Delete($"uidLookup/{sessionKey}");
     }
 
     public void DeleteSession(string sessionKey)
@@ -58,8 +67,6 @@ public class FirebaseService(FirebaseConfig firebaseConfig)
         var uid = GetUidFromSessionKey(sessionKey);
         firebaseClient.Delete($"{uid}/vitnebokser/{sessionKey}");
         firebaseClient.Delete($"publicVitnebokser/{sessionKey}");
-        firebaseClient.Delete($"activeSessions/{sessionKey}");
-
     }
 
     public void SetDeletionFromDate(string sessionKey, DateTimeOffset date)
@@ -68,9 +75,14 @@ public class FirebaseService(FirebaseConfig firebaseConfig)
         firebaseClient.Set($"{uid}/vitnebokser/{sessionKey}/deletionFromDate", date.ToUniversalTime());
     }
 
-    public bool AuthourizeUser(string sessionKey, string userToken)
-    { 
+    public bool AuthourizeUserBySessionKey(string sessionKey, string userToken)
+    {
         var uid = GetUidFromSessionKey(sessionKey);
+        return AuthorizeUser(uid, userToken);
+    }
+
+    public bool AuthorizeUser(string uid, string userToken)
+    {
         var storedToken = firebaseClient.Get($"userTokens/{uid}").ResultAs<string>();
         return userToken.Equals(storedToken);
     }

@@ -6,9 +6,10 @@ import {
 } from "../utils";
 import type Question from "../types/Question";
 import { uploadVideoToProcessor } from "../vitneboksService";
-import { getDatabase, ref, set, update } from "firebase/database";
+import { getDatabase } from "firebase/database";
 import fixWebmDuration from "webm-duration-fix";
 import SpinnerIcon from "./SpinnerIcon";
+import { SetPublicVitneboksIsRecording } from "../types/publicVitneboks";
 
 interface VideoRecorderProps {
   question: Question;
@@ -40,25 +41,9 @@ export default function VideoRecorder({
   const streamRef = useRef<MediaStream | null>(null);
   const db = getDatabase();
 
-  const setActiveSessionInFirebase = (
-    isRecording: boolean,
-    activeQuestion?: number
-  ) => {
-    const sessionRef = ref(db, `/activeSessions/${vitneboksId}`);
-    if (hideQuestionText) {
-      update(sessionRef, { isRecording: isRecording});
-    } else {
-      const sessionData: { isRecording: boolean; activeQuestion?: number } = {
-        isRecording,
-        activeQuestion: activeQuestion,
-      };
-      set(sessionRef, sessionData);
-    }
-  };
-
   useEffect(() => {
     const startRecording = async () => {
-      setActiveSessionInFirebase(true, question.order);
+      SetPublicVitneboksIsRecording(db, vitneboksId, true);
       const baseConstraints = GetRecordingConstrains();
       // If deviceId is provided, add it to the video constraints
       const constraints: MediaStreamConstraints = {
@@ -66,9 +51,9 @@ export default function VideoRecorder({
         video:
           deviceId && baseConstraints.video
             ? {
-                ...(baseConstraints.video as MediaTrackConstraints),
-                deviceId: { exact: deviceId },
-              }
+              ...(baseConstraints.video as MediaTrackConstraints),
+              deviceId: { exact: deviceId },
+            }
             : baseConstraints.video,
       };
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -154,7 +139,7 @@ export default function VideoRecorder({
     };
 
     const stopRecording = () => {
-      setActiveSessionInFirebase(false, question.order);
+      SetPublicVitneboksIsRecording(db, vitneboksId, false);
       if (countdownIntervalRef.current)
         clearInterval(countdownIntervalRef.current);
       if (mediaRecorderRef.current?.state === "recording")
@@ -165,7 +150,7 @@ export default function VideoRecorder({
     startRecording();
 
     return () => {
-      setActiveSessionInFirebase(false, question.order);
+      SetPublicVitneboksIsRecording(db, vitneboksId, false);
       if (countdownIntervalRef.current)
         clearInterval(countdownIntervalRef.current);
       if (mediaRecorderRef.current?.state === "recording")
@@ -175,8 +160,8 @@ export default function VideoRecorder({
   }, [question, onFinish, deviceId, hideQuestionText]);
 
   const uploadToServer = async (blob: Blob, extension: string) => {
-    
-    if(!hideQuestionText) {
+
+    if (!hideQuestionText) {
       uploadVideoToProcessor(blob, vitneboksId, question.text, extension);
       onFinish();
       return;
@@ -205,9 +190,8 @@ export default function VideoRecorder({
       <div className="flex flex-col items-center justify-center fixed bg-black top-0 left-0 right-0 bottom-0 flex-1 ">
         <video
           ref={videoRef}
-          className={`fixed inset-0 w-full h-full object-cover ${
-            isMirrored ? "-scale-x-100" : ""
-          }`}
+          className={`fixed inset-0 w-full h-full object-cover ${isMirrored ? "-scale-x-100" : ""
+            }`}
         />
         {!hideQuestionText && (
           <h2

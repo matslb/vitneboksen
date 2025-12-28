@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { getDatabase, ref, onValue, set } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
-import { FinalVideoStatus, type Vitneboks } from '../types/Vitneboks';
+import { FinalVideoStatus, GetVitneboksRef, type Vitneboks } from '../types/Vitneboks';
 import Footer from '../components/Footer';
 import { generateVitneboksId, mapVitneboks } from '../utils';
 import Header from '../components/Header';
 import VitneboksBox from '../components/VitneboksBox';
 import { createSession, wakeUpServer } from '../vitneboksService';
+import { GetPublicVitneboksRef, type PublicVitneboks } from '../types/publicVitneboks';
 
 export default function AdminDashboard() {
   const [vitnebokser, setVitnebokser] = useState<Vitneboks[]>([]);
@@ -43,12 +44,23 @@ export default function AdminDashboard() {
       sessionStorageUsage: 0,
       completedVideoIds: []
     };
-    const vitneboksRef = ref(db, `${uid}/vitnebokser/${newVitneboks.id}`);
+    const vitneboksRef = GetVitneboksRef(db, uid, newVitneboks.id);
     set(vitneboksRef, newVitneboks);
 
-    const publicVitneboksRef = ref(db, `publicVitnebokser/${newVitneboks.id}`);
+    const publicVitneboksRef = GetPublicVitneboksRef(db, newVitneboks.id);
+    const publicVitneboks: PublicVitneboks = {
+      id: newVitneboks.id,
+      title: newVitneboks.title,
+      maxStorage: newVitneboks.maxStorage,
+      finalVideoProcessingStatus: newVitneboks.finalVideoProcessingStatus,
+      questions: newVitneboks.questions,
+      isOpen: newVitneboks.isOpen,
+      sessionStorageUsage: newVitneboks.sessionStorageUsage,
+      activeQuestionIndex: 0,
+      isRecording: false
+    };
 
-    set(publicVitneboksRef, newVitneboks);
+    set(publicVitneboksRef, publicVitneboks);
 
     createSession(newVitneboks.id, uid);
     setNewTitle('');
