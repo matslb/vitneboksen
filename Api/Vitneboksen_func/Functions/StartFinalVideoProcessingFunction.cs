@@ -2,9 +2,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Azure.Storage.Blobs;
+using Azure.Storage.Queues;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using Shared;
 using Shared.Models;
 using Vitneboksen_func.Helpers;
@@ -33,7 +35,6 @@ public class StartFinalVideoProcessingFunction
 
         var storageConnectionString = _configuration["StorageConnectionString"] ?? 
                                      _configuration.GetConnectionString("AzureWebJobsStorage") ?? "";
-        var blobService = new BlobServiceClient(storageConnectionString);
 
         var queryParams = RequestHelper.ExtractQueryParameters(req.Url.Query);
         queryParams.TryGetValue("sessionKey", out var sessionKey);
@@ -43,19 +44,27 @@ public class StartFinalVideoProcessingFunction
             return req.CreateResponse(System.Net.HttpStatusCode.BadRequest);
         }
 
-        var containerClient = blobService.GetBlobContainerClient(Constants.FinalVideoProcessingContainer);
+        // Create queue client
+        var queueClient = new QueueClient(storageConnectionString, "final-video-processing-requests");
+        
+        // Ensure queue exists
+        await queueClient.CreateIfNotExistsAsync();
 
-        if (containerClient == null)
+        // Create message with sessionKey and optional requestId
+        var message = new
         {
-            return req.CreateResponse(System.Net.HttpStatusCode.NotFound);
-        }
+            sessionKey = sessionKey,
+            requestId = System.Guid.NewGuid().ToString()
+        };
 
-        var processingRequest = new FinalVideoProcessingRequest(sessionKey);
+        var messageJson = JsonConvert.SerializeObject(message);
+        var messageBytes = System.Text.Encoding.UTF8.GetBytes(messageJson);
+        var base64Message = System.Convert.ToBase64String(messageBytes);
 
-        var blobClient = containerClient.GetBlobClient(sessionKey);
+        // Enqueue message
+        await queueClient.SendMessageAsync(base64Message);
 
-        await Shared.Helpers.UploadJsonToStorage(blobClient, processingRequest);
-
+        // Update Firebase status
         _firebaseService.SetFinalVideoProcessingStatus(sessionKey, FirebaseService.FinalVideoProcessingStatus.started);
 
         return req.CreateResponse(System.Net.HttpStatusCode.OK);

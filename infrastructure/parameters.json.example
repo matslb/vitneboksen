@@ -1,0 +1,28 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "storageAccountName": {
+      "value": "yourstorageaccount"
+    },
+    "resourceGroupName": {
+      "value": "your-resource-group"
+    },
+    "acrLoginServer": {
+      "value": "yourregistry.azurecr.io"
+    },
+    "containerImageName": {
+      "value": "finalvideo-worker:latest"
+    },
+    "firebaseAuthSecret": {
+      "value": "your-firebase-auth-secret"
+    },
+    "firebaseBasePath": {
+      "value": "https://your-firebase-project.firebaseio.com"
+    },
+    "location": {
+      "value": "westeurope"
+    }
+  }
+}
+

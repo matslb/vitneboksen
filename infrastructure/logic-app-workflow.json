@@ -1,0 +1,211 @@
+{
+  "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "acrLoginServer": {
+      "type": "string"
+    },
+    "containerImageName": {
+      "type": "string",
+      "defaultValue": "finalvideo-worker:latest"
+    },
+    "storageAccountName": {
+      "type": "string"
+    },
+    "resourceGroupName": {
+      "type": "string"
+    },
+    "uamiResourceId": {
+      "type": "string"
+    },
+    "blobEndpoint": {
+      "type": "string"
+    },
+    "firebaseAuthSecret": {
+      "type": "securestring"
+    },
+    "firebaseBasePath": {
+      "type": "string"
+    }
+  },
+  "triggers": {
+    "When_a_message_is_received_in_a_queue": {
+      "type": "ApiConnection",
+      "inputs": {
+        "host": {
+          "connection": {
+            "name": "@parameters('$connections')['azurequeues']['connectionId']"
+          }
+        },
+        "method": "get",
+        "path": "/v2/queues/@{encodeURIComponent('final-video-processing-requests')}/messages",
+        "queries": {
+          "peekOnly": false,
+          "maxMessagesCount": 1
+        }
+      },
+      "recurrence": {
+        "frequency": "Second",
+        "interval": 10
+      }
+    }
+  },
+  "actions": {
+    "Initialize_PollCount": {
+      "type": "InitializeVariable",
+      "inputs": {
+        "variables": [
+          {
+            "name": "PollCount",
+            "type": "integer",
+            "value": 0
+          }
+        ]
+      }
+    },
+    "Parse_JSON": {
+      "type": "ParseJson",
+      "inputs": {
+        "content": "@{base64ToString(triggerBody()?['Content'])}",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "sessionKey": {
+              "type": "string"
+            },
+            "requestId": {
+              "type": "string"
+            }
+          },
+          "required": ["sessionKey"]
+        }
+      }
+    },
+    "Create_container_group": {
+      "type": "ApiConnection",
+      "inputs": {
+        "host": {
+          "connection": {
+            "name": "@parameters('$connections')['azurecontainerinstances']['connectionId']"
+          }
+        },
+        "method": "post",
+        "path": "/subscriptions/@{encodeURIComponent(subscription().subscriptionId)}/resourceGroups/@{encodeURIComponent(parameters('resourceGroupName'))}/providers/Microsoft.ContainerInstance/containerGroups/finalvideo-job-@{body('Parse_JSON')?['sessionKey']}",
+        "queries": {
+          "api-version": "2021-10-01"
+        },
+        "body": {
+          "location": "@{workflow().location}",
+          "identity": {
+            "type": "UserAssigned",
+            "userAssignedIdentities": {
+              "@{parameters('uamiResourceId')}": {}
+            }
+          },
+          "properties": {
+            "containers": [
+              {
+                "name": "finalvideo-worker",
+                "properties": {
+                  "image": "@{parameters('acrLoginServer')}/@{parameters('containerImageName')}",
+                  "resources": {
+                    "requests": {
+                      "cpu": 1,
+                      "memoryInGb": 4
+                    }
+                  },
+                  "environmentVariables": [
+                    {
+                      "name": "SESSION_KEY",
+                      "value": "@{body('Parse_JSON')?['sessionKey']}"
+                    },
+                    {
+                      "name": "BLOB_ENDPOINT",
+                      "value": "@{parameters('blobEndpoint')}"
+                    },
+                    {
+                      "name": "FireSharp__AuthSecret",
+                      "secureValue": "@{parameters('firebaseAuthSecret')}"
+                    },
+                    {
+                      "name": "FireSharp__BasePath",
+                      "value": "@{parameters('firebaseBasePath')}"
+                    }
+                  ]
+                }
+              }
+            ],
+            "restartPolicy": "Never",
+            "osType": "Linux"
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    "Wait_for_container_completion": {
+      "type": "Until",
+      "expression": "@or(equals(body('Get_container_group_status')?['properties']?['instanceView']?['state'], 'Succeeded'), equals(body('Get_container_group_status')?['properties']?['instanceView']?['state'], 'Failed'), greaterOrEquals(variables('PollCount'), 720))",
+      "limit": {
+        "count": 720,
+        "timeout": "PT2H"
+      },
+      "actions": {
+        "Delay": {
+          "type": "Wait",
+          "inputs": {
+            "interval": {
+              "count": 10,
+              "unit": "Second"
+            }
+          }
+        },
+        "Get_container_group_status": {
+          "type": "ApiConnection",
+          "inputs": {
+            "host": {
+              "connection": {
+                "name": "@parameters('$connections')['azurecontainerinstances']['connectionId']"
+              }
+            },
+            "method": "get",
+            "path": "/subscriptions/@{encodeURIComponent(subscription().subscriptionId)}/resourceGroups/@{encodeURIComponent(parameters('resourceGroupName'))}/providers/Microsoft.ContainerInstance/containerGroups/finalvideo-job-@{body('Parse_JSON')?['sessionKey']}"
+          }
+        },
+        "Increment_poll_count": {
+          "type": "IncrementVariable",
+          "inputs": {
+            "name": "PollCount",
+            "value": 1
+          }
+        }
+      }
+    },
+    "Delete_container_group": {
+      "type": "ApiConnection",
+      "inputs": {
+        "host": {
+          "connection": {
+            "name": "@parameters('$connections')['azurecontainerinstances']['connectionId']"
+          }
+        },
+        "method": "delete",
+        "path": "/subscriptions/@{encodeURIComponent(subscription().subscriptionId)}/resourceGroups/@{encodeURIComponent(parameters('resourceGroupName'))}/providers/Microsoft.ContainerInstance/containerGroups/@{body('Create_container_group')?['name']}"
+      }
+    }
+  },
+  "$connections": {
+    "azurequeues": {
+      "connectionId": "/subscriptions/@{subscription().subscriptionId}/resourceGroups/@{resourceGroup().name}/providers/Microsoft.Web/connections/azurequeues",
+      "connectionName": "azurequeues",
+      "id": "/subscriptions/@{subscription().subscriptionId}/providers/Microsoft.Web/locations/@{workflow().location}/managedApis/azurequeues"
+    },
+    "azurecontainerinstances": {
+      "connectionId": "/subscriptions/@{subscription().subscriptionId}/resourceGroups/@{resourceGroup().name}/providers/Microsoft.Web/connections/azurecontainerinstances",
+      "connectionName": "azurecontainerinstances",
+      "id": "/subscriptions/@{subscription().subscriptionId}/providers/Microsoft.Web/locations/@{workflow().location}/managedApis/azurecontainerinstances"
+    }
+  }
+}
+

@@ -53,10 +53,24 @@ namespace Shared
 
         public static async Task<FFmpegResult> ExecuteFFmpegCommand(string arguments, int timeoutInSeconds = 60, CancellationToken cancellationToken = default)
         {
-            string environment = Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT")!;
-
-            var ffmpegFileName = Path.Combine(environment == "Development" ? Environment.CurrentDirectory : "C:\\home\\site\\wwwroot",
-                IsRunningOnWindows() ? "ffmpeg.exe" : "ffmpeg");
+            string ffmpegFileName;
+            
+            // Check if running in container (Linux) - FFmpeg should be in /usr/bin/ffmpeg
+            if (File.Exists("/usr/bin/ffmpeg"))
+            {
+                ffmpegFileName = "/usr/bin/ffmpeg";
+            }
+            else if (File.Exists("/usr/local/bin/ffmpeg"))
+            {
+                ffmpegFileName = "/usr/local/bin/ffmpeg";
+            }
+            else
+            {
+                // Fallback to original logic for Azure Functions
+                string environment = Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT") ?? "";
+                ffmpegFileName = Path.Combine(environment == "Development" ? Environment.CurrentDirectory : "C:\\home\\site\\wwwroot",
+                    IsRunningOnWindows() ? "ffmpeg.exe" : "ffmpeg");
+            }
 
             var ffmpegStartInfo = new ProcessStartInfo
             {

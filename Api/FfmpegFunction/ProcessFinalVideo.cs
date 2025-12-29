@@ -13,6 +13,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using static Shared.FirebaseService;
+using static Shared.FfmpegCommandBuilder;
 namespace FfmpegFunction
 {
     public class ProcessFinalVideo
