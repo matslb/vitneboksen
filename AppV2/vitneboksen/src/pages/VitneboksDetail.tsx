@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { getDatabase, ref, onValue, set, remove, update } from "firebase/database";
 import { getAuth, onAuthStateChanged, type User } from "firebase/auth";
 import { FinalVideoStatus, GetVitneboksRef, type Vitneboks } from "../types/Vitneboks";
@@ -21,7 +21,6 @@ import { GetPublicVitneboksRef } from "../types/PublicVitneboks";
 export default function VitneboksDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const [vitneboks, setVitneboks] = useState<Vitneboks | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const auth = getAuth();
@@ -124,17 +123,15 @@ export default function VitneboksDetail() {
               questions={vitneboks.questions}
             />
             <div className="flex justify-between items-end gap-4">
-              {searchParams.has("sudo") && (
-                <div className="flex flex-col align-left gap-4">
-                  <span>Tror du noe har gått galt?</span>
-                  <button
-                    onClick={() => forceUpdateVitneboksStatus(vitneboks.id)}
-                    className="bg-primary-button w-45 text-black px-4 py-2 rounded hover:text-white hover:bg-secondary-bg"
-                  >
-                    Tving statussjekk
-                  </button>
-                </div>
-              )}
+              <div className="flex flex-col align-left gap-4">
+                <span>Tror du noe har gått galt?</span>
+                <button
+                  onClick={() => forceUpdateVitneboksStatus(vitneboks.id)}
+                  className="bg-primary-button w-45 text-black px-4 py-2 rounded hover:text-white hover:bg-secondary-bg"
+                >
+                  Tving statussjekk
+                </button>
+              </div>
               <p className="opacity-80">
                 {vitneboks.deletionFromDate && (
                   <>

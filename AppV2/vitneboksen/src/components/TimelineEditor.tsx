@@ -26,6 +26,7 @@ export default function TimelineEditor({
     return (
         <>
             <h3 className="text-xl font-bold">Vitnesbyrd</h3>
+
             <div className="bg-white/10 rounded p-4 my-4 overflow-x-auto">
                 <VideoStats flexDirection="row" completed={vitneboks.completedVideos} inProgress={vitneboks.videosToBeProcessed} max={vitneboks.maxStorage} sessionStorageUsage={vitneboks.sessionStorageUsage} />
                 {vitneboks.completedVideoIds.length > 0 &&
@@ -40,11 +41,11 @@ export default function TimelineEditor({
                                     <div className="absolute top-1 left-1 bg-black/60 py-1 rounded-br rounded-tl px-2 text-sm text-white">
                                         kl {date.getHours().toString().padStart(2, "0")}:{date.getMinutes().toString().padStart(2, "0")}
                                     </div>
-                                        <img
-                                            src={`${API_URL}getgif/${videoId}?sessionKey=${vitneboks.id}`}
-                                            alt="Ingen gif. Noe har gått galt. Slett denne dersom Vitneboksvideoen ikke blir som forventet"
-                                            className="rounded min-h-[135px] w-60"
-                                        />
+                                    <img
+                                        src={`${API_URL}getgif/${videoId}?sessionKey=${vitneboks.id}`}
+                                        alt="Ingen gif. Noe har gått galt. Slett denne dersom Vitneboksvideoen ikke blir som forventet"
+                                        className="rounded min-h-[135px] w-60"
+                                    />
                                     <div className="flex justify-between items-center m-2">
                                         <button
                                             onClick={() => downloadSingleVideo(vitneboks.id, videoId)}
