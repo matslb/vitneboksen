@@ -94,6 +94,7 @@ export default function ActionShotPage() {
   const isClosed =
     !vitneboks.isOpen ||
     vitneboks.finalVideoProcessingStatus == FinalVideoStatus.started ||
+    vitneboks.videosToBeProcessed > 3 ||
     (vitneboks.sessionStorageUsage ?? 0) >= vitneboks.maxStorage;
 
   if (isClosed) {
@@ -103,7 +104,7 @@ export default function ActionShotPage() {
         className="flex flex-col min-h-screen bg-primary-bg text-primary-text"
       >
         <div className="flex flex-col items-center justify-center flex-1 p-6 text-3xl">
-          Kom tilbake senere. Her er det dessverre stengt 😓
+          Kom tilbake senere. Her er det dessverre stengt. Men prøv igjen om litt😓
         </div>
       </div>);
   }
@@ -155,7 +156,7 @@ export default function ActionShotPage() {
 
       {thankYouWaiting && vitneboks.isOpen && (
         <ActionShotThankYouScreen
-          seconds={30}
+          seconds={60}
           setWaiting={setThankYouWaiting}
         />
       )}

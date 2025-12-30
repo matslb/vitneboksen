@@ -13,9 +13,12 @@ export interface PublicVitneboks {
   isOpen: boolean;
   isRecording?: boolean | undefined;
   sessionStorageUsage?: number | undefined;
+  videosToBeProcessed: number;
 }
 
-export async function getPublicVitneboks(data: PublicVitneboks): Promise<PublicVitneboks | null> {
+export async function getPublicVitneboks(
+  data: PublicVitneboks
+): Promise<PublicVitneboks | null> {
   const publicVitneboks: PublicVitneboks = {
     id: data.id,
     title: data.title,
@@ -26,6 +29,7 @@ export async function getPublicVitneboks(data: PublicVitneboks): Promise<PublicV
     isRecording: data.isRecording,
     sessionStorageUsage: data.sessionStorageUsage,
     activeQuestionIndex: data.activeQuestionIndex,
+    videosToBeProcessed: data.videosToBeProcessed,
   };
 
   return publicVitneboks;
@@ -33,11 +37,15 @@ export async function getPublicVitneboks(data: PublicVitneboks): Promise<PublicV
 
 export const GetPublicVitneboksRef = (db: Database, id: string) => {
   return ref(db, `publicVitnebokser/${id}`);
-}
+};
 
-export const SetPublicVitneboksIsRecording = async (db: Database, id: string, isRecording: boolean) => {
+export const SetPublicVitneboksIsRecording = async (
+  db: Database,
+  id: string,
+  isRecording: boolean
+) => {
   const vitneboksRef = GetPublicVitneboksRef(db, id);
-    const auth = getAuth();
+  const auth = getAuth();
 
   if (!auth.currentUser) {
     try {
@@ -51,8 +59,8 @@ export const SetPublicVitneboksIsRecording = async (db: Database, id: string, is
 };
 
 export const SetPublicVitneboksActiveQuestionIndex = async (
-  db: Database, 
-  id: string, 
+  db: Database,
+  id: string,
   activeQuestionIndex: number | undefined
 ) => {
   const auth = getAuth();

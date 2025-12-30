@@ -18,6 +18,7 @@ public class FirebaseService(FirebaseConfig firebaseConfig)
             (blob.Name.EndsWith(".webm", StringComparison.OrdinalIgnoreCase) ||
              blob.Name.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase)));
         firebaseClient.Set($"{uid}/vitnebokser/{sessionKey}/videosToBeProcessed", count);
+        firebaseClient.Set($"{uid}/publicVitnebokser/{sessionKey}/videosToBeProcessed", count);
     }
 
     public void SetMaxSessionStorageUsage(string sessionKey)
