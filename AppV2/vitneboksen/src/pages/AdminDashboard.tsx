@@ -57,6 +57,7 @@ export default function AdminDashboard() {
       isOpen: newVitneboks.isOpen,
       sessionStorageUsage: newVitneboks.sessionStorageUsage,
       activeQuestionIndex: 0,
+      videosToBeProcessed: 0,
       isRecording: false
     };
 
