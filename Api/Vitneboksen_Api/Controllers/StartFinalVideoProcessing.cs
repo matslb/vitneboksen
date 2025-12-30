@@ -1,5 +1,3 @@
-using Azure.Storage.Queues;
-using Newtonsoft.Json;
 using Shared;
 using Shared.Models;
 
@@ -9,6 +7,8 @@ public static class StartFinalVideoProcessing
 {
     public static async Task<IResult> Run(HttpRequest req, string constring, FirebaseService firebaseService)
     {
+        var blobService = new Azure.Storage.Blobs.BlobServiceClient(constring);
+
         var sessionKey = req.Query["sessionKey"].ToString();
 
         if (sessionKey == null)
@@ -16,27 +16,20 @@ public static class StartFinalVideoProcessing
             return Results.BadRequest();
         }
 
-        // Create queue client
-        var queueClient = new QueueClient(constring, "final-video-processing-requests");
-        
-        // Ensure queue exists
-        await queueClient.CreateIfNotExistsAsync();
+        var containerClient = blobService.GetBlobContainerClient(Constants.FinalVideoProcessingContainer);
 
-        // Create message with sessionKey and optional requestId
-        var message = new
+        if (containerClient == null)
+
         {
-            sessionKey = sessionKey,
-            requestId = Guid.NewGuid().ToString()
-        };
+            return Results.NotFound("Not found");
+        }
 
-        var messageJson = JsonConvert.SerializeObject(message);
-        var messageBytes = System.Text.Encoding.UTF8.GetBytes(messageJson);
-        var base64Message = Convert.ToBase64String(messageBytes);
+        var processingRequest = new FinalVideoProcessingRequest(sessionKey);
 
-        // Enqueue message
-        await queueClient.SendMessageAsync(base64Message);
+        var blobClient = containerClient.GetBlobClient(sessionKey);
 
-        // Update Firebase status
+        await Helpers.UploadJsonToStorage(blobClient, processingRequest);
+
         firebaseService.SetFinalVideoProcessingStatus(sessionKey, FirebaseService.FinalVideoProcessingStatus.started);
 
         return Results.Ok();
