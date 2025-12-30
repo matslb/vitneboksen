@@ -12,7 +12,7 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import LoadingFullScreen from './components/LoadingFullScreen';
 import './index.css';
 import { generateStrongToken, isPhoneDevice, getCookieDomain } from './utils';
-import { getDatabase, ref, set } from 'firebase/database';
+import { getDatabase, onValue, ref, set } from 'firebase/database';
 
 const auth = getAuth();
 
@@ -21,25 +21,50 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const [user, setUser] = React.useState<any>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    let tokenUnsubscribe: (() => void) | null = null;
+
+    const authUnsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);
       setLoading(false);
 
-      if (firebaseUser) {
-        const token = generateStrongToken();
-        const db = getDatabase();
-        set(ref(db, `/userTokens/${firebaseUser.uid}`), token);
-        
-        // Set token as a cookie for the current domain
-        // Cookie expires in 30 days
-        const expiryDate = new Date();
-        expiryDate.setTime(expiryDate.getTime() + (30 * 24 * 60 * 60 * 1000));
-        const cookieDomain = getCookieDomain();
-        document.cookie = `userToken=${token}; expires=${expiryDate.toUTCString()}; path=/; domain=${cookieDomain}; SameSite=Lax`;
+      // Clean up previous token listener if user changes/logs out
+      if (tokenUnsubscribe) {
+        tokenUnsubscribe();
+        tokenUnsubscribe = null;
       }
 
+      if (!firebaseUser) {
+        return;
+      }
+
+      const db = getDatabase();
+      const tokenRef = ref(db, `/userTokens/${firebaseUser.uid}`);
+
+      // OPTIONAL: only generate if you don't already do this elsewhere
+      const token = generateStrongToken();
+      set(tokenRef, token);
+
+      // Listen for token value changes
+      const unsubscribeFromToken = onValue(tokenRef, (snapshot) => {
+        const tokenValue = snapshot.val();
+        if (!tokenValue) return;
+
+        const expiryDate = new Date();
+        expiryDate.setTime(expiryDate.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+        const cookieDomain = getCookieDomain();
+        document.cookie = `userToken=${tokenValue}; expires=${expiryDate.toUTCString()}; path=/; domain=${cookieDomain}; SameSite=Lax`;
+      });
+
+      tokenUnsubscribe = () => unsubscribeFromToken();
     });
-    return () => unsubscribe();
+
+    return () => {
+      authUnsubscribe();
+      if (tokenUnsubscribe) {
+        tokenUnsubscribe();
+      }
+    };
   }, []);
 
   if (loading) return <LoadingFullScreen />;
