@@ -4,7 +4,7 @@ param storageAccountName string
 @description('The name of the resource group where resources will be deployed')
 param resourceGroupName string
 
-@description('The name of the container registry (e.g., myregistry.azurecr.io)')
+@description('The name of the container registry (e.g., myregistry.azurecr.io or ghcr.io for GitHub Container Registry)')
 param acrLoginServer string
 
 @description('The name of the container image (e.g., finalvideo-worker:latest)')

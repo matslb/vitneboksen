@@ -72,3 +72,6 @@ bower_components/
 .env
 *ffmpeg
 *.exe
+
+# Azure deployment parameters (contains secrets)
+infrastructure/parameters.json

@@ -7,7 +7,13 @@
     },
     "containerImageName": {
       "type": "string",
-      "defaultValue": "finalvideo-worker:latest"
+      "defaultValue": "ghcr.io/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME/finalvideo-worker:latest"
+    },
+    "githubUsername": {
+      "type": "string"
+    },
+    "githubToken": {
+      "type": "securestring"
     },
     "storageAccountName": {
       "type": "string"
@@ -103,11 +109,18 @@
             }
           },
           "properties": {
+            "imageRegistryCredentials": [
+              {
+                "server": "ghcr.io",
+                "username": "@{parameters('githubUsername')}",
+                "password": "@{parameters('githubToken')}"
+              }
+            ],
             "containers": [
               {
                 "name": "finalvideo-worker",
                 "properties": {
-                  "image": "@{parameters('acrLoginServer')}/@{parameters('containerImageName')}",
+                  "image": "@{parameters('containerImageName')}",
                   "resources": {
                     "requests": {
                       "cpu": 1,
