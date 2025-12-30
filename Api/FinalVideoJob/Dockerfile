@@ -10,7 +10,7 @@ RUN apt-get update && \
 WORKDIR /app
 
 # Copy published application
-COPY bin/Release/net8.0/publish/ .
+COPY publish/ .
 
 # Set entrypoint
 ENTRYPOINT ["dotnet", "FinalVideoJob.dll"]

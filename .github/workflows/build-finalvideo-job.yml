@@ -36,7 +36,7 @@ jobs:
 
       - name: Build and publish
         working-directory: Api/FinalVideoJob
-        run: dotnet publish -c Release -o bin/Release/net8.0/publish
+        run: dotnet publish -c Release -o publish
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
