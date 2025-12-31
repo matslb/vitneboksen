@@ -53,20 +53,6 @@ export function detectInAppBrowser(): string | null {
     }
   }
 
-  // Additional check: iOS WebView detection
-  const isIOSWebView =
-    /iphone|ipad|ipod/.test(userAgentLower) &&
-    !(window as any).MSStream &&
-    !(window as any).webkit?.messageHandlers;
-
-  // Check for missing browser features that are typically present in full browsers
-  const hasLimitedFeatures =
-    !(window as any).chrome && !(window as any).safari && !(window as any).firefox;
-
-  if (isIOSWebView && hasLimitedFeatures) {
-    return "Nå har du åpna denne linken inne i en app uten noen funksjoner :(. Bruk heller en skikkelig browser";
-  }
-
   return null;
 }
 
