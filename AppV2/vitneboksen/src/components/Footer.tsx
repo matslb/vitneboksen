@@ -13,7 +13,6 @@ export default function Footer() {
         >
           Mats Løvstrand Berntsen
         </a>
-        <span>Har du trøbbel? Send meg en mail på <a href="mailto:mats@spritjakt.no">mats@spritjakt.no</a></span>
       </div>
       <div className="flex flex-col items-center gap-1s">
         <span>Sponset av</span>
