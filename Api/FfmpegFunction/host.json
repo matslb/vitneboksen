@@ -11,7 +11,8 @@
   "extensions": {
     "blobs": {
       "maxDegreeOfParallelism": 1,
-      "pollingInterval": "00:00:05"
+      "pollingInterval": "00:00:05",
+      "poisonBlobThreshold": 1
     }
   },
   "retry": {
