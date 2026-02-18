@@ -1,6 +1,5 @@
 using Azure;
 using Azure.Storage.Blobs;
-using FirebaseAdmin.Auth;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -16,14 +15,15 @@ public class DeleteOldSessions
     private readonly ILogger _logger;
     private readonly IConfiguration _configuration;
     private readonly FirebaseService _firebaseService;
-    private readonly FirebaseAuth _firebaseAuth;
-
-    public DeleteOldSessions(ILoggerFactory loggerFactory, IConfiguration configuration, FirebaseService firebaseService, FirebaseAuth firebaseAuth)
+    public DeleteOldSessions(ILoggerFactory loggerFactory, IConfiguration configuration)
     {
         _logger = loggerFactory.CreateLogger<DeleteOldSessions>();
         _configuration = configuration;
-        _firebaseAuth = firebaseAuth;
-        _firebaseService = firebaseService;
+        _firebaseService = new FirebaseService(new FireSharp.Config.FirebaseConfig
+        {
+            AuthSecret = Environment.GetEnvironmentVariable("FireSharp__AuthSecret"),
+            BasePath = Environment.GetEnvironmentVariable("FireSharp__BasePath"),
+        });
     }
 
     [Function("DeleteOldSessions")]
@@ -70,27 +70,5 @@ public class DeleteOldSessions
             }
         }
 
-    }
-
-    private async Task CleanUpAnonymousUsers()
-    {
-        var result = FirebaseAuth.DefaultInstance.ListUsersAsync(new ListUsersOptions
-        {
-            PageSize = 1000,
-            PageToken = ""
-        });
-
-        var cutoff = DateTimeOffset.UtcNow.AddDays(-7);
-
-        await foreach (var user in result)
-        {
-            bool isAnonymous = user.ProviderData.Length == 0;
-            var created = user.UserMetaData.CreationTimestamp;
-
-            if (isAnonymous && created < cutoff)
-            {
-                await FirebaseAuth.DefaultInstance.DeleteUserAsync(user.Uid);
-            }
-        }
     }
 }
