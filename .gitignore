@@ -75,3 +75,4 @@ bower_components/
 
 # Azure deployment parameters (contains secrets)
 infrastructure/parameters.json
+/Api/Vitneboksen_func/local.settings.json

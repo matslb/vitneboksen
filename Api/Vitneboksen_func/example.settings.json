@@ -1,14 +1,21 @@
-{
+﻿{
   "IsEncrypted": false,
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
-    "StorageConnectionString": "",
     "FireSharp__BasePath": "",
     "FireSharp__AuthSecret": "",
     "Cors__AllowedOrigins__0": "http://localhost:5173",
     "Cors__AllowedOrigins__1": "https://localhost:5173",
-    "APPLICATIONINSIGHTS_CONNECTION_STRING": ""
+    "APPLICATIONINSIGHTS_CONNECTION_STRING": "",
+    "StorageConnectionString": "",
+    "ApplicationInsights": {
+      "ConnectionString": ""
+    }
+  },
+  "ConnectionStrings": {
+    "AzureWebJobsStorage": "",
+    "storage-account-connection-string:blob": "",
+    "storage-account-connection-string:queue": ""
   }
 }
-

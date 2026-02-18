@@ -1,5 +1,6 @@
 using Azure;
 using Azure.Storage.Blobs;
+using FirebaseAdmin.Auth;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -15,19 +16,18 @@ public class DeleteOldSessions
     private readonly ILogger _logger;
     private readonly IConfiguration _configuration;
     private readonly FirebaseService _firebaseService;
-    public DeleteOldSessions(ILoggerFactory loggerFactory, IConfiguration configuration)
+    private readonly FirebaseAuth _firebaseAuth;
+
+    public DeleteOldSessions(ILoggerFactory loggerFactory, IConfiguration configuration, FirebaseService firebaseService, FirebaseAuth firebaseAuth)
     {
         _logger = loggerFactory.CreateLogger<DeleteOldSessions>();
         _configuration = configuration;
-        _firebaseService = new FirebaseService(new FireSharp.Config.FirebaseConfig
-        {
-            AuthSecret = Environment.GetEnvironmentVariable("FireSharp__AuthSecret"),
-            BasePath = Environment.GetEnvironmentVariable("FireSharp__BasePath"),
-        });
+        _firebaseAuth = firebaseAuth;
+        _firebaseService = firebaseService;
     }
 
     [Function("DeleteOldSessions")]
-    public async Task Run([TimerTrigger("1 * * * *")] TimerInfo myTimer)
+    public async Task Run([TimerTrigger("0 0 * * *")] TimerInfo myTimer)
     {
         string connectionString = _configuration.GetConnectionString("AzureWebJobsStorage");
 
@@ -53,7 +53,7 @@ public class DeleteOldSessions
                     continue;
                 }
 
-                if (now - createdDate > TimeSpan.FromDays(60))
+                if (now - createdDate > TimeSpan.FromDays(Constants.DaysBeforeDeletion))
                 {
                     await containerClient.DeleteIfExistsAsync();
                     _logger.LogInformation($"Deleted container: {container.Name} in Azure");
@@ -70,5 +70,27 @@ public class DeleteOldSessions
             }
         }
 
+    }
+
+    private async Task CleanUpAnonymousUsers()
+    {
+        var result = FirebaseAuth.DefaultInstance.ListUsersAsync(new ListUsersOptions
+        {
+            PageSize = 1000,
+            PageToken = ""
+        });
+
+        var cutoff = DateTimeOffset.UtcNow.AddDays(-7);
+
+        await foreach (var user in result)
+        {
+            bool isAnonymous = user.ProviderData.Length == 0;
+            var created = user.UserMetaData.CreationTimestamp;
+
+            if (isAnonymous && created < cutoff)
+            {
+                await FirebaseAuth.DefaultInstance.DeleteUserAsync(user.Uid);
+            }
+        }
     }
 }

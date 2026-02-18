@@ -7,6 +7,9 @@
     <UserSecretsId>vitneboksen-func-secrets</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="example.settings.json" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.23.0" />
     <PackageReference Include="Azure.Storage.Queues" Version="12.21.0" />
     <PackageReference Include="FireSharp" Version="2.0.4" />
