@@ -1,0 +1,42 @@
+using Microsoft.AspNetCore.Http;
+using Azure.Storage.Blobs;
+using Shared;
+
+namespace Vitneboksen_func.Controllers;
+
+public static class CreateSession
+{
+    public static async Task<IResult> Run(HttpRequest req, string constring, FirebaseService firebaseService)
+    {
+        var blobService = new BlobServiceClient(constring);
+
+        var uid = req.Query["uid"].ToString();
+        var sessionKey = req.Query["sessionKey"].ToString();
+        var userTokenFromCookie = req.Cookies["userToken"];
+
+        if (uid == null || sessionKey == null)
+        {
+            return Results.BadRequest();
+        }
+
+        if (string.IsNullOrWhiteSpace(userTokenFromCookie) || string.IsNullOrWhiteSpace(sessionKey) || !firebaseService.AuthorizeUser(uid, userTokenFromCookie))
+        {
+            return Results.Unauthorized();
+        }
+
+        firebaseService.SetUidSessionLookup(sessionKey, uid);
+
+        var containerClient = Helpers.GetContainerBySessionKey(blobService, sessionKey);
+
+        if (containerClient == null)
+        {
+            containerClient = blobService.GetBlobContainerClient($"{sessionKey}-{uid.ToLowerInvariant()}");
+            await containerClient.CreateAsync();
+            containerClient.SetMetadata(new Dictionary<string, string> { { "created", DateTime.Now.ToString() } });
+            firebaseService.SetDeletionFromDate(sessionKey, DateTime.Now);
+            firebaseService.SetMaxSessionStorageUsage(sessionKey);
+        }
+
+        return Results.Created();
+    }
+}

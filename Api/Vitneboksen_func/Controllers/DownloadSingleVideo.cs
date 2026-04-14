@@ -1,0 +1,31 @@
+using Microsoft.AspNetCore.Http;
+using Shared;
+
+namespace Vitneboksen_func.Controllers;
+
+public static class DownloadSingleVideo
+{
+    public static async Task<IResult> Run(HttpRequest req, string fileName, string constring, FirebaseService firebaseService)
+    {
+        var blobService = new Azure.Storage.Blobs.BlobServiceClient(constring);
+
+        var sessionKey = req.Query["sessionKey"].ToString();
+
+        if (sessionKey == null)
+        {
+            return Results.BadRequest();
+        }
+
+        var containerClient = Helpers.GetContainerBySessionKey(blobService, sessionKey);
+        if (containerClient == null)
+        {
+            return Results.NotFound("Not found");
+        }
+
+        var sessionName = firebaseService.GetSessionName(sessionKey);
+        var blob = containerClient.GetBlobClient($"{fileName}.mp4");
+        var blobContent = await blob.DownloadContentAsync();
+
+        return Results.File(blobContent.Value.Content.ToStream(), "video/mp4", $"{fileName}.mp4");
+    }
+}
