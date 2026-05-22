@@ -25,7 +25,7 @@ export default function TimelineEditor({
 
     return (
         <>
-            <h3 className="text-xl font-bold">Vitnesbyrd</h3>
+            <h3 className="text-xl">Vitnesbyrd</h3>
 
             <div className="bg-white/10 rounded p-4 my-4 overflow-x-auto">
                 <VideoStats flexDirection="row" completed={vitneboks.completedVideos} inProgress={vitneboks.videosToBeProcessed} max={vitneboks.maxStorage} sessionStorageUsage={vitneboks.sessionStorageUsage} />
@@ -43,7 +43,7 @@ export default function TimelineEditor({
                                     </div>
                                     <img
                                         src={`${API_URL}getgif/${videoId}?sessionKey=${vitneboks.id}`}
-                                        alt="Ingen gif. Noe har gått galt. Slett denne dersom Vitneboksvideoen ikke blir som forventet"
+                                        alt="Gif"
                                         className="rounded min-h-[135px] w-60"
                                     />
                                     <div className="flex justify-between items-center m-2">

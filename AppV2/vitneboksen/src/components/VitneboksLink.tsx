@@ -17,8 +17,8 @@ export default function VitneboksLink({ vitneboksId }: VitneboksLinkProps) {
   const linkUrl = `${window.location.origin}/bidra/${vitneboksId}`;
 
   return (
-    <div className="py-4">
-      <label className="text-sm">Vitnebokslink</label>
+      <div className="bg-white/10 rounded p-4 my-4 overflow-x-auto">
+      <label className="text-xl">Vitnebokslink</label>
       <input
         readOnly
         value={linkUrl}

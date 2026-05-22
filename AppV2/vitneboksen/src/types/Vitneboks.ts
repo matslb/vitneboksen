@@ -22,6 +22,8 @@ export interface Vitneboks {
   isOpen: boolean;
   uid: string;
   sessionStorageUsage: number;
+  allowActionShots?: boolean;
+  actionShotDuration?: number;
 }
 
 export const GetVitneboksRef = (db: Database, uid: string, id: string) => {

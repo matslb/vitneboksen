@@ -93,6 +93,7 @@ export default function ActionShotPage() {
 
   const isClosed =
     !vitneboks.isOpen ||
+    vitneboks.allowActionShots === false ||
     vitneboks.finalVideoProcessingStatus == FinalVideoStatus.started ||
     vitneboks.videosToBeProcessed > 3 ||
     (vitneboks.sessionStorageUsage ?? 0) >= vitneboks.maxStorage;
@@ -133,6 +134,7 @@ export default function ActionShotPage() {
         <ActionShotWelcomeScreen
           onStart={handleStart}
           title={vitneboks.title}
+          duration={vitneboks.actionShotDuration}
           initialName={savedUserName}
         />
       )}
@@ -141,7 +143,7 @@ export default function ActionShotPage() {
           question={{
             id: "actionshot",
             text: `Sendt inn av ${userName}`,
-            recordingDuration: 10,
+            recordingDuration: vitneboks.actionShotDuration ?? 10,
             allwaysActive: true,
             activeFrom: null,
             activeTo: null,

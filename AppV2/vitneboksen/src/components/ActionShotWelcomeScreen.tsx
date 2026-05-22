@@ -4,9 +4,10 @@ interface ActionShotWelcomeScreenProps {
   title: string;
   onStart: (userName: string) => void;
   initialName?: string;
+  duration?: number;
 }
 
-export default function ActionShotWelcomeScreen({ title, onStart, initialName = '' }: ActionShotWelcomeScreenProps) {
+export default function ActionShotWelcomeScreen({ title, onStart, duration = 10, initialName = '' }: ActionShotWelcomeScreenProps) {
   const [userName, setUserName] = useState(initialName);
 
   // Update userName when initialName changes (e.g., when saved name is loaded)
@@ -51,7 +52,7 @@ export default function ActionShotWelcomeScreen({ title, onStart, initialName = 
             Spill inn videosnutt
           </button>
         <p className="text-l text-center m-4">
-          Du får 10 sekunder på deg.
+          Du får {duration} sekunder på deg.
         </p>
       </div>
     </div>

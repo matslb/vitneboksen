@@ -40,11 +40,10 @@ export default function QuestionList({ vitneBoksId, userId, questions }: Questio
   };
   return (
     <>
-      <div className="w-full mb-8">
-        {questions.length > 0 &&
-          <h2 className="text-xl font-semibold mb-4">Spørsmål</h2>
-        }
-        <ul className="flex flex-col gap-4">
+      <div className="w-full bg-white/10 rounded shadow-md p-6  mb-8">
+        <h2 className="text-xl font-semibold mb-4">Spørsmål</h2>
+        <p className="my-8">Spørsmålene du legger til her vil vises til gjestene dine når du setter opp Vitneboksen på en PC eller Mac.</p>
+        <ul className="my-8 flex flex-col gap-4">
           {questions.map((q) => (
             <li key={q.id}>
               <QuestionBox
@@ -56,8 +55,7 @@ export default function QuestionList({ vitneBoksId, userId, questions }: Questio
             </li>
           ))}
         </ul>
-      </div >
-      <h2 className="text-xl font-semibold mb-4">Legg til nytt spørsmål</h2>
+      <h3 className="text-lg font-semibold mb-4">Legg til spørsmål</h3>
       <div className="w-full  bg-white/10 rounded shadow-md p-6  mb-8">
         <div
           style={{
@@ -89,6 +87,7 @@ export default function QuestionList({ vitneBoksId, userId, questions }: Questio
             Legg til spørsmål
           </button>
         </div>
+      </div >
       </div >
     </>
   );

@@ -14,6 +14,8 @@ export interface PublicVitneboks {
   isRecording?: boolean | undefined;
   sessionStorageUsage?: number | undefined;
   videosToBeProcessed: number;
+  allowActionShots?: boolean;
+  actionShotDuration?: number;
 }
 
 export async function getPublicVitneboks(
@@ -30,6 +32,8 @@ export async function getPublicVitneboks(
     sessionStorageUsage: data.sessionStorageUsage,
     activeQuestionIndex: data.activeQuestionIndex,
     videosToBeProcessed: data.videosToBeProcessed,
+    allowActionShots: data.allowActionShots ?? true,
+    actionShotDuration: data.actionShotDuration ?? 10,
   };
 
   return publicVitneboks;

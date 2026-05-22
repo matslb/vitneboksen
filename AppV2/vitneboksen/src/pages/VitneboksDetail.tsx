@@ -17,6 +17,7 @@ import { mapVitneboks, vitneboksTimeRemaining } from "../utils";
 import TimelineEditor from "../components/TimelineEditor";
 import VitneboksLink from "../components/VitneboksLink";
 import { GetPublicVitneboksRef } from "../types/PublicVitneboks";
+import ActionShotSettings from "../components/ActionShotSettings";
 
 export default function VitneboksDetail() {
   const { id } = useParams();
@@ -44,7 +45,9 @@ export default function VitneboksDetail() {
       finalVideoProcessingStatus: vitneboks.finalVideoProcessingStatus,
       questions: vitneboks.questions,
       isOpen: vitneboks.isOpen,
-      sessionStorageUsage: vitneboks.sessionStorageUsage
+      sessionStorageUsage: vitneboks.sessionStorageUsage,
+      allowActionShots: vitneboks.allowActionShots ?? true,
+      actionShotDuration: vitneboks.actionShotDuration ?? 10
     };
     update(publicVitneboksRef, publicVitneboks);
 
@@ -99,7 +102,7 @@ export default function VitneboksDetail() {
                 }
               />
             </div>
-            <h2 className="text-xl font-semibold">Tittel</h2>
+            <h2 className="text-xl">Tittel</h2>
             <p className="text-3xl font-bold my-4  ">
               <input
                 type="text"
@@ -115,8 +118,9 @@ export default function VitneboksDetail() {
                 }
               />
             </p>
-            <VitneboksLink vitneboksId={vitneboks.id} />
             <TimelineEditor vitneboks={vitneboks} />
+            <VitneboksLink vitneboksId={vitneboks.id} />
+            <ActionShotSettings vitneboks={vitneboks} user={user} db={db} />
             <QuestionList
               vitneBoksId={vitneboks.id}
               userId={user.uid}
