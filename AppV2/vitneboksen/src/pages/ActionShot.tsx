@@ -95,7 +95,6 @@ export default function ActionShotPage() {
     !vitneboks.isOpen ||
     vitneboks.allowActionShots === false ||
     vitneboks.finalVideoProcessingStatus == FinalVideoStatus.started ||
-    vitneboks.videosToBeProcessed > 3 ||
     (vitneboks.sessionStorageUsage ?? 0) >= vitneboks.maxStorage;
 
   if (isClosed) {
@@ -108,6 +107,18 @@ export default function ActionShotPage() {
           Kom tilbake senere. Her er det dessverre stengt.😓
         </div>
       </div>);
+  }
+  const isTooBusy= vitneboks.videosToBeProcessed > 3
+  if (isTooBusy) {
+    return (
+        <div
+            ref={divRef}
+            className="flex flex-col min-h-screen bg-primary-bg text-primary-text"
+        >
+          <div className="flex flex-col items-center justify-center flex-1 p-6 text-3xl">
+            Akkurat nå er det mange som prøver seg, kom tilbake senere. 😓
+          </div>
+        </div>);
   }
 
   const inAppBrowserError = detectInAppBrowser();
