@@ -25,9 +25,8 @@ export default function TimelineEditor({
 
     return (
         <>
+            <div className="bg-white/10 rounded p-4 my-4 overflow-x-auto flex flex-col gap-4">
             <h3 className="text-xl">Vitnesbyrd</h3>
-
-            <div className="bg-white/10 rounded p-4 my-4 overflow-x-auto">
                 <VideoStats flexDirection="row" completed={vitneboks.completedVideos} inProgress={vitneboks.videosToBeProcessed} max={vitneboks.maxStorage} sessionStorageUsage={vitneboks.sessionStorageUsage} />
                 {vitneboks.completedVideoIds.length > 0 &&
                     <div className="flex gap-2 my-4 overflow-x-scroll pb-1">
@@ -36,7 +35,7 @@ export default function TimelineEditor({
                             return (
                                 <div
                                     key={videoId}
-                                    className="relative bg-black/50 rounded shadow-md p-1 rounded shrink-0"
+                                    className="relative bg-black/50 rounded shadow-md p-1 shrink-0"
                                 >
                                     <div className="absolute top-1 left-1 bg-black/60 py-1 rounded-br rounded-tl px-2 text-sm text-white">
                                         kl {date.getHours().toString().padStart(2, "0")}:{date.getMinutes().toString().padStart(2, "0")}
@@ -76,7 +75,7 @@ export default function TimelineEditor({
                                 return (
                                     <div
                                         key={videoId}
-                                        className="relative bg-black/50 rounded shadow-md p-1 rounded shrink-0"
+                                        className="relative bg-black/50 shadow-md p-1 rounded shrink-0"
                                     >
                                         <div className="absolute top-1 left-1 bg-black/60 py-1 rounded-br rounded-tl px-2 text-sm text-white">
                                             kl {date.getHours().toString().padStart(2, "0")}:{date.getMinutes().toString().padStart(2, "0")}

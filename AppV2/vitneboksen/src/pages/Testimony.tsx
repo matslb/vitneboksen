@@ -121,8 +121,22 @@ export default function TestimonyPage() {
     }
   };
 
-  const currentQuestion = filteredQuestions[vitneboks!.activeQuestionIndex];
-  const isClosed = !vitneboks.isOpen || filteredQuestions.length === 0 || vitneboks.finalVideoProcessingStatus == FinalVideoStatus.started || (vitneboks.sessionStorageUsage ?? 0) >= vitneboks.maxStorage || vitneboks.videosToBeProcessed > 3
+  let currentQuestion = filteredQuestions[vitneboks!.activeQuestionIndex];
+  if(currentQuestion == undefined)
+    currentQuestion = {
+      id: "0",
+      text: "",
+      recordingDuration: vitneboks.actionShotDuration || 10,
+      allwaysActive: true,
+      order: 0,
+      activeFrom: null,
+      activeTo: null,
+    }
+
+  const isClosed = !vitneboks.isOpen
+      || vitneboks.finalVideoProcessingStatus == FinalVideoStatus.started
+      || (vitneboks.sessionStorageUsage ?? 0) >= vitneboks.maxStorage
+      || vitneboks.videosToBeProcessed > 3
 
   return (
     <div ref={divRef} className="flex flex-col min-h-screen bg-primary-bg text-primary-text">
@@ -138,7 +152,7 @@ export default function TestimonyPage() {
         </div>
         :
         <>
-          {!started && !waiting && !thankYouWaiting && currentQuestion != null &&
+          {!started && !waiting && !thankYouWaiting &&
             <WelcomeScreen onStart={handleStart} recordingTime={currentQuestion!.recordingDuration} title={vitneboks.title} />
           }
         </>

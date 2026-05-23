@@ -92,7 +92,6 @@ export default function ActionShotPage() {
   };
 
   const isClosed =
-    !vitneboks.isOpen ||
     vitneboks.allowActionShots === false ||
     vitneboks.finalVideoProcessingStatus == FinalVideoStatus.started ||
     (vitneboks.sessionStorageUsage ?? 0) >= vitneboks.maxStorage;

@@ -4,22 +4,22 @@ import type {Vitneboks} from "../types/Vitneboks";
 import type { User } from "firebase/auth";
 import ToggleSwitch from "./ToggleSwitch";
 
-interface ActionShotSettingsProps {
+interface MobileSettingsProps {
   vitneboks: Vitneboks;
   user: User;
   db: Database;
 }
 
-const ActionShotSettings: React.FC<ActionShotSettingsProps> = ({ vitneboks, user, db }) => {
+const MobileSettings: React.FC<MobileSettingsProps> = ({ vitneboks, user, db }) => {
   const id = vitneboks.id;
 
   return (
-      <div className="flex flex-col gap-4 my-4 p-4 bg-white/5 rounded shadow-inner">
-        <h2 className="text-xl font-semibold">Mobilinnstillinger</h2>
-          <p>Når gjestene dine åpner Vitnebokslinken på mobilen får de en forenklet visning. De fyller inn navnet sitt og sender inn en videohilsen uten å få spørsmål.</p>
+      <div className="flex flex-col gap-4 my-4 p-4 bg-white/10 rounded shadow-inner">
+        <h2 className="text-xl font-semibold">Innstillinger for mobil</h2>
+          <p>Del vitnebokslinken med gjestene dine, så de kan sende inn videoer fra sin mobil. De fyller inn navnet sitt og sender inn en videohilsen uten å få spørsmål.</p>
         <div className="flex flex-row justify-evenly gap-4 my-4 p-4 bg-white/5 rounded shadow-inner">
           <div className="flex items-center gap-10 w-1/2">
-            <span>Tillat videoer på mobil</span>
+            <span>Ta imot videoer på mobil</span>
             <ToggleSwitch
               checked={vitneboks.allowActionShots ?? true}
               onChange={(checked) =>
@@ -49,4 +49,4 @@ const ActionShotSettings: React.FC<ActionShotSettingsProps> = ({ vitneboks, user
   );
 };
 
-export default ActionShotSettings;
+export default MobileSettings;

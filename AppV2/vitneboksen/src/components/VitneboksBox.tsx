@@ -3,14 +3,12 @@ import { type Vitneboks } from "../types/Vitneboks"
 import { Link } from "react-router-dom";
 import { getDatabase, onValue } from "firebase/database";
 import VideoStats from "./VideoStats";
-import GenerateVideoButton from "./GenerateVideoButton";
-import VitneboksLink from "./VitneboksLink";
 import RecIndicator from "./RecIndicator";
 import { getPublicVitneboks, GetPublicVitneboksRef } from "../types/PublicVitneboks";
 
 interface VitneboxBoxProps {
     Vitneboks: Vitneboks
-};
+}
 
 export default function VitneboksBox({ Vitneboks }: VitneboxBoxProps) {
 
@@ -33,23 +31,21 @@ export default function VitneboksBox({ Vitneboks }: VitneboxBoxProps) {
                 >{Vitneboks.isOpen ? "Åpen" : "Stengt"}
                 </div>
             }
-            <div className="absolute top-0 right-0">
-                <RecIndicator vitneboksId={Vitneboks.id} />
-            </div>
-            <VitneboksLink vitneboksId={Vitneboks.id} />
-            <div className='flex justify-between gap-2'>
-                <p className="text-m mb-1"><span className='bg-black/40 text-center text-white min-w-9 inline-block rounded'>{Object.values(Vitneboks.questions)?.length}</span> Spørsmål</p>
-                <VideoStats flexDirection="col" completed={Vitneboks.completedVideos} inProgress={Vitneboks.videosToBeProcessed} max={Vitneboks.maxStorage} sessionStorageUsage={Vitneboks.sessionStorageUsage} />
-            </div>
-            <div className="mt-4 text-right flex justify-between items-start gap-6">
-                <GenerateVideoButton showZip={false} Vitneboks={Vitneboks} />
-                <Link
-                    to={`/admin/vitneboks/${Vitneboks.id}`}
-                    className="bg-primary-button text-black px-4 py-2 rounded hover:text-white hover:bg-secondary-bg"
-                >
-                    Rediger
-                </Link>
-            </div>
+                <div className="absolute top-0 right-0">
+                    <RecIndicator vitneboksId={Vitneboks.id} />
+                </div>
+                <div className='flex justify-between gap-2'>
+                    <p className="text-m mb-1"><span className='bg-black/40 text-center text-white min-w-9 inline-block rounded'>{Object.values(Vitneboks.questions)?.length}</span> Spørsmål</p>
+                    <VideoStats flexDirection="col" completed={Vitneboks.completedVideos} inProgress={Vitneboks.videosToBeProcessed} max={Vitneboks.maxStorage} sessionStorageUsage={Vitneboks.sessionStorageUsage} />
+                </div>
+                <div className="mt-4 text-right flex justify-between items-start gap-6">
+                    <Link
+                        to={`/admin/vitneboks/${Vitneboks.id}`}
+                        className="bg-primary-button text-black px-4 py-2 rounded hover:text-white hover:bg-secondary-bg"
+                    >
+                        Åpne
+                    </Link>
+                </div>
 
         </div>
     );

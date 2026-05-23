@@ -11,10 +11,11 @@ type QuestionBoxProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
     question: Question,
     allQuestions: Question[],
     userId: string,
-    vitneboksId: string
+    vitneboksId: string,
+    isOpen: boolean,
 }
 
-export default function QuestionBox({ vitneboksId, userId, question, allQuestions }: QuestionBoxProps) {
+export default function QuestionBox({ vitneboksId, userId, question, allQuestions, isOpen }: QuestionBoxProps) {
     const db = getDatabase();
     const [activeQuestion, setActiveQuestion] = useState<number | undefined>(undefined);
 
@@ -26,7 +27,7 @@ export default function QuestionBox({ vitneboksId, userId, question, allQuestion
         });
     }, [db, vitneboksId]);
 
-    const isActiveQuestion = activeQuestion !== undefined && activeQuestion === question.order;
+    const isActiveQuestion = activeQuestion !== undefined && activeQuestion === question.order && isOpen;
 
     const handleDelete = () => {
         // Remove the question
@@ -71,7 +72,7 @@ export default function QuestionBox({ vitneboksId, userId, question, allQuestion
     };
     return (
         <div
-            className={`bg-white/10 py-6 px-4 rounded shadow-md max-w-5xl relative ${isActiveQuestion ? 'border-4 border-yellow-400' : ''}`}
+            className={`bg-white/5 py-6 px-4 rounded shadow-md max-w-5xl relative ${isActiveQuestion ? 'border-4 border-yellow-400' : ''}`}
             key={question.id}
             draggable
             onDragStart={(e) => handleDragStart(e, question.id, question.order)}
@@ -80,13 +81,13 @@ export default function QuestionBox({ vitneboksId, userId, question, allQuestion
         >
             <div className="w-100 flex flex-row gap-1 absolute top-0 left-0">
                 <span className="cursor-move py-1 px-3 text-center block bg-black/40 rounded-br rounded-tl" title="Dra for å endre rekkefølge">
-                    {question.order + 1}
+                    {`#${question.order + 1}${isActiveQuestion ? " - Vises nå " : ""}` }
                 </span>
                 {isActiveQuestion &&
                     <RecIndicator vitneboksId={vitneboksId} />
                 }
             </div>
-            <span className="absolute top-2 right-4 cursor-move text-2xl" title="Dra for å endre rekkefølge">≡</span>
+            <span className="absolute top-0 right-2 cursor-move text-3xl" title="Dra for å endre rekkefølgen">≡</span>
             <div
                 style={{
                     gridTemplateColumns: "4fr 2fr"
