@@ -166,7 +166,7 @@ export default function ActionShotPage() {
         />
       )}
 
-      {thankYouWaiting && vitneboks.isOpen && (
+      {thankYouWaiting && vitneboks.allowActionShots && (
         <ActionShotThankYouScreen
           seconds={60}
           setWaiting={setThankYouWaiting}
