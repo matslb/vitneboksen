@@ -135,9 +135,20 @@ export default function TestimonyPage() {
 
   const isClosed = !vitneboks.isOpen
       || vitneboks.finalVideoProcessingStatus == FinalVideoStatus.started
-      || (vitneboks.sessionStorageUsage ?? 0) >= vitneboks.maxStorage
-      || vitneboks.videosToBeProcessed > 3
+      || (vitneboks.sessionStorageUsage ?? 0) >= vitneboks.maxStorage;
 
+  const isTooBusy= vitneboks.videosToBeProcessed > 3
+  if (isTooBusy) {
+    return (
+        <div
+            ref={divRef}
+            className="flex flex-col min-h-screen bg-primary-bg text-primary-text"
+        >
+          <div className="flex flex-col items-center justify-center flex-1 p-6 text-3xl">
+            Vitneboksen tar seg en liten pause. Kom tilbake senere. 😓
+          </div>
+        </div>);
+  }
   return (
     <div ref={divRef} className="flex flex-col min-h-screen bg-primary-bg text-primary-text">
       {!isFullScreen && !waiting && !thankYouWaiting && !started &&
