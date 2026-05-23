@@ -48,7 +48,7 @@ export default function DesktopSettings({ vitneBoksId,actionShotDuration, vitneb
         <p>Åpne vitnebokslinken på datamaskinen du skal bruke på festen din. Send inn gjestene dine og la dem svare på spørsmålene du har lagt inn her.
           Bruk et eksternt webkamera og mikrofon for best mulig kvalitet.
         </p>
-        <div className="p-4 w-full bg-white/5 flex justify-between items-center">
+        <div className="p-4 w-full gap-4 md:items-center md:flex-row md:justify-start flex-col bg-white/5 flex ">
           <ToggleSwitch
               label={"Ta imot videoer på PC"}
               checked={vitneboksIsOpen}
@@ -56,7 +56,7 @@ export default function DesktopSettings({ vitneBoksId,actionShotDuration, vitneb
                   set(ref(db, `${userId}/vitnebokser/${vitneBoksId}/isOpen`), checked)
               }
           />
-          <div className="flex items-center gap-10  w-1/2">
+          <div className="flex items-center gap-10 justify-between md:justify-start md:w-1/2 w-full" >
             <span>Opptakstid uten spørsmål</span>
             <select
                 value={actionShotDuration ?? 10}
@@ -68,9 +68,9 @@ export default function DesktopSettings({ vitneBoksId,actionShotDuration, vitneb
                 }
                 className="bg-primary-bg text-primary-text p-2 rounded border border-white/20"
             >
-              <option value={10}>10 sekunder</option>
-              <option value={15}>15 sekunder</option>
-              <option value={20}>20 sekunder</option>
+              <option value={10}>10 sek</option>
+              <option value={15}>15 sek</option>
+              <option value={20}>20 sek</option>
             </select>
           </div>
         </div>

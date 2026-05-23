@@ -8,7 +8,7 @@ interface ToggleSwitchProps {
 
 const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ checked, onChange, label }) => {
   return (
-    <label className="flex  gap-2 cursor-pointer select-none">
+    <label className="flex justify-between w-full md:w-1/2 md:justify-start items-center gap-4 cursor-pointer select-none">
       {label && <span className="text-l text-white">{label}</span>}
 
       <button

@@ -11,10 +11,10 @@ export default function QuestionDuration({ recordingDuration, setRecordingDurati
             onChange={(e) => setRecordingDuration(parseInt(e.target.value))}
             className="white w-full p-2 rounded text-black"
         >
-            <option value={10}>10 sekunder</option>
-            <option value={15}>15 sekunder</option>
-            <option value={20}>20 sekunder</option>
-            <option value={25}>25 sekunder</option>
+            <option value={10}>10 sek</option>
+            <option value={15}>15 sek</option>
+            <option value={20}>20 sek</option>
+            <option value={25}>25 sek</option>
         </select>
 
     );

@@ -38,7 +38,7 @@ export default function VitneboksLink({
   const linkUrl = `${window.location.origin}/bidra/${vitneboksId}`;
 
   return (
-    <div className="bg-white/10 rounded flex flex-row  gap-4 p-4 my-4">
+    <div className="bg-white/10 rounded flex items-start md:items-end md:flex-row flex-col gap-4 p-4 my-4">
       <div>
         <label className="text-xl block mb-2">Vitnebokslink</label>
             <input
