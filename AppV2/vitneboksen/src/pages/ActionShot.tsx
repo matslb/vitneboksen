@@ -115,7 +115,7 @@ export default function ActionShotPage() {
             className="flex flex-col min-h-screen bg-primary-bg text-primary-text"
         >
           <div className="flex flex-col items-center justify-center flex-1 p-6 text-3xl">
-            Akkurat nå er det mange som prøver seg, kom tilbake senere. 😓
+            Akkurat nå er det mange som prøver seg. Kom tilbake senere. 😓
           </div>
         </div>);
   }
