@@ -56,9 +56,12 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      # The service principal must have permission to update Container Apps jobs
-      # in the resource group (e.g. Contributor on the RG).
+      # Only on master: the federated identity credential is scoped to
+      # refs/heads/master, and the service principal must have permission to
+      # update Container Apps jobs in the resource group. Branch builds just
+      # push the image; deploy it via the bicep containerImage parameter.
       - name: Login to Azure
+        if: github.ref == 'refs/heads/master'
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_33016C231C6F45DE915EFBFA34847574 }}
@@ -68,6 +71,7 @@ jobs:
       # Skips gracefully while the ACA jobs haven't been provisioned yet
       # (infrastructure/main.bicep is deployed manually).
       - name: Update Container Apps jobs to new image
+        if: github.ref == 'refs/heads/master'
         run: |
           IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${{ github.sha }}"
           for JOB in vitneboksen-encode-job vitneboksen-finalvideo-job; do
