@@ -64,6 +64,10 @@ namespace Shared
             {
                 ffmpegFileName = "/usr/local/bin/ffmpeg";
             }
+            else if (File.Exists("/opt/homebrew/bin/ffmpeg"))
+            {
+                ffmpegFileName = "/opt/homebrew/bin/ffmpeg";
+            }
             else
             {
                 // Fallback to original logic for Azure Functions

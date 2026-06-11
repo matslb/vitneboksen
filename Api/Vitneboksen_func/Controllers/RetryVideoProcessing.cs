@@ -46,6 +46,8 @@ public class RetryVideoProcessing
         await sourceVideo.DeleteIfExistsAsync();
         await sourceSub.DeleteIfExistsAsync();
 
+        await QueueHelpers.EnqueueJsonAsync(constring, Constants.EncodingQueueName, new EncodeVideoMessage(videoBlobItem.Name));
+
         failedBlobs.Remove(videoBlobItem);
         firebaseService.SetFailedVideoIds(sessionKey, failedBlobs);
         firebaseService.SetToBeProcessedCount(sessionKey, unprocessedContainer.GetBlobs());

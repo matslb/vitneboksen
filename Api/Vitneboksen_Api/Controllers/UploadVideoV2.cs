@@ -65,6 +65,8 @@ public static class UploadVideoV2
             await Helpers.UploadJsonToStorage(subTextBlobClient, subText);
         }
 
+        await QueueHelpers.EnqueueJsonAsync(constring, Constants.EncodingQueueName, new EncodeVideoMessage(videoFileName));
+
         firebaseService.SetToBeProcessedCount(sessionKey, unprocessedContainer.GetBlobs());
         firebaseService.SetFinalVideoProcessingStatus(sessionKey, FirebaseService.FinalVideoProcessingStatus.notStarted);
         firebaseService.SetFailedVideoIds(sessionKey, Helpers.GetFailedVideosInSession(blobService, sessionKey));

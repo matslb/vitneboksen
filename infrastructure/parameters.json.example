@@ -5,17 +5,8 @@
     "storageAccountName": {
       "value": "yourstorageaccount"
     },
-    "resourceGroupName": {
-      "value": "your-resource-group"
-    },
-    "acrLoginServer": {
-      "value": "ghcr.io"
-    },
-    "containerImageName": {
-      "value": "ghcr.io/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME/finalvideo-worker:latest"
-    },
-    "blobEndpoint": {
-      "value": "https://yourstorageaccount.blob.core.windows.net"
+    "containerImage": {
+      "value": "ghcr.io/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME/video-worker:latest"
     },
     "firebaseAuthSecret": {
       "value": "your-firebase-auth-secret"
@@ -24,8 +15,7 @@
       "value": "https://your-firebase-project.firebaseio.com"
     },
     "location": {
-      "value": "westeurope"
+      "value": "northeurope"
     }
   }
 }
-

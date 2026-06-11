@@ -35,6 +35,12 @@ public class FirebaseService(FirebaseConfig firebaseConfig)
         firebaseClient.Set($"publicVitnebokser/{sessionKey}/finalVideoProcessingStatus", status);
     }
 
+    public FinalVideoProcessingStatus GetFinalVideoProcessingStatus(string sessionKey)
+    {
+        var firebaseResponse = firebaseClient.Get($"publicVitnebokser/{sessionKey}/finalVideoProcessingStatus");
+        return firebaseResponse.ResultAs<FinalVideoProcessingStatus?>() ?? FinalVideoProcessingStatus.notStarted;
+    }
+
     public void SetIsSessionRecording(string sessionKey, bool isRecording)
     {
         firebaseClient.Set($"publicVitnebokser/{sessionKey}/isRecording", isRecording);
@@ -119,6 +125,7 @@ public class FirebaseService(FirebaseConfig firebaseConfig)
     {
         notStarted = 0,
         started = 1,
-        completed = 2
+        completed = 2,
+        failed = 3
     }
 }

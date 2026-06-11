@@ -54,6 +54,16 @@ export default function GenerateVideoButton({ Vitneboks, showZip = false }: Gene
                                         Forbereder nedlasting
                                     </button>
                                 }
+                                {Vitneboks.finalVideoProcessingStatus == FinalVideoStatus.failed &&
+                                    <div>
+                                        <p className="text-red-500 mb-2">Noe gikk galt under sammensetting av videoen.</p>
+                                        <button
+                                            onClick={() => startFinalVideoProcessing(Vitneboks.id)}
+                                            className="flex gap-2 bg-primary-button text-black px-4 py-2 rounded hover:text-white hover:bg-secondary-bg">
+                                            Prøv igjen
+                                        </button>
+                                    </div>
+                                }
                             </>
                         </div >
                     }

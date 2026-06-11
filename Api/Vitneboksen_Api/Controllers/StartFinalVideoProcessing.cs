@@ -7,8 +7,6 @@ public static class StartFinalVideoProcessing
 {
     public static async Task<IResult> Run(HttpRequest req, string constring, FirebaseService firebaseService)
     {
-        var blobService = new Azure.Storage.Blobs.BlobServiceClient(constring);
-
         var sessionKey = req.Query["sessionKey"].ToString();
 
         if (sessionKey == null)
@@ -16,21 +14,14 @@ public static class StartFinalVideoProcessing
             return Results.BadRequest();
         }
 
-        var containerClient = blobService.GetBlobContainerClient(Constants.FinalVideoProcessingContainer);
-
-        if (containerClient == null)
-
+        if (firebaseService.GetFinalVideoProcessingStatus(sessionKey) == FirebaseService.FinalVideoProcessingStatus.started)
         {
-            return Results.NotFound("Not found");
+            return Results.Ok();
         }
 
-        var processingRequest = new FinalVideoProcessingRequest(sessionKey);
-
-        var blobClient = containerClient.GetBlobClient(sessionKey);
-
-        await Helpers.UploadJsonToStorage(blobClient, processingRequest);
-
         firebaseService.SetFinalVideoProcessingStatus(sessionKey, FirebaseService.FinalVideoProcessingStatus.started);
+
+        await QueueHelpers.EnqueueJsonAsync(constring, Constants.FinalVideoQueueName, new FinalVideoRequestMessage(sessionKey));
 
         return Results.Ok();
     }

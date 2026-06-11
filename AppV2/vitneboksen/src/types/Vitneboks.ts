@@ -4,7 +4,8 @@ import type Question from "./Question";
 export const enum FinalVideoStatus  {
     notStarted = 0,
     started = 1,
-    completed = 2
+    completed = 2,
+    failed = 3
 }
 
 export interface Vitneboks {

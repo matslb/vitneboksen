@@ -1,0 +1,82 @@
+name: Build and deploy VideoWorker image
+
+on:
+  push:
+    branches:
+      - master
+      - feature/aca-video-worker
+    paths:
+      - 'Api/VideoWorker/**'
+      - 'Api/Shared/**'
+      - '.github/workflows/build-videoworker.yml'
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}/video-worker
+  RESOURCE_GROUP: Vitneboksen
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=sha-${{ github.sha }}
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: Api
+          file: Api/VideoWorker/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      # The service principal must have permission to update Container Apps jobs
+      # in the resource group (e.g. Contributor on the RG).
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_33016C231C6F45DE915EFBFA34847574 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_5ECD04A3520541EFB0044073A4E7A43D }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_EFC02380ABD24120A5EC824ABA11A491 }}
+
+      # Skips gracefully while the ACA jobs haven't been provisioned yet
+      # (infrastructure/main.bicep is deployed manually).
+      - name: Update Container Apps jobs to new image
+        run: |
+          IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${{ github.sha }}"
+          for JOB in vitneboksen-encode-job vitneboksen-finalvideo-job; do
+            if az containerapp job show --resource-group "${{ env.RESOURCE_GROUP }}" --name "$JOB" > /dev/null 2>&1; then
+              az containerapp job update \
+                --resource-group "${{ env.RESOURCE_GROUP }}" \
+                --name "$JOB" \
+                --image "$IMAGE"
+            else
+              echo "Job $JOB not found - skipping image update (deploy infrastructure/main.bicep first)"
+            fi
+          done

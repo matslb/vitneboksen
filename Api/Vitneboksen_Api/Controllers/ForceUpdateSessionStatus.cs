@@ -31,12 +31,8 @@ public static class ForceUpdateSessionStatus
             sessionKey,
             unprocessedContainer.GetBlobs());
 
-        var finalProcessingContainer = blobService.GetBlobContainerClient(Constants.FinalVideoProcessingContainer);
-        var existingFinalProcessingBlob = finalProcessingContainer.GetBlobs().FirstOrDefault(b => b.Name == sessionKey);
-        if (existingFinalProcessingBlob != null)
-        {
-            finalProcessingContainer.DeleteBlobIfExists(existingFinalProcessingBlob.Name);
-        }
+        // Resetting the status also cancels any in-flight final video request:
+        // the worker drops queued messages whose status is no longer 'started'.
         if (containerClient.GetBlobs().Any(b => b.Name == Constants.FinalVideoFileName))
         {
             firebaseService.SetFinalVideoProcessingStatus(sessionKey, FirebaseService.FinalVideoProcessingStatus.completed);

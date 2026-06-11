@@ -10,8 +10,10 @@
         public const string UnprocessedContainer = "unprocessed";
         public const string FailedContainer = "failed";
         public const string FinalVideoProcessingContainer = "final-video-processing-requests";
+        public const string EncodingQueueName = "video-encoding-requests";
+        public const string FinalVideoQueueName = "final-video-requests";
         public const int DaysBeforeDeletion = 14;
-        public const int MaxStoragePerSession = 140;
+        public const int MaxStoragePerSession = 512;
 
         public static class VideoTypes
         {

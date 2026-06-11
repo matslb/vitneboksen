@@ -1,78 +1,82 @@
-# Infrastructure Deployment
+# Vitneboksen infrastructure
 
-This directory contains Bicep templates for deploying the ACI-based final video processing infrastructure.
+Provisions the video-processing backend: two Azure Container Apps **jobs** (scale-to-zero,
+queue-triggered via KEDA) that run the `VideoWorker` container image, plus the storage queues
+they consume.
+
+## Architecture
+
+```
+upload endpoint ──▶ queue: video-encoding-requests ──▶ vitneboksen-encode-job      (1 vCPU/2Gi, max 5 parallel)
+"generate" click ─▶ queue: final-video-requests ─────▶ vitneboksen-finalvideo-job  (2 vCPU/4Gi, max 2 parallel)
+```
+
+Both jobs run the same image (`Api/VideoWorker`, built by `.github/workflows/build-videoworker.yml`);
+the `JOB_MODE` env var selects encode vs final-video behavior. Each job execution drains its queue
+and exits, so executions scale with queue depth and cost nothing when idle.
+
+Resources created by `main.bicep`:
+
+| Resource | Name | Purpose |
+| --- | --- | --- |
+| Storage queues | `video-encoding-requests`, `final-video-requests` | Work queues (on the existing storage account) |
+| Log Analytics | `log-vitneboksen` | Job logs (30-day retention) |
+| Container Apps environment | `cae-vitneboksen` | Consumption environment, scale-to-zero |
+| Container Apps job | `vitneboksen-encode-job` | Per-clip encoding |
+| Container Apps job | `vitneboksen-finalvideo-job` | Final video concatenation |
+
+The jobs authenticate to storage with the account connection string (stored as a Container Apps
+secret, also used by the KEDA queue scaler) and to Firebase with the auth secret.
 
 ## Prerequisites
 
-- Azure CLI installed and logged in
-- Storage account already exists
-- Azure Container Registry (ACR) with the finalvideo-worker image pushed
-- Contributor role on the target resource group
+- Azure CLI (`az login`, subscription selected)
+- An existing storage account holding the blob containers and queues
+- The `video-worker` image pushed to GHCR and set to **public** visibility
+  (GitHub → Packages → video-worker → Package settings → Change visibility)
+- Contributor on the target resource group
 
-## Files
+## Deploy
 
-- `main.bicep` - Main infrastructure template (Storage Queue, UAMI, Logic App, Role Assignments)
-- `logic-app-workflow.json` - Logic App workflow definition (to be imported after deployment)
-- `parameters.json.example` - Example parameters file
+1. Copy parameters and fill in real values (this file is git-ignored — never commit it):
 
-## Deployment Steps
+   ```bash
+   cp parameters.json.example parameters.json
+   ```
 
-### 1. Create parameters file
+2. Deploy:
 
-Copy `parameters.json.example` to `parameters.json` and fill in your values:
+   ```bash
+   az deployment group create \
+     --resource-group <your-resource-group> \
+     --template-file main.bicep \
+     --parameters @parameters.json
+   ```
+
+No manual post-deployment steps are required (unlike the previous Logic App + ACI design,
+which this replaces).
+
+## Verify
 
 ```bash
-cp parameters.json.example parameters.json
-# Edit parameters.json with your values
+# Jobs exist and are idle
+az containerapp job list -g <rg> -o table
+
+# Drop a test message on a queue and watch an execution start
+az storage message put --account-name <account> -q final-video-requests \
+  --content '{"v":1,"sessionKey":"<test-session-key>"}' --auth-mode key
+az containerapp job execution list -g <rg> --name vitneboksen-finalvideo-job -o table
+
+# Logs
+az containerapp job logs show -g <rg> --name vitneboksen-finalvideo-job --container video-worker
 ```
 
-### 2. Deploy infrastructure
+## Updating the worker image
+
+CI (`build-videoworker.yml`) builds, pushes, and points both jobs at the new image on every
+change to `Api/VideoWorker/**` or `Api/Shared/**` on `master`. To do it manually:
 
 ```bash
-az deployment group create \
-  --resource-group <your-resource-group> \
-  --template-file main.bicep \
-  --parameters @parameters.json
+az containerapp job update -g <rg> -n vitneboksen-encode-job --image ghcr.io/matslb/vitneboksen/video-worker:<tag>
+az containerapp job update -g <rg> -n vitneboksen-finalvideo-job --image ghcr.io/matslb/vitneboksen/video-worker:<tag>
 ```
-
-### 3. Configure Logic App connections
-
-After deployment, you need to configure the Logic App connections:
-
-1. Go to Azure Portal → Logic App → `la-finalvideo-orchestrator`
-2. Configure API connections:
-   - **azurequeues**: Connect to your storage account
-   - **azurecontainerinstances**: Use system-assigned managed identity
-
-### 4. Import Logic App workflow
-
-1. In the Logic App, go to "Logic app designer"
-2. Click "Code view"
-3. Paste the contents of `logic-app-workflow.json`
-4. Update the parameters section with actual values from your deployment
-5. Save the workflow
-
-### 5. Configure concurrency
-
-1. In Logic App designer, click on the trigger "When a message is received in a queue"
-2. Click "..." → "Settings"
-3. Enable "Concurrency Control"
-4. Set "Degree of Parallelism" to 1
-5. Save
-
-## Important Notes
-
-- The Logic App workflow definition in `logic-app-workflow.json` needs to be manually imported/configured after the initial deployment
-- The container group name will be auto-generated by Logic App (not using the `finalvideo-job-<sessionKey>` pattern as specified, but this is acceptable)
-- Ensure the ACR image is accessible (either public or with proper authentication configured)
-- The UAMI needs to be attached to the ACI container group for blob storage access
-
-## Verification
-
-After deployment, verify:
-
-1. Storage Queue `final-video-processing-requests` exists
-2. UAMI `uami-finalvideo-worker` exists and has proper role assignments
-3. Logic App `la-finalvideo-orchestrator` exists and is enabled
-4. Logic App has system-assigned identity with Contributor role on resource group
-
